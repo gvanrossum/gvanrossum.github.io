@@ -1,0 +1,976 @@
+<!-- Vignette V/5 Tue Jul 22 12:21:19 2003 -->
+
+<!-- USER RECOGNIZED	/0/
+	 PATH				//article_email/
+	 CACHED				/true/
+-->
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<!--added for registration bypass2 October 3,2002-->
+<!-- CDS hostname /j2ktemplate02/ -->
+<LINK REL="SHORTCUT ICON" href="http://online.wsj.com/favicon.ico"><link rel="stylesheet" href="/j20type.css" type="text/css">
+<SCRIPT LANGUAGE="JavaScript">
+<!-- 
+var fileNOTloaded = true;
+
+function converter(currency) {
+	var newWindow=window.open(currency,"",'width=400,height=460,left=153,top=40,toolbar=no,directories=no,menubar=no,status=no,location=no,scrollbars=yes,resizable=yes')
+}
+ 
+function find_string( inwhat, what )
+{
+	return ( inwhat.indexOf( what ) >= 0 );
+}
+
+function init()
+{
+	// The set focus does not work in Netscape 2.0
+	// because of the nested tables or something
+	if ( !find_string( navigator.userAgent, "Mozilla/2" ) )
+		document.login_form.User.focus();
+}
+//-->
+</SCRIPT>
+<script type="text/javascript" src="/nav_array/0,,20030722,00.js"></script>
+
+	
+<script type="text/javascript" src="/navigation.js"></script>
+	<script type="text/javascript" src="/headerscripts.js"></script>
+<script type="text/javascript" src="/quotesearch.js"></script>
+<SCRIPT LANGUAGE="JavaScript">
+window.name = "wndMain"
+var NumAttempts = 0;
+function onLoadAction() 
+{
+	if (fileNOTloaded) 
+	{
+		NumAttempts++;
+		if (NumAttempts < 5)
+		{
+			setTimeout( 'onLoadAction()', 250 );
+		}
+	} else 
+	{
+		//added by tahir for health journal
+		var WinLoc = window.top.location+"";
+		if (WinLoc.indexOf('public/health')>-1||WinLoc.indexOf('dow_jones_health_indexes')>-1) {
+		  DisplayPopUpForHealth()
+		} else if (WinLoc.indexOf('public/media')>-1||WinLoc.indexOf('dow_jones_media_indexes')>-1) {
+			DisplayPopUpForMandM()
+		}
+		  // Added by WFK, 04/23/2001
+		// Personal Journal, Define the default field to receive focus on rendering
+		PJ_SetDefaultFocus();
+	}
+}
+</script>
+<SCRIPT language="javascript">
+function CopyrightPopUp()
+{
+	var contentID = escape("SB105874358077089900.djm");
+	var title = escape( "Two Men, Two Ways To Speak Computerese");
+	var author = escape("Lee Gomes");
+	var creditline = escape("Staff Reporter of The Wall Street Journal");
+	
+		var pubDate = escape( "2003-07-20");
+	 var pubNameCheck = "The Wall Street Journal Interactive Edition";
+	if (pubNameCheck == "The Wall Street Journal Interactive Edition")
+	{
+		var pubName= escape("wsj.com");
+	}
+	else if (pubNameCheck == "Barron's Online")
+	{
+		var pubName= escape("barrons.com");
+	}
+	else
+	{
+		var pubName= escape("newswires");
+	}
+
+	var url = "https://s100.copyright.com/Clients/wsj_com/FairUse.jsp";
+	var location = url + "?PublisherName="	+ pubName + "&ContentID=" + contentID + "&orderReset=true" + "&Title=" + title + "&Author=" + author + "&CreditLine=" + creditline + "&PublicationDate=" + pubDate;
+	PopUp = window.open(location, 'reprints', 'location=no,toolbar=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=515,height=440');
+}
+
+				
+</SCRIPT>
+<script type="text/javascript">
+	var userid = GetUBID(GetCookie("UBID"));
+	var segmentid = (GetCookie("segment"))?GetCookie("segment"):"";
+</script>
+	
+<!--Added by kelly 9/21/01-->
+<SCRIPT LANGUAGE="JavaScript">
+<!-- Hide Script from low-end browsers
+function openPopup( sURL ){
+	if ( "" != sURL )
+	self.open( sURL, "Convert59Popup", "width=440,height=370,scrollbars=no", true );
+}
+function remove_sub_cookie(){
+// this function removes the subscriber cookie that may have been written on the login screen.
+document.cookie='user_type=unsubscribed; expires=Sunday, 31-Dec-80 10:10:10 GMT; path=/; domain=.wsj.com;';
+document.cookie='/WSJIE_LOGIN=defunct; expires=Sunday, 31-Dec-80 10:10:10 GMT; path=/ domain=.wsj.com;';}
+//-->
+</SCRIPT>
+<TITLE>WSJ.com - Portals</TITLE>
+</HEAD>
+<body onUnload='exitPopup();' marginheight="0" marginwidth="0" leftmargin="0" topmargin="0" link="#0066CC" bgcolor="#ffffff" alink="#FF9933" vlink="#8FA563" onLoad="onLoadAction()">
+<a name=top>
+<!-- HEADER TABLE STARTS HERE -->
+<!--img src="/img/wj00g01.gif" -->
+<table border="0" width="100%" cellspacing="0" cellpadding="0">
+<tr valign="top">
+	<td valign="bottom" colspan="2"><a href="/home"><IMG SRC="/img/compressed_head.gif" ALT="The Wall Street Journal Home Page" BORDER="0" HEIGHT="58" WIDTH="462"></A></td>
+
+	<td>
+		<table border="0" cellpadding="0" cellspacing="0" width="230" bgcolor="#FFFFFF">
+			<tr>
+				<td valign="top"><span style="color:#999;font-weight:bold;font-size:12px;">Search</span></td>
+				<td colspan="4"><span style="color:#999;font-weight:bold;font-size:12px;">&nbsp;Quotes &amp; Research</span></td>
+			</tr>
+			<tr>
+
+
+
+<td valign="top" class="plnTwelve">
+<form name="main_article_search" action="/public/search" method="post">
+<!-- 
+<input type="hidden" name="FIELD" value="field=vdkvgwkey+main-hed+article-doc-date+article-doc-publication+article-doc-id">
+-->
+<input type="hidden" name="FIELD" value="field=vdkvgwkey&field=main-hed&field=article-doc-date&field=article-doc-publication&field=article-doc-id">
+<input type="hidden" name="SORT_STRING" value="sort-string=article-doc-date+desc+main-hed+asc">
+<input type="hidden" name="SEARCH_SECTION" value="article-body">
+<input type="hidden" name="COLLECTION_WSJ" value="collection=wsjie/30day">
+<input type="hidden" name="COLLECTION_OTHER" value="collection=autowire/30day&collection=barrons/30day">
+<input type="text" name="KEYWORDS" value="" SIZE="9">&nbsp;<input type="image" SRC="/img/wj00b01.gif" border="0" height="14" width="14" alt="Submit Search"></td></form>
+
+	
+<SCRIPT>
+<!--
+var form_s=window.document.main_article_search;
+var form_fastlogin_value = GetCookie("fastlogin");
+if (form_fastlogin_value)
+{
+	form_s.action="/search";
+}
+//-->
+</SCRIPT>
+
+ <FORM name=fund_search action="/inap-bin/bb" method="GET"><input type="HIDDEN" name="page" value="9"><input type="HIDDEN" name="sym" size="8"></FORM>
+	<td valign="top" colspan="4" class="plnTwelve">
+	<FORM action="/mds/companyresearch-quote.cgi" method="GET" name="US_search" onSubmit="checkSymbol();return false;"><input type=hidden name=route value=BOEH><input type=hidden name=template value=company-research><input type=hidden name="ambiguous-purchase-template" value="company-research-symbol-ambiguity"><input type=hidden name="profile-name" value="Portfolio1"><input type=hidden name="profile-version" value="3.0"><input type=hidden name="profile-type" value="Portfolio"><input type=hidden name="profile-format-action" value="include"><input type=hidden name="profile-read-action" value="skip-read"><input type=hidden name="profile-write-action" value="skip-write"><input type=hidden name="p-headline" value="wsjie">&nbsp;<input type=text name="transform-value-quote-search" value="" size="9">&nbsp;<input type="image" SRC="/img/wj00b01.gif" border="0" height="14" width="14"></td>
+</tr>
+<tr>
+	<td class="plnEleven"><a href="/advanced_search" class="unvisited">Advanced Search</A></td>
+	<td align="left" width="20"><input type="radio" name="transform-name-quote-search" value="nvp-set-p-sym" checked></td>
+	<td><span class="greyTen"><nobr>Symbol(s)</nobr></span></td>
+	<td align="right" width="20"><input type="radio" name="transform-name-quote-search" value="nvp-no-set-p-name"></td>
+	<td width="40"><span class="greyTen">Name</span></td></tr>
+</table>
+<input type="hidden" name="nvp-companion-p-type" value="usstock usfund"><input type=hidden name="q-match" value="stem"><input type=hidden name="q-max_results" value="200"><input type=hidden  name="p-sym" value=""><input type=hidden  name="p-name" value=""><input type=hidden name="section" value="quote"><input type=hidden  name="profile-end" value="Portfolio"><input type="hidden" name="p-headline" value="wsjie"></td></form>
+</td>
+	<td width="100%" class="plnThirteen">&nbsp;<spacer type="block" width="1" height="3" border="0"></td>
+</tr>
+</tr>
+</table>
+<!-- STRIPE	-->
+<table border="0" width="100%" cellspacing="0" cellpadding="0">
+<tr>
+	<td height="1" bgcolor="ffffff"><spacer type="block" width="3" height="2"></td>
+</tr>
+<tr>
+	<td background="/img/wj00t01.gif"><img src="/img/wj00g02.gif" height="7" width="132" border="0"></td>
+</tr>
+<tr>
+	<td bgcolor="#E1EAF3" class="plnEleven"><nobr>&nbsp;<a href="/public/other_wsj_sites" onMouseover="OverBar=true;OpenMenu('OtherJrnlSite')" onMouseout="OverBar=false"><img src="/img/other_journal_sites.gif" border="0" align="absmiddle" name="OtherJrnlSiteIMG"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;As&nbsp;of&nbsp;9:38&nbsp;p.m.&nbsp;EDT&nbsp;Sunday,&nbsp;July&nbsp;20,&nbsp;2003&nbsp;
+&nbsp;
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<script type="text/javascript">
+<!--
+if (!GetCookie("fastlogin")) {
+	document.write('<span class="boldEleven">&nbsp;Online Journal Subscribers&nbsp;<a href="/login" class="unvisited">LOG IN</a></span>');
+}
+//-->
+</script>
+</nobr>
+</td></tr>
+<tr>
+	<td height="3" bgcolor="#E1EAF3"><spacer type="block" width="3" height="3"></td>
+</tr>
+<tr>
+	<td height="3" bgcolor="#336699"><spacer type="block" width="3" height="3"></td>
+</tr>
+<tr>
+	<td height="1" bgcolor="#000000"><spacer type="block" width="3" height="1"></td>
+</tr>
+</table>
+<!-- HEADER TABLE ENDS -->
+<!-- Begin Body Shell -->
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+	<tr>
+	<!-- Begin the navigation column. -->
+	<td width="131" rowspan="16" align="left" valign="top">
+		<!-- Begin Navigation -->
+		
+<!-- BEGIN LIB_NAV -->
+
+<script type="text/javascript">OM = "";</script>
+<table border="0" cellpadding="0" cellspacing="0" width="131" bgcolor="#FFFFFF">
+	<tr>
+		<td height="20" colspan="2"><a href="/home" onMouseOver="MyImg=new Image;MyImg.src=document.HOMEIMG.src;document.HOMEIMG.src='/img/Home_over.gif'" onMouseOut="document.HOMEIMG.src=MyImg.src"><img name="HOMEIMG" src="/img/Home_normal.gif" border="0" height="20" width="131"></a></td>
+	</tr>
+<TR height=1><td><spacer type=block height=1 width=1></td></TR>
+	
+		
+			  <tr>
+				<td height="20" colspan="2"><a href="/home/news/1,,1_0001,00.html?mod=1%5F0001" onMouseover="OverBar=true;OpenMenu('News')" onMouseout="OverBar=false;"><img SRC="/img/News_normal.gif" name="NewsIMG" border="0" height="20" width="131"></a></td>
+			</tr>
+			<tr><td colspan="2" height="1"><spacer type="vertical" size="1"></td></tr>
+		 
+		
+			  <tr>
+				<td height="20" colspan="2"><a href="/technology?mod=1%5F0013" onMouseover="OverBar=true;OpenMenu('Technology')" onMouseout="OverBar=false;"><img SRC="/img/Technology_normal.gif" name="TechnologyIMG" border="0" height="20" width="131"></a></td>
+			</tr>
+			<tr><td colspan="2" height="1"><spacer type="vertical" size="1"></td></tr>
+		 
+		
+			  <tr>
+				<td height="20" colspan="2"><a href="/markets?mod=1%5F0021" onMouseover="OverBar=true;OpenMenu('Markets')" onMouseout="OverBar=false;"><img SRC="/img/Markets_normal.gif" name="MarketsIMG" border="0" height="20" width="131"></a></td>
+			</tr>
+			<tr><td colspan="2" height="1"><spacer type="vertical" size="1"></td></tr>
+		 
+		
+			  <tr>
+				<td height="20" colspan="2"><a href="/your_money?mod=1%5F0034" onMouseover="OverBar=true;OpenMenu('YourMoney')" onMouseout="OverBar=false;"><img SRC="/img/YourMoney_normal.gif" name="YourMoneyIMG" border="0" height="20" width="131"></a></td>
+			</tr>
+			<tr><td colspan="2" height="1"><spacer type="vertical" size="1"></td></tr>
+		 
+		
+			  <tr>
+				<td height="20" colspan="2"><a href="/opinion?mod=1%5F0045" onMouseover="OverBar=true;OpenMenu('Opinion')" onMouseout="OverBar=false;"><img SRC="/img/Opinion_normal.gif" name="OpinionIMG" border="0" height="20" width="131"></a></td>
+			</tr>
+			<tr><td colspan="2" height="1"><spacer type="vertical" size="1"></td></tr>
+		 
+		
+			  <tr>
+				<td height="20" colspan="2"><a href="/at_leisure?mod=1%5F0051" onMouseover="OverBar=true;OpenMenu('AtLeisure')" onMouseout="OverBar=false;"><img SRC="/img/AtLeisure_normal.gif" name="AtLeisureIMG" border="0" height="20" width="131"></a></td>
+			</tr>
+			<tr><td colspan="2" height="1"><spacer type="vertical" size="1"></td></tr>
+		 </table>
+
+	<!-- Begin HOUSEKEEPING NAV --><table border="0" bgcolor="#7194BA" width="131" cellpadding="0" cellspacing="0">
+	<tr><td height="1" bgcolor="#FFFFFF"><spacer type="vertical" size="1"></td></tr>
+	<tr><td height="7" bgcolor="#E1EAF3"><spacer type="block" height="7" width="131"></td></tr>
+	<tr><td height="1" bgcolor="#FFFFFF"><spacer type="vertical" size="1"></td></tr>
+	<tr><td height="17" style="padding-left: 7px"><spacer type="horizontal" size="7"><a href="/page/0,,2_0133,00.html" style="color: #FFF; font-size:12px;">In Today's Paper</a></td></tr>
+	<tr><td height="1" bgcolor="#FFFFFF"><spacer type="vertical" size="1"></td></tr>
+	<tr><td height="17" style="padding-left: 7px"><spacer type="horizontal" size="7"><a href="/page/0,,columnists,00.html" style="color: #FFF; font-size:12px;">Columnists</a></td></tr>
+	<tr><td height="1" bgcolor="#FFFFFF"><spacer type="vertical" size="1"></td></tr>
+	<tr><td height="17" style="padding-left: 7px"><spacer type="horizontal" size="7"><a href="/pj/PortfolioDisplay.cgi" style="color: #FFF; font-size:12px;">Portfolio</a></td></tr>
+	<tr><td height="1" bgcolor="#FFFFFF"><spacer type="vertical" size="1"></td></tr>
+	<tr><td height="17" style="padding-left: 7px"><spacer type="horizontal" size="7"><a href="/setup/setup_center_mainpage?page=Setup+Center" style="color: #FFF; font-size:12px;">Setup Center</a></td></tr>
+	<tr><td height="1" bgcolor="#FFFFFF"><spacer type="vertical" size="1"></td></tr>
+
+<SCRIPT>
+<!--
+var fastlogin_value = GetCookie("fastlogin");
+if (fastlogin_value)
+{
+	document.write('<tr><td height="17" style="padding-left: 7px"><spacer type="horizontal" size="7"><a href="/user-cgi-bin/searchUser.pl?action=emailalert" style="color: #FFF; font-size:12px;">E-Mail Setup</a></td></tr>');
+}
+else
+{
+	document.write('<tr><td height="17" style="padding-left: 7px"><spacer type="horizontal" size="7"><a href="http://public.wsj.com/emailcenter/subscribe.html" style="color: #FFF; font-size:12px;">E-Mail Setup</a></td></tr>');
+}
+//-->
+</SCRIPT>
+
+	
+
+	<tr><td height="1" bgcolor="#FFFFFF"><spacer type="vertical" size="1"></td></tr>
+	<tr><td height="17" style="padding-left: 7px"><spacer type="horizontal" size="7"><a href="/public/site_map?page=Site+Map" style="color: #FFF; font-size:12px;">Site Map</a></td></tr>
+	<tr><td height="1" bgcolor="#FFFFFF"><spacer type="vertical" size="1"></td></tr>
+	<tr><td height="17" style="padding-left: 7px"><spacer type="horizontal" size="7"><a href="/discussions?page=Discussions" style="color: #FFF; font-size:12px;">Discussions</a></td></tr>
+	<tr><td height="1" bgcolor="#FFFFFF"><spacer type="vertical" size="1"></td></tr>
+	<tr><td height="17" style="padding-left: 7px"><spacer type="horizontal" size="7"><a href="/help?page=help" target="help"  style="color: #FFF; font-size:12px;" onclick="newWindow=window.open('/help', 'help', 'toolbar=yes,directories=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=610,height=400,left=153,top=40');newWindow.focus();return false;">Help</a></td></tr>
+	<tr><td height="1" bgcolor="#FFFFFF"><spacer type="vertical" size="1"></td></tr>
+	<tr><td height="17" style="padding-left: 7px"><spacer type="horizontal" size="7"><a href="/public/contact_us?page=Contact+Us" style="color: #FFF; font-size:12px;">Contact Us</a></td></tr>
+<SCRIPT>
+<!--
+var bOK = GetCookie("fastlogin");
+var sPath = (bOK) ? "/logout?page=Log+Out" : "/login?page=Log+In" ;
+var sText = (bOK) ? "Log Out" : "Log In" ;
+document.write('<tr><td height="1" bgcolor="#FFFFFF"><spacer type="vertical" size="1"></td></tr>');
+document.write('<tr><td height="17" style="padding-left: 7px"><spacer type="horizontal" size="7"><a href="'+ sPath +'" style="color: #FFF; font-size:12px;">'+ sText +'</a></td></tr>');
+//-->
+</SCRIPT>
+
+<tr><td height="7" bgcolor="#FFFFFF"><spacer type="vertical" size="7"></td></tr>
+</table><!-- End HOUSEKEEPING NAV -->
+ <!--WSJ Print Editions Link-->
+<table border="0" bgcolor="#7194BA"	width="131"	cellpadding="0"	cellspacing="0">
+	<!--WSJ Print Editions Link-->
+	<tr><td bgcolor="#FFFFFF" height="3"><spacer type="vertical" size="3"></td></tr>
+	<tr><td valign="top" align="right" width="131" bgcolor="#FFFFFF"><a href="/submkt/print_editions"><img src="/img/wj08g01.gif" width="126" height="37" border="0"></a></td>
+	<tr><td bgcolor="#FFFFFF" height="8"><spacer type="vertical" size="8"></td></tr>
+	</table>
+	<!--WSJ Barrons Link-->
+	<table border="0" width="131" cellpadding="0" cellspacing="0"><tr><td bgcolor="#FFFFFF" height="3"><spacer type="block" size="3"></td></tr><tr><td height="1" bgcolor="#7194BA"><spacer type="block" height="1"></td></tr><tr><td height="17" align="center"><span style="font-size:11px; color:#000;"><spacer type="horizontal" size="7">Today In:</span><BR><a HREF="http://www.barrons.com/"><img src="/barrons-media/barrons131.gif" border=0 height=35 width=131></a></td></tr><tr><tr><td height="1" bgcolor="#7194BA"><spacer type="block" height="1"></td></tr><tr>	<td bgcolor="#FFFFFF" height="8"><spacer type="vertical" size="8"></td></tr></table>
+
+<!--Ad Banner-->
+<table border="0" bgcolor="#7194BA" width="131" cellpadding="0" cellspacing="0"><tr><td align="right" bgcolor="#FFFFFF"></td></tr></table>
+<BR>
+
+	<!-- BEGIN lib_At_Your_Service -->
+	
+<!--Begin Commerce Center MODULE-->
+<script type="text/javascript" language="javascript">
+	var offering_window = null;
+	function service_win (locator)
+	{
+		if (offering_window == null) {
+			service_window = window.open(locator, 'service');
+		} else {
+			service_window.location = locator;
+		}
+		service_window.focus();
+		return false;
+	}
+</script>
+<table  border="0" cellspacing="0" cellpadding="0" width="131" bgcolor="#EEEEEE">
+<tr><td bgcolor="#C9D9E9" height="17" style="padding-left: 7px"><spacer type="horizontal" size="7"><span style="font-size:12px;">@ Your Service</span></td></tr>
+
+
+<tr><td height="17" style="padding-left: 7px"><a target="service" onClick="service_win('http://blmkt.dsi-enews.net/bleu/btrk/?dsid=3581&typ=C')" href="http://blmkt.dsi-enews.net/bleu/btrk/?dsid=3581&typ=C" style="font-size:12px;"><spacer type="horizontal" size="7">
+	
+		 Financial Workstations at PC prices  </a></td></tr>
+	<tr><td bgcolor="#FFFFFF" height=1></td></tr>
+
+<tr><td height="17" style="padding-left: 7px"><a target="service" onClick="service_win('http://ad.doubleclick.net/clk;5035371;7786947;x?http://pcg.fisherinvestments.com/0602cap/usletter.asp?KC=%epid!_%erid!_%eaid!_01')" href="http://ad.doubleclick.net/clk;5035371;7786947;x?http://pcg.fisherinvestments.com/0602cap/usletter.asp?KC=%epid!_%erid!_%eaid!_01" style="font-size:12px;"><spacer type="horizontal" size="7">
+	
+		 FREE report >> Forbes columnist's stock market analysis  </a></td></tr>
+	<tr><td bgcolor="#FFFFFF" height=1></td></tr>
+
+<tr><td height="17" style="padding-left: 7px"><a target="service" onClick="service_win('http://ad.doubleclick.net/clk;5512871;6853491;q?http://www.ibm.com/ondemand/t01')" href="http://ad.doubleclick.net/clk;5512871;6853491;q?http://www.ibm.com/ondemand/t01" style="font-size:12px;"><spacer type="horizontal" size="7">
+	
+		 Get there with IBM 
+		
+			<br><spacer type="horizontal" size="7">&nbsp;&nbsp;
+		 e-business on demand.  </a></td></tr>
+	<tr><td bgcolor="#FFFFFF" height=1></td></tr>
+
+<tr><td height="17" style="padding-left: 7px"><a target="service" onClick="service_win('http://blmkt.dsi-enews.net/bleu/btrk/?dsid=3446&typ=C')" href="http://blmkt.dsi-enews.net/bleu/btrk/?dsid=3446&typ=C" style="font-size:12px;"><spacer type="horizontal" size="7">
+	
+		 Get postage 24/7 at your office!  </a></td></tr>
+	<tr><td bgcolor="#FFFFFF" height=1></td></tr>
+
+<tr><td height="17" style="padding-left: 7px"><a target="service" onClick="service_win('http://wsj.com/WSJgifts/')" href="http://wsj.com/WSJgifts/" style="font-size:12px;"><spacer type="horizontal" size="7">
+	
+		 Give the perfect gift: The Online Journal  </a></td></tr>
+	<tr><td bgcolor="#FFFFFF" height=1></td></tr>
+
+<tr><td height="17" style="padding-left: 7px"><a target="service" onClick="service_win('http://ad.doubleclick.net/clk;5405473;6853491;p?http://wsjie.ar.wilink.com/asp/WSJ3_search_eng.asp')" href="http://ad.doubleclick.net/clk;5405473;6853491;p?http://wsjie.ar.wilink.com/asp/WSJ3_search_eng.asp" style="font-size:12px;"><spacer type="horizontal" size="7">
+	
+		 Order Free Annual Reports  </a></td></tr>
+	<tr><td bgcolor="#FFFFFF" height=1></td></tr>
+
+<tr><td height="17" style="padding-left: 7px"><a target="service" onClick="service_win('http://ad.doubleclick.net/clk;5405500;-2;p?http://wsjie.fundinfo.wilink.com/asp/F102_search_eng.asp')" href="http://ad.doubleclick.net/clk;5405500;-2;p?http://wsjie.fundinfo.wilink.com/asp/F102_search_eng.asp" style="font-size:12px;"><spacer type="horizontal" size="7">
+	
+		 Order Free Fund Prospectuses  </a></td></tr>
+	<tr><td bgcolor="#FFFFFF" height=1></td></tr>
+
+<tr><td height="17" style="padding-left: 7px"><a target="service" onClick="service_win('http://ad.doubleclick.net/clk;5786381;8144333;p?http://www.lind-waldock.com/edu/ed_5free.cgi')" href="http://ad.doubleclick.net/clk;5786381;8144333;p?http://www.lind-waldock.com/edu/ed_5free.cgi" style="font-size:12px;"><spacer type="horizontal" size="7">
+	
+		 Trade 5 Free @ Lind-Waldock. Click Now!  </a></td></tr>
+	<tr><td bgcolor="#FFFFFF" height=1></td></tr>
+
+<tr><td height="17" style="padding-left: 7px"><a target="service" onClick="service_win('http://ad.uk.doubleclick.net/clk;5838381;8169069;a?http://www.oracle.com/tvplayers/')" href="http://ad.uk.doubleclick.net/clk;5838381;8169069;a?http://www.oracle.com/tvplayers/" style="font-size:12px;"><spacer type="horizontal" size="7">
+	
+		 What makes some businesses stand out? Find out more at www.theplayers.tv  </a></td></tr>
+	<tr><td bgcolor="#FFFFFF" height=1></td></tr>
+</table>
+<!--End Commerce Center MODULE-->
+ <!-- END lib_At_Your_Service -->
+  <!-- End Navigation -->
+	</td>
+	<td width="15" rowspan="16"><img src="/img/b.gif" height="1" width="15" border="0"><!-- Left Gutter --></td>
+	<td colspan="3"><img src="/img/b.gif" height="10" width="1" border="0"></td>
+	<td width="5" rowspan="16"><img src="/img/b.gif" height="5" width="5" border="0"><!-- Right Gutter --></td>
+</tr>
+
+<TR><td colspan="3"><!-- guestAuthor=0,authorIcon=/img/colhed_gomes_lee.jpg,columnShared=0,authorName=Lee Gomes,one_author_in_byline=<BR>,authorNameSqueezed=<BR> -->
+<table border=0 cellspacing=0 cellpadding=0 width="100%">
+	<tr>
+		<td colspan=3 valign="center" align="left" class="boldPumpkinSixteen">
+		 
+			<table align="left" cellpadding="0" cellspacing="0" border="0"><tr>
+			<td class="boldLightGreyThirteen" valign="top"><span class="boldPumpkinSixteen">
+				
+					PORTALS  </span>
+				
+					<br>By LEE GOMES</span>
+				 
+					</td><td><img src="/img/colhed_gomes_lee.jpg" height="48" width="44" align="top" hspace="40" vspace="0" border="0"></td>
+				 </tr></table>
+				
+					<br><br>
+					<table cellpadding="0" cellspacing="0" border="0" width="100%"><tr>
+						<td height="10"><spacer type="block" height="10" width="10"></td>
+     				</tr></table>
+				  </td>
+	</tr>
+
+	<tr><td height="8"><spacer type="block" height="8"></td></tr>
+</table>
+</td></tr><TR><TD width="100%" colspan="3"><table width="200" cellpadding="0" cellspacing="0" border="0" align="right"><tr>
+<td width="5" height="1" rowspan="12"><img src="/img/b.gif" width="5" border="0" height="1"></td>
+<td width="1" height="1" rowspan="12" bgcolor="#cccccc"><img src="/img/b.gif" width="1" border="0" height="1"><spacer type="block" height=1 width=1></td>
+<td width="5" height="1" rowspan="12"><img src="/img/b.gif" width="5" border="0" height="1"></td><td width="180" height="1"><img src="/img/b.gif" width="180" border="0" height="1"></td></tr><tr><td><SCRIPT language="javascript1.2"><!--
+	var clickURL='http://online.wsj.com/wsjgate?subURI=%2Farticle%2F0%2C%2CSB105874358077089900%2Demail%2C00%2Ehtml&nonsubURI=%2Farticle%5Femail%2F0%2C%2CSB105874358077089900%2DH9jeoNplal2op2mZoCIb6eAm5%2C00%2Ehtml';
+	var clickTitle='WSJ.com - Two Men, Two Ways To Speak Computerese';
+	// before -> document.write('<SCRIPT language="javascript1.2" src="http://a449.g.akamai.net/7/449/1776/000/button.clickability.com/150/button_1/button.js"></SCRIPT>');
+	document.write('<SCRIPT language="javascript1.2" src="/button.js"></SCRIPT>'); //-->
+	</SCRIPT>	
+	
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td>
+      <table width="187" border="0" cellpadding="0" cellspacing="0" align="left">
+        <tr>
+          <td width="30" align="left"><nobr><a href="#" onclick="return(ET());" onMouseOver="return(ETMouseOver());" onMouseOut="return(ETMouseOut());" border="0"><img src="/img/h-e-icon-l-adj.gif" border="0" alt="Click to email this article"></a></nobr></td>
+          <td width="47" align="left"><nobr><a href="#" onclick="return(ET());" onMouseOver="return(ETMouseOver());" onMouseOut="return(ETMouseOut());" border="0"><img src="/img/email_text.gif" alt="Click to email this article" width="30" height="18" border="0"></a></nobr></td>
+          <td width="18" align="left"><nobr><a href="/public/article_print/0,,SB105874358077089900,00.html" border="0"><img src="/img/printIcon.gif" alt="Click to format this article for printing" width="15" height="14" border="0"></a></nobr></td>
+          <td width="93" align="left"><nobr><a href="/public/article_print/0,,SB105874358077089900,00.html" border="0"><img src="/img/print_text.gif" alt="Click to format this article for printing" width="30" height="18" border="0"></a></nobr></td>
+        </tr>
+		
+        <tr>
+		  <td colspan="4" height="16" align="left" valign="middle"><nobr><a href="http://ad.doubleclick.net/jump/N3324.wsj.com/B1135922.5;sz=230x33;ord=123456?" target="_new"><img src="/img/sponsoredby.gif" width="82" height="16" ALT="Advertisement" border=0><img src="/adimg/pb.gif" ALT="Advertisement" width="103" height="16" border=0></a></nobr></td>
+        </tr>
+		 <tr>
+          <td colspan="4" height="1" align="left"><spacer type="vertical" wifth="1" height="1"></td>
+        </tr>
+        <tr>
+          <td colspan="4" height="1" align="left" bgcolor="#CCCCCC"><spacer type="block" width="1" height="1"></td>
+        </tr>
+		<tr>
+          <td colspan="4" height="17" align="left"><spacer type="vertical" height="17"></td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ---------- Free Trial Box Module starts Here ------------------------  -->
+	<table width="100%" cellpadding="5" cellspacing="0" border="0" bgcolor="#D3E5F5">
+		<tr><td align=center>
+
+		<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#D3E5F5">
+		<tr>
+			<td colspan="3" height="5" bgcolor="#D3E5F5"><spacer type="block" width="1" height="5"></td>
+		</tr>
+		<tr>
+			<td colspan=3 class="boldTwelve" valign="top">
+			<a href="/cgi-bin/wsjgate?source=emailart&URI=http://interactive.wsj.com/14_regchoice.html" class="plnTwelve"><img src="/img/wj076g01.gif" width="56" height="51" border="0" align="right"></a>
+			Start a FREE<br> trial of the<br> <a href="/wsjgate?source=emailart&URI=http://interactive.wsj.com/14_regchoice.html" class="plnTwelve"><b>Online Journal</b></a>
+			<BR CLEAR="all"></td>
+		</tr>
+		<tr>
+			<td colspan="3" height="5" bgcolor="#D3E5F5"><spacer type="block" width="1" height="5"></td>
+		</tr>
+		<tr>
+			<td colspan="3" height="1" bgcolor="#999999"><spacer type="block" width=1></td>
+		</tr>
+		<tr>
+			<td colspan="3" height="5" bgcolor="#D3E5F5"><spacer type="block" width="1" height="5"></td>
+		</tr>
+		<tr>
+			<td colspan="3" class="boldTwelve" valign="top">
+			<a href="http://subscribe.wsj.com/wsjie" class="plnTwelve"><img src="/img/wj076g02.gif" align="right"  border=0></a>
+			Subscribe to<br> <a href="http://subscribe.wsj.com/wsjie" class="plnTwelve">The Print Journal</a>
+			<BR CLEAR="all"></td>
+		</tr>
+		<tr>
+			<td colspan="3" height="5" bgcolor="#D3E5F5"><spacer type="block" width="1" height="5"></td>
+		</tr>
+		<tr>
+			<td colspan="3" height="1" bgcolor="#999999"><spacer type="block" width=1></td>
+		</tr>
+		<tr>
+			<td colspan="3" height="5" bgcolor="#D3E5F5"><spacer type="block" width="1" height="5"></td>
+		</tr>
+		<tr>
+			<td colspan="3" bgcolor="#D3E5F5" class="boldTwelve">&nbsp;&nbsp;Free US Quotes:</td>
+		</tr>
+		<tr>
+			<form target="_top" name="qsearch" action="/tafkam/public-quotes.cgi" method="GET" onSubmit="q();return false;"">
+			<input type=hidden name=route value=boh>
+			<input type=hidden name=template value=public-quote-search>
+			<input type=hidden name="ambiguous-purchase-template" value="public-symbol-ambiguity">
+			<input type=hidden name="profile-name" value="Portfolio1">
+			<input type=hidden name="profile-version" value="3.0">
+			<input type=hidden name="profile-type" value="Portfolio">
+			<input type=hidden name="profile-format-action" value="include">
+			<input type=hidden name="profile-read-action" value="skip-read">
+			<input type=hidden name="profile-write-action" value="skip-write">
+			<td width=20><input type="radio" name="type" value="name" checked style="#D3E5F5; color: #D3E5F5)"></td>
+			<td width=20><span class="elevenpxArial">Symbol</span></td>
+			<td><img src="/img/b.gif" width="1" height="1" border="0"></td></tr>
+
+			<tr>
+			<td width=20><input type="radio" name="type" value="symbol" style="background-color: #D3E5F5; color: #D3E5F5"></td>
+			<td width=20><span class="elevenpxArial">Name</span></td>
+			<td><img src="/img/b.gif" width="1" height="1" border="0"></td></tr>
+
+			<tr>
+			<td width=20><img src="/img/b.gif" width="1" height="1" border="0"></td>
+			<td><INPUT TYPE="TEXT" name="transform-value-quote-search" value="" size="7"><input type="image" name="submit" SRC="/img/wj00b01.gif" border="0" height="14" width="14" alt="Submit Quote"></td>
+			<td><img src="/img/b.gif" width="1" height="1" border="0"></td>
+			<input type=hidden name=nvp-companion-p-type value="usstock usfund">
+			<input type=hidden name=transform-name-quote-search value="nvp-set-p-sym">
+			<input type=hidden name=p-sym value="">
+			<input type=hidden name=p-name value="">
+			<input type=hidden name=q-match value="stem">
+			<input type=hidden name=q-max_results value="200">
+			<input type=hidden name=profile-end value=portfolio>
+			</form>
+		</tr>
+		<tr>
+			<td colspan="3" height="5" bgcolor="#D3E5F5"><spacer type="block" width="1" height="5"></td>
+		</tr>
+		<tr>
+			<td colspan="3" height="1" bgcolor="#999999"><spacer type="block" width=1></td>
+		</tr>
+		<tr>
+			<td colspan="3" height="5" bgcolor="#D3E5F5"><spacer type="block" width="1" height="5"></td>
+		</tr>
+		<tr>
+			<td colspan="3" align="center" class="plnTwelve">Get <a href="http://public.wsj.com/emailcenter/subscribe.html" style="color: #ff0000; text-decoration: none;">FREE</a>&nbsp;<a href="http://public.wsj.com/emailcenter/subscribe.html" class="plnTwelve"><b>E-Mail</b></a>	by topic<br>
+		</tr>
+
+		<tr>
+			<td colspan="3" height="5" bgcolor="#D3E5F5"><spacer type="block" width="1" height="5"></td>
+		</tr>
+		<tr>
+			<td colspan="3" height="1" bgcolor="#999999"><spacer type="block" width=1></td>
+		</tr>
+		<tr>
+			<td colspan="3" height="5" bgcolor="#D3E5F5"><spacer type="block" width="1" height="5"></td>
+		</tr>
+
+		<tr>
+			<td colspan="3" align="center" class="plnTwelve">Check Out our
+			<a href="/public/mobile_devices" class="plnTwelve"><b>Mobile &amp; Wireless Services</b></a></td>
+		</tr>
+
+		<tr>
+			<td colspan="3" height="5" bgcolor="#D3E5F5"><spacer type="block" width="1" height="5"></td>
+		</tr>
+		<tr>
+			<td colspan="3" height="1" bgcolor="#999999"><spacer type="block" width=1></td>
+		</tr>
+		<tr>
+			<td colspan="3" height="5" bgcolor="#D3E5F5"><spacer type="block" width="1" height="5"></td>
+		</tr>
+
+		<tr>
+			<td colspan="3" align="center" CLASS="boldTwelve"><a href="/public/resources/documents/digest_earnings.htm">DIGEST OF EARNINGS</a></td>
+		</tr>
+		<tr>
+			<td colspan="3" height="3" bgcolor="#D3E5F5"><spacer type="block" width="1" height="3"></td>
+		</tr>
+		<tr>
+			<td colspan="3" align="center">
+			<span class="elevenpxArial">Details of the latest corporate<br>earnings reported for FREE.</span></td>
+		</tr>
+		<tr>
+			<td colspan="3" height="10" bgcolor="#D3E5F5"><spacer type="block" width="1" height="10"></td>
+		</tr> 
+		</table>
+		</td></tr></table>
+<p>
+<!-- ---------- Free Trial Box Module Ends Here ------------------------  -->
+<!-- Vignette V/5 Tue Jul 22 12:21:21 2003 -->
+
+<!-- ID=UG9ydGFscw==-3-1-__article_email-0-SB105874358077089900 -->
+
+
+
+
+
+
+<A NAME="">
+<table cellpadding="0" width="100%" cellspacing="0" border="0">
+
+<tr>
+	<td class="boldThirteen" colspan="4">
+	
+		
+			<a href="/search/aggregate?article-doc-type={Portals}%20&KEYWORDS=%2A&FIELD=field=vdkvgwkey%2Bmain%2Dhed%2Barticle%2Ddoc%2Ddate%2Barticle%2Ddoc%2Dpublication%2Barticle%2Ddoc%2Did%2Barticle%2Ddoc%2Dtype%2Bs%2Dmain%2Dhed&SORT_STRING=sort%2Dstring%3Darticle%2Ddoc%2Ddate%2Bdesc%2Bmain%2Dhed%2Basc&SEARCH_SECTION=article-body&COLLECTION_AGG=collection=wsjie/archive&HEADER_TEXT=Portals" class="blackBoldThirteen" ><img src="/img/more_arrows.gif" alt="Go to Page" border=0 height=10 width=5>&nbsp;RECENT COLUMNS</a>
+		  </td>
+</tr>
+<tr> 
+	<td height="1" colspan="4" bgcolor="#cccccc"><spacer type="block" width="100%" height="1"></td>
+</tr> 
+
+
+
+<!-- results from txt -->
+
+
+	
+	<tr>
+		 
+			<td class="greyEleven" style="padding-top: 7px;">July 14 <br><font style="color: #000000;">&#149;&nbsp;</font><A HREF="/article/0,,SB105814021547316100,00.html?mod=Portals" class="plnEleven" >Mapping the Road</A></td>
+		 
+		 </tr>
+	
+	<tr>
+		 
+			<td class="greyEleven" style="padding-top: 7px;">July 7 <br><font style="color: #000000;">&#149;&nbsp;</font><A HREF="/article/0,,SB105752742117991400,00.html?mod=Portals" class="plnEleven" >The Tech World Finds Use in Committees</A></td>
+		 
+		 </tr>
+	
+	<tr>
+		 
+			<td class="greyEleven" style="padding-top: 7px;">June 30 <br><font style="color: #000000;">&#149;&nbsp;</font><A HREF="/article/0,,SB10569205648909100,00.html?mod=Portals" class="plnEleven" >Does Jay Walker Have Another Genius Idea?</A></td>
+		 
+		 </tr>
+	<!-- MORE -->
+
+
+		<tr>
+		
+			<td colspan="3" valign="top" style="padding-top: 7px;"><a href="/search/aggregate?article-doc-type={Portals}%20&KEYWORDS=%2A&FIELD=field=vdkvgwkey%2Bmain%2Dhed%2Barticle%2Ddoc%2Ddate%2Barticle%2Ddoc%2Dpublication%2Barticle%2Ddoc%2Did%2Barticle%2Ddoc%2Dtype%2Bs%2Dmain%2Dhed&SORT_STRING=sort%2Dstring%3Darticle%2Ddoc%2Ddate%2Bdesc%2Bmain%2Dhed%2Basc&SEARCH_SECTION=article-body&COLLECTION_AGG=collection=wsjie/archive&HEADER_TEXT=Portals" class="plnEleven" >MORE</a></td>
+		 </tr>
+	 </table>
+
+<table border=0 bgcolor="#FFFFFF" cellpadding="0" cellspacing="0">
+<tr><td width="100%" height="17"><spacer type="block" width="100%" height="17"></td>
+</tr>
+</table>
+
+
+	 <!-- begin article outsets -->
+	
+			<!-- begin outset -->
+		
+			 
+   <!-- start outset -->
+<table cellpadding="0" width="100%" cellspacing="0" border="0">
+<tr><td class="plnEleven">
+
+</td></tr>
+</table>
+<!-- end outset --> <!-- end outset -->
+		  
+			<!-- begin outset -->
+		   <BR>
+	<!-- end article outsets -->
+
+<table bgcolor="#eeeeee" width="100%" cellspacing="0" cellpadding="3" border="0">
+<form action="/search/aggregate" name="search" method="POST">
+<tr><td style="padding-left: 9px; padding-top: 8px; line-height:11px;">
+
+ <input type="hidden" name="FIELD" value="field=vdkvgwkey+main-hed+article-doc-date+article-doc-publication+article-doc-id">
+	<input type="hidden" name="SORT_STRING" value="sort-string=article-doc-date+desc+main-hed+asc">
+	  <input type="hidden" name="SEARCH_SECTION" value="article-body">
+	 
+		<input type="hidden" name="HEADER_TEXT" value="PORTALS">
+	 
+		 <input type="hidden" name="COLLECTION_AGG" value="collection=wsjie/archive">
+	 
+	 <span class="boldTwelve">SEARCH PAST COLUMNS</span><br></td>
+	</tr>
+	<tr>
+	<td style="padding-left: 9px; padding-bottom: 0px;">
+	
+		<span class="plnEleven">Search for these words:</span></td>
+	</td>
+	</tr>
+	<tr><td class="plnEleven" style="padding-left: 9px; padding-bottom: 6px;">
+	<nobr><input type="text" name="KEYWORDS" size="18">&nbsp;<input type="image" src="/img/wj071b02.gif" width="15" height="15" border="0" onClick="this.form.submit();"></nobr>
+
+
+ 
+	<input type=hidden name="article-doc-type" value="{Portals}">
+	<span style="font-size: 2px;"><br>&nbsp;<br></span>
+	 
+		
+			<a href="/search/aggregate?article-doc-type={Portals}%20&KEYWORDS=%2A&FIELD=field=vdkvgwkey%2Bmain%2Dhed%2Barticle%2Ddoc%2Ddate%2Barticle%2Ddoc%2Dpublication%2Barticle%2Ddoc%2Did%2Barticle%2Ddoc%2Dtype%2Bs%2Dmain%2Dhed&SORT_STRING=sort%2Dstring%3Darticle%2Ddoc%2Ddate%2Bdesc%2Bmain%2Dhed%2Basc&SEARCH_SECTION=article-body&COLLECTION_AGG=collection=wsjie/archive&HEADER_TEXT=PORTALS" class="plnEleven">Display all columns</a><br>
+		   </td></tr></form>
+</table>
+
+<div style="line-height:17px; font-size:17px;">&nbsp;</div>
+
+
+	
+		
+			
+<table cellpadding="0" width="300" align="center" cellspacing="0" border="0">
+<tr>
+<td bgcolor="#FFFFFF" height="3"><spacer type="block" width="1" height="3"></td>
+</tr>
+<tr>
+<td width="300" valign="absbottom" align="center">
+
+<span class="boldGreyNine">advertisement</span><BR><!-- lib_Large_Rectangle_Ad -->
+<script type="text/javascript">
+	var tempHTML = '';
+	tempHTML += '<nolayer>'
+	tempHTML += '<iframe src="http://ad.doubleclick.net/adi/interactive.wsj.com/article_email;famil=article_email;' + segmentid + 'u=' + userid + ';sz=300x250;ord=19334193341933419334" width=300 height=250 marginwidth=0 marginheight=0 hspace=0 vspace=0 frameborder=0 scrolling=no bordercolor="#000000" id="iframe4" style="width:300">'
+	tempHTML += '<a href="http://ad.doubleclick.net/jump/interactive.wsj.com/article_email;famil=article_email;' + segmentid + 'u=' + userid + ';sz=300x250;ord=19334193341933419334" target="_new">'
+	tempHTML += '<img src="http://ad.doubleclick.net/ad/interactive.wsj.com/article_email;famil=article_email;' + segmentid + 'u=' + userid + ';sz=300x250;ord=19334193341933419334" border=0 width=300 height=250 vspace="0" alt="Advertisement"></a><br clear="all"></iframe>'
+	tempHTML += '</nolayer>'
+	tempHTML += '<ilayer id=ilayer4 visibility=hide width=300 height=250 left=0 top=0></ilayer>'
+	document.write(tempHTML);
+</script>
+<!-- lib_Large_Rectangle_Ad -->
+
+</tr>
+<tr>
+<td bgcolor="#FFFFFF" height="9"><spacer type="block" width="1" height="9"></td>
+</tr>
+</table>
+
+  
+	 <!-- begin article outsets -->
+	
+			<!-- begin outset -->
+		  
+			<!-- begin outset -->
+		
+			<span style="line-height:5px; font-size:5px;"><BR>&nbsp;<BR></span> 
+   <!-- start outset -->
+<table cellpadding="0" width="100%" cellspacing="0" border="0">
+<tr><td class="plnEleven">
+<span class="boldThirteen"><a name="REMOVEMARKUP"></a>ABOUT LEE GOMES</span><br>
+<div width="100%"><IMG SRC="/img/g.gif" ALT="" WIDTH="100%" HEIGHT="1"></div>
+<div width="100%"><IMG SRC="/img/b.gif" ALT="" WIDTH="100%" HEIGHT="5"></div>
+<div class="plnEleven">Lee Gomes, who writes the Portals column on Monday and the Portals
+Exchange on Friday, has been covering various topics, technical and
+otherwise, for The Wall Street Journal since 1996. He is a graduate of the
+University of Hawaii and the Columbia University Graduate School of
+Journalism, and lives in San Francisco. He can be reached at
+<a class="moduleLink" href="mailto:lee.gomes@wsj.com">lee.gomes@wsj.com</a>. His Boomtown and Boomtown Exchange columns are available
+<a class="moduleLink" href="http://online.wsj.com/search/aggregate?article-doc-type={Boom+Town}%20{Boom+Town+Guest}%20&KEYWORDS=%2A&FIELD=field=vdkvgwkey%2Bmain%2Dhed%2Barticle%2Ddoc%2Ddate%2Barticle%2Ddoc%2Dpublication%2Barticle%2Ddoc%2Did%2Barticle%2Ddoc%2Dtype%2Bs%2Dmain%2Dhed&SORT_STRING=sort%2Dstring%3Darticle%2Ddoc%2Ddate%2Bdesc%2Bmain%2Dhed%2Basc&SEARCH_SECTION=article-body&COLLECTION_AGG=collection=wsjie/archive&HEADER_TEXT=BOOMTOWN">here</a>.</div><span style="line-height: 5px"><br>&nbsp;<br></span>
+
+</td></tr>
+</table>
+<!-- end outset --> <!-- end outset -->
+		   <BR>
+	<!-- end article outsets -->
+
+
+	</td></tr></table>
+<!-- Source: db -->
+ 	
+		
+			
+	<!-- Article in DB -->
+		  
+				<span class="article">
+			 
+				<!--       ID: SB105874358077089900.djm -->
+<!--    LEVEL: normal -->
+<!--     TYPE: Portals -->
+<!-- DISPLAY-NAME: Portals -->
+<!-- PUBLICATION: "The Wall Street Journal Interactive Edition" -->
+<!--     DATE: 2003-07-20 21:38 -->
+<!--     COPY: Dow Jones & Company, Inc. -->
+<!--  ORIG-ID:  -->
+<!-- article start -->
+<p class="articleTitle" style="margin: 0px 0px 0px 0px;">Two Men, Two Ways<br>
+To Speak Computerese</p>
+
+   <p class="times">They live a few dozen miles from each other, have strikingly different
+backgrounds and world views, but in their own separate ways they have
+created computer languages among the most important in the world.</p>
+<p class="times">Larry Wall and Guido van Rossum are the driving forces behind Perl and
+Python, respectively. If you haven't heard of any of them, it's because you
+don't run a Web site, write server software, or toil in the many other
+fields where both men and their creations have enormous and very zealous
+followings.</p>
+<p class="times">Perl and Python are free and freely modified &quot;open source&quot; software,
+just like the better-known Linux operating system. Mr. Wall, 48, and Mr.
+von Rossum, 47, each started working on his language in the 1980s, a few
+years before Linus Torvalds began Linux. In all three cases, what began as
+a hobby grew into a global phenomenon.</p>
+<p class="times">Perl and Python are considered scripting languages, a category whose
+story has a &quot;Little Engine That Could&quot; quality to it.</p>
+<p class="times">These languages have been around since the very early days of computers.
+At first, they were limited to rudimentary tasks, like starting and
+stopping other much larger programs written in real languages. The most
+famous example of a scripting language is the autoexec.bat batch file of
+DOS and Windows fame.</p>
+<p class="times">Over the past decade, though, scripting languages have come to rival
+full-blown languages such as C and Java in power and performance. But
+they've kept the ease of use that was their main attraction in the first
+place. Hence their popularity.</p>
+<p class="times">While they are used for many things, you probably wouldn't write, say, a
+big graphics-intensive computer game in them because it would probably run
+too slowly. Be warned, though, that any such statement about the alleged
+unsuitability of Perl or Python for a particular task is likely to generate
+instant flame mails, not from Mr. Wall or Mr. van Rossum, who tend to be
+insouciant about these matters, but from some of their more die-hard
+followers.</p>
+<p class="times">Computer-science departments tend to frown on scripting languages,
+saying they encourage bad programming habits. Their tut-tut attitude is the
+kind you'd expect from carpentry teachers if someone started selling kits
+that let people build houses without knowing know how to plumb a door.</p>
+<p class="times">As the most popular of all the scripting languages, Perl and Python
+compete with each other for mind share among the same communities of
+programmers. The competition is good-natured, like the fake-Buddhist Python
+Web site that tells how &quot;the origin of suffering lies in the use of
+not-Python.&quot;</p>
+<p class="times">Lay people often don't appreciate it, but computer languages have
+distinct personalities, much like human languages. Perl is famous for being
+permissive, with no right or wrong way of accomplishing a task. Python, by
+contrast, is considered more rigid and exacting.</p>
+<p class="times">Those descriptions are the opposite of what you'd expect from the
+inventors' bios. The Dutch-born Mr. van Rossum started working on the
+my-way-or-the-highway Python as a typical resident of the famously
+freewheeling city of Amsterdam. About his approach to Python, Mr. van
+Rossum says that if there is a clearly right way of doing something, why
+mess it up with alternatives?</p>
+<p class="times">By contrast, Mr. Wall, the gatekeeper of the undogmatic Perl, is a
+devout evangelical Christian. &quot;God doesn't enforce morality on us, but
+prefers to let us choose it,&quot; he says. &quot;And if we are created in God's
+image, we ought to extend the same courtesy.&quot;</p>
+<p class="times">Besides choice, Mr. Wall also brings to his work a playful erudition.
+His yearly reports on the state of Perl development, available at
+<a class="times" href="http://www.perl.com/">www.perl.com</a>, are known for their Nabokovian wit.</p>
+<p class="times">Perl and Python aren't the only scripting languages; there are also PHP
+and Ruby and TCL and many more. That variety is another of the many
+differences between open source and for-profit software. Most companies
+will kill a product if it isn't No. 1 or No. 2 in a big market. But in open
+source, software lives on if there are enough believers to keep it
+alive.</p>
+<p class="times">Microsoft often likes to question the viability of open source, but the
+futures of both Python and Perl appear secure, thanks largely to Sugar
+Daddies who support the inventors.</p>
+<p class="times">Mr. van Rossum moved to the U.S. in 1995, and married a Texas
+martial-arts instructor. They have a young son, and have just relocated to
+Foster City, Calif., 15 miles south of San Francisco. Mr. van Rossum
+recently began work at Elemental Security, a computer-security
+start-up.</p>
+<p class="times">Mr. Wall is married with four children, and lives in nearby Mountain
+View. He just finished a gig at the nonprofit Perl Foundation, and is
+currently in search of a new patron.</p>
+<p class="times">These days, his main project is a massive, multiyear reworking of the
+entire Perl language. &quot;I made some bad decisions early on,&quot; he explains.
+&quot;But then, every language designer does. The trick is to make different
+mistakes as you get older.&quot;</p>
+
+<span class="plnTwelve">&#149;</span>&nbsp;Send your comments to
+<a class="times" href="mailto:lee.gomes@wsj.com">lee.gomes@wsj.com</a>, and check back on Friday for some selected letters at
+<a class="times" href="http://online.wsj.com/article/0,,portals_exchange,00.html">WSJ.com/Portals</a>.<span style="font-size: 5px;"><br>&nbsp;<br></span>
+
+<!-- article end -->
+     
+				<p class="article"><i>Updated July 20, 2003 9:38 p.m.</i></p>   
+
+<CENTER>
+<table border="0" cellpadding=0 cellspacing=0>
+<tr valign="top"><td align="center" colspan=3>
+
+<!-- Clickability/Reprint/Format For Printing Buttons begin -->
+
+ 
+	<img src="/img/b.gif" width=1 height=1>	
+
+	<a href="/public/article_print/0,,SB105874358077089900,00.html"><img src="/img/printIcon.gif" border="0" width="15" height="14" alt="Click to format this article for printing"></a>
+	<a href="/public/article_print/0,,SB105874358077089900,00.html"><img src="/img/printText.gif" border="0" width="120" height="18" alt="Click to format this article for printing"></a>&nbsp;
+
+	<img src="/img/b.gif" width=3 height=1>
+
+	<a href="JavaScript:CopyrightPopUp()" class="plnElevenUnderline"><IMG SRC="/img/reprintsIcon.gif" width="22" height="16" border=0 alt="Find out about distributing multiple copies of this article"></a>
+	<a href="JavaScript:CopyrightPopUp()" class="plnElevenUnderline"><IMG SRC="/img/reprintsText.gif" width="84" height="18" border=0 alt="Find out about distributing multiple copies of this article"></a>&nbsp;<br>
+<!-- Clickability/Reprint/Format For Printing Buttons end -->
+</td></tr>
+
+
+	<tr>
+		<td align="left" valign="bottom"><IMG SRC="/img/clickability_vert_line.gif" height=8 width=1></td>
+		<td align="center" class="greyTen">Sponsored by</td>
+		<td align="right" valign="bottom"><IMG SRC="/img/clickability_vert_line.gif" height=8 width=1></td>
+	</tr>
+	<tr><td height="1" bgcolor="#cccccc" colspan=3><spacer type="block" width="1" height="1"></td></tr>
+	<tr><td align=center colspan=3>
+		<a href="http://ad.doubleclick.net/jump/N3324.wsj.com/B1135922.5;sz=230x33;ord=123456?" target="_new"><img src="http://ad.doubleclick.net/ad/N3324.wsj.com/B1135922.5;sz=230x33;ord=123456?" ALT="" width="230" height="33" border=0></a><br>
+	</td></tr>
+</table>
+</CENTER>
+
+<!-- art_debugthis: ...found PG_ID
+		Portals/MST:Portals//SB105874358077089900-H9jeoNplal2op2mZYCIb6aAm5 --><img src="/img/b.gif" width="615" border="0" height="1"><BR CLEAR=ALL></TD></TR><!--  PageId=/3_0501/  ArticleType=/Portals/ --><tr>
+	<td COLSPAN="3" align="center" class="plnTwelve">
+	<div style="line-height:12px; font-size:12px;">&nbsp;</div>
+	<a href="#top" class="unvisited">Return To Top</a></td>
+</tr>
+<tr>
+	<td COLSPAN="3" height="10"><spacer type="block" width="1" height="10"></td>
+</tr>
+<TR>
+	<td colspan="3" bgcolor="#cccccc" height="1"><spacer type="block" width="1" height="1"></td>
+</tr>
+<tr>
+	<td colspan="3" height="800" valign=top align="center"><!-- ---------------- FOOTER ------------------ -->
+<center>
+<span><IMG SRC="/img/b.gif" HEIGHT=12 WIDTH=581 border=0><br><a href="/public/corrections" CLASS="pln75">Corrections</a>
+	&nbsp;&nbsp; <a href="/public/contact_us" CLASS="pln75">Contact Us</a>
+	&nbsp;&nbsp; <a href="/help_center" target="help" CLASS="pln75" onclick="newWindow=window.open('/help_center', 'help', 'toolbar=yes,directories=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=610,height=400,left=153,top=40');newWindow.focus();return false;">Help</a>
+	&nbsp;&nbsp; <a href="http://www.dj.com/" CLASS="pln75">About Dow Jones</a>
+	&nbsp;&nbsp; <a href="/public/mobile_devices" CLASS="pln75">Mobile Devices</a>
+	&nbsp;&nbsp;
+
+<SCRIPT>
+<!--
+var fastlogin_value = GetCookie("fastlogin");
+if (fastlogin_value)
+{
+	document.write('<a href="/user-cgi-bin/searchUser.pl?action=emailalert" CLASS="pln75">E-mail Setup</a>');
+}
+else
+{
+	document.write('<a href="http://public.wsj.com/emailcenter/subscribe.html" CLASS="pln75">E-mail Setup</a>');
+}
+//-->
+</SCRIPT>
+
+	<BR><IMG SRC="/img/b.gif" HEIGHT=8 width=1 border=0><BR><a href="https://online.wsj.com/acct/setup_account" CLASS="pln75">Account Information</a>
+	&nbsp;&nbsp; <a href="/public/privacy_policy" CLASS="pln75">Privacy Policy</a>
+	&nbsp;&nbsp; <a href="/public/subscriber_agreement" CLASS="pln75">Subscriber Agreement</a>
+	<BR><IMG SRC="/img/b.gif" HEIGHT=11 width=0 border=0><BR><font color="#000000"><span class="pln75">Copyright &#169; 2003 &nbsp;&nbsp; Dow Jones & Company, Inc.
+	&nbsp;&nbsp; All Rights Reserved</span>
+<br>
+
+
+	<br><a class="pln75" href="JavaScript:CopyrightPopUp()">Copyright and reprint information.</a></font>
+<P><IMG SRC="/img/wj00g18.gif" WIDTH=78 HEIGHT=19 border="0" ALT="DowJones">
+</span>
+</center><!-- FOOTER END-->
+</td>
+</tr>
+
+</table>
+</tr></table>
+<!-- End Body Shell -->
+<!-- Netscape Ad Layer Code Begin -->
+<script type="text/javascript">
+	var tempHTML = '';
+	var show = 'show';
+
+
+	  
+	 tempHTML += '<layer src="http://ad.doubleclick.net/adl/interactive.wsj.com/article_email;famil=article_email;' + segmentid + 'u=' + userid + ';abr=!ie4;abr=!ie5;sz=300x250;ord=19334193341933419334" visibility=hide onload="moveToAbsolute(ilayer4.pageX, ilayer4.pageY);visibility=show;" id="layer4" clip="300,250"></layer>'
+	      document.write(tempHTML);
+</script>
+<!-- Netscape Ad Layer Code End -->
+
+</body>
+</html>
