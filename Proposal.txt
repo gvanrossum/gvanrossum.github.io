@@ -1,0 +1,751 @@
+A different take
+
+Let's look at typechecking again.
+
+Introduction
+
+There are two kinds of modules: checked and unchecked.  The programmer 
+indicates inside the module source code that a module is a checked 
+module.  Proposed syntax: place "decl" on a line by itself at the top 
+of the module (after the doc string if any, but must occur before the 
+first statement -- this includes import statements and other decl 
+statements).
+
+A checked module is required to be internally typesafe, and typesafe 
+with respect to other checked modules that it imports.  Typesafety is a 
+compile-time property; every attempt is made to ensure that run-time 
+behavior of unchecked modules cannot violate typesafety of checked 
+modules.  This restricts the language somewhat.
+
+The Python implementation should guarantee that a checked module cannot 
+raise TypeError and similar exceptions, except when explicitly 
+requested through the use a dynamic cast operator (the spelling of 
+which is not yet decided).  Other exceptions may occur, however: 
+IndexError, KeyError, ZeroDivisionError, OverflowError and perhaps 
+others can occur on certain operations; MemoryError can occur almost 
+anywhere (like SystemError and KeyboardInterrupt).  The fate of 
+NameError and AttributeError for declared, but uninitialized variables 
+is undecided; these require flow control and thus don’t strictly fall 
+under type checks, but a rough check for these is not particularly 
+hard, and such a guarantee would be very useful.
+
+When a checked module imports an unchecked module, all objects in the 
+unchecked module (and the unchecked module itself) are assumed to be of 
+type 'any', and the checked module is typechecked accordingly.  When an 
+unchecked module imports a checked module, typechecks are inserted at 
+access points (where the unchecked module calls or otherwise accesses 
+the checked module) to ensure that the type constraints specified by 
+the checked module are satisfied at runtime.  These checks may be 
+bypassed when the checked module is accessed from another checked 
+module.
+
+Because even checked modules may be loaded dynamically, when a checked 
+module imports another checked module, the newly imported module is 
+tested against its expected signature.  If its signature is 
+incompatible with the signature expected by the importing module (e.g. 
+because the imported module was modified and rechecked since the 
+importing module was last checked) the import fails (with an 
+ImportError exception).
+
+Example: take a checked module containing a simple GCD function:
+
+# module gcdlib.py
+
+decl
+
+def gcd(a: integer, b: integer) -> integer:
+    while a:
+        a, b = b%a, a
+    return b
+
+This module passes the typesafety check.  Now consider another checked 
+module using that is it:
+
+# module test_gcdlib.py
+
+decl
+
+from gcdlib import gcd
+
+print gcd(12, 14)
+print gcd(20, 200)
+print gcd(6400, 2L**100)
+
+This module also passes the typesafety check (note that the last print 
+statement is accepted because the type 'integer' matches both the int 
+and long standard types).
+
+The following statement, when added to this module, will fail the 
+typesafety test, and thus make the module fail the safety test:
+
+print gcd(3.5, 3)
+
+Assuming we have a typechecking Python interpreter, running or 
+importing the file test_gcdlib.py thus modified will fail with a 
+compile-type typecheck error before a single statement in it is 
+executed.
+
+Now consider an unchecked module that is using the gcdlib.py module:
+
+# module foo.py
+
+from gcdlib import gcd
+
+print gcd(12, 14)
+print gcd(20, 200)
+print gcd(6400, 2L**100)
+print gcd(3.5, 3)
+
+This will print the first three answers:
+
+2
+20
+256L
+
+and fail with a dynamic typecheck error on the fourth print statement.
+
+On the other hand, if we now remove the "declare typecheck" from the 
+gcdlib.py file, the algorithm as stated will perform some result for 
+the fourth call (generally ill-defined, because of rounding 
+inaccuracies of floating point arithmetic), e.g.:
+
+2
+20
+256L
+0.5
+
+If we now run the modified test_gcdlib.py code (with the invalid 
+statement added) we see the same results: the module is checked, but it 
+calls an unchecked module, which can yield any results it likes.
+
+Now consider the following module (still using the unchecked version of 
+gcdlib.py):
+
+# module bar.py
+
+decl # this is a checked module
+
+from gcdlib import gcd
+
+decl i: integer
+
+i = gcd(2, 3)
+
+This module does not pass the typecheck, because gcdlib.py is not 
+checked, so its gcd() function is assumed to return a value of type 
+'any'.
+
+Could we fix this by adding "decl gcd: def(int, int)->int" to this 
+module?  No, because there's no way at compile time to verify that the 
+gcd function in fact matches this signature; generating a runtime error 
+when the result doesn't have the right type isn't very helpful (given 
+that we're asking to be typechecked).
+
+Some more examples of code that passes or fails the typecheck:
+
+def gcd(a: any, b: any) -> integer:
+    while a: a, b = b%a, a
+    return b
+
+This fails, because the type of b is 'any', which isn't a proper subset 
+of the type 'integer'.
+
+def foo(a: int) -> int:
+    return a/2.0
+
+This fails, because the type of the return expression is float, not 
+int.
+
+def foo(a: int) -> int:
+    b = a
+    return b
+
+This passes, even though the type of the local variable b is not 
+declared -- basic type inference can deduce its type.
+
+def foo(a: int) -> int:
+    L = []
+    L.append(a)
+    return L[0]
+
+This *fails*, because the type of L is not declared, and the 
+typechecking algorithm doesn't specify powerful enough type inference 
+to be able to deduce that L's type is "list of int".  Here's how to fix 
+the example:
+
+def foo(a: int) -> int:
+    decl L: [int]
+    L = []
+    L.append(a)
+    return L[0]
+
+Obviously, we have to define more precisely how much the assumed "basic 
+type inference" can deduce.  For now, we presume that it sees basic 
+blocks and assignments to simple variables.
+
+Now let's look at a realistic example.  This is find.py (taken from 
+Lib/lib-old in the Python 1.5.2 distribution) modified to be checked 
+and typesafe.  We assume that the imported modules, both part of the 
+standard library, are checked and hence typesafe.  Bold text was added:
+
+decl
+
+import fnmatch
+import os
+
+_debug = 0
+
+decl _prune: [str]
+_prune = ['(*)']
+
+def find(pattern: string, dir: string = os.curdir) -> [string]:
+	decl list: [string]
+	list = []
+decl names: [string]
+	names = os.listdir(dir)
+	names.sort()
+	for name in names:
+		if name in (os.curdir, os.pardir):
+			continue
+		fullname = os.path.join(dir, name)
+		if fnmatch.fnmatch(name, pattern):
+			list.append(fullname)
+		if os.path.isdir(fullname) and not os.path.islink(fullname):
+			for p in _prune:
+				if fnmatch.fnmatch(name, p):
+					if _debug: print "skip", `fullname`
+					break
+			else:
+				if _debug: print "descend into", `fullname`
+				list = list + find(pattern, fullname)
+	return list
+
+Note that the types of local variables 'name' and 'fullname' are not 
+declared; their types are deduced from the context: the type of 'name' 
+is the item type of 'names', and the type of 'fullname' is the return 
+type of os.path.join().  (By the way, this gives us another indication 
+of the required power for basic type inference; it has to know the 
+relation between the type of the sequence iterated ober by a for loop 
+and the type of the loop control variable.)
+
+Ditto for 'p'.  It should be noted that the type declaration for 
+'names' could be omitted without effect, since the return type of 
+os.listdir() is known to be [string].
+
+Could we omit the declaration for '_prune'?  No; even though it is 
+effectively a constant (by intention, it changes only when the module 
+is edited), the typechecker isn't required to notice this.  Or is it 
+even constant?  Earlier, we've discussed how the runtime can prevent 
+changes to module globals that are apparently constants.  Hmm, even if 
+we disallow direct assignment to 'find._prune' from outside the module, 
+that doesn't stop us from writing 'find._prune.append("spam")', so even 
+if the typechecker can deduce that _prune is a list, it can't assume 
+that it is a list of strings, unless it is declared so.  Such are the 
+joys of working with mutable data types.
+
+On the other hand, '_debug' doesn't need to be declared, even when we 
+assume outside assignments are legal, because its only use is in a 
+true/false test, which applies to any object.  Hmm, this may change in 
+the future; the new design for rich comparisons introduces types that 
+cannot be used directly in a Boolean context, because the outcome of a 
+comparison between two arrays will be allowed to return an array of 
+Booleans; in order to prevent naive programmers to write "if A < B: 
+..." where A and B are arrays, this will raise an exception rather than 
+always returning true.  Anway, the "no outside assignments" rule would 
+do away with this argument, and it is the most sane rule to be adopted.
+
+Syntax
+
+I like the syntax shown above; it is roughly what Greg proposes (mostly 
+inspired by Tim's earlier proposal).  There's an optional alternative 
+which places all type annotations inside decl statements; this makes is 
+easier to remove the decl statements for use with an unmodified Python 
+interpreter.  Thus,
+
+decl gcd: def(a: integer, b: integer) -> integer
+def gcd(a, b):
+    while a:
+        a, b = b%a, a
+    return b
+
+is equivalent to the "in-line" version:
+
+def gcd(a: integer, b: integer) -> integer:
+    while a:
+        a, b = b%a, a
+    return b
+
+I think that maybe we can allow this too, with roughly the same 
+meaning:
+
+decl def gcd(a: integer, b: integer) -> integer
+
+I’d like to distinguish the two slightly: the form ``decl def 
+name(...)’’ should mean that we declare a function; the form ``decl 
+name: def(...)’’ should mean that we declare a variable that holds a 
+function (callable).  This is a useful distinction (even more so in 
+classes).
+
+Either of the following declares the argument types without declaring 
+the names of keyword arguments, so the function can only be called with 
+positional arguments:
+
+decl gcd: def(integer, integer) -> integer
+
+decl def gcd(integer, integer) -> integer
+
+Note that if the decl statement doesn't give the keyword argument 
+names, the presence of the argument names (even with default values) in 
+the actual def statement doesn't change this.  On the other hand, if 
+the argument type declarations are included in the function definition, 
+they keyword argument names are implied.
+
+Here's another way to declare the argument and return types.  It is 
+more verbose, and equivalent to the in-line form:
+
+def gcd(a, b):
+    decl a: integer, b: integer
+    decl return: integer
+    while a:
+        a, b = b%a, a
+    return b
+
+I don't like Paul's 'as' keyword.  See Greg's argument about this (it 
+suggests possibly changing the value to conform to the type).
+
+I don't like Greg's '!' operator.  Its semantics are defined in terms 
+of runtime checks, but I want the semantics of typechecking to be done 
+at compile-time, as explained above.  This is not negotiable at the 
+moment.
+
+An alternative form of syntax that doesn't require changing the 
+interpreter at all places the decl statements inside string literals, 
+e.g.:
+
+"decl gcd: def(integer, integer) -> integer"
+def gcd(a, b):
+    while a:
+        a, b = b%a, a
+    return b
+
+Paul suggests something similar, but uses a tuple of two strings.  I 
+don’t see the point of that (besides, such a tuple ends up being 
+evaluated and then thrown away at run time; a simple string is thrown 
+away during code generation).
+
+There's one more idea that I want to discuss: once the in-line syntax 
+is accepted, the 'decl' keyword may be redundant (in most cases 
+anyway).  We might just as well write "a: int" on a line by itself 
+rather than "decl a: int".  The Python parser won't have serious 
+problems with this, as long as the thing on the left of the colon can 
+be simplified to be an expression.  (This is already done for 
+assignment statements.)
+
+Minor syntactic nit: I like to use '|' to separate type alternatives, 
+not 'or'.
+
+Classes
+
+Now let's look at the use of type declarations to annotate class 
+definitions.
+
+A class will mostly want to declare two kinds of things: the signatures 
+of its instance methods, and the types of its instance variables.  I 
+will briefly discuss the declaration of class methods and variables 
+below.
+
+I propose the syntax used in the following example:
+
+class Stack:
+
+    decl _store: [any]
+
+    def __init__(self):
+        self._store = []
+
+    def push(self, x: any):
+        self._store.append(x)
+
+    def pop(self) -> any:
+        x = self._store[-1]
+        del self._store[-1]
+        return x
+
+Note that 'self' is still mentioned in the def statement, but its type 
+is not declared; it is implied to be 'Stack'.
+
+It is possible to use decl statements for the methods instead of inline 
+syntax; then the decl statement should *not* list 'self':
+
+class Stack:
+
+    decl _store: [any]
+
+    def __init__(self):
+        self._store = []
+
+    decl def push(any)
+    def push(self, x):
+        self._store.append(x)
+
+    decl def pop() -> any
+    def pop(self):
+        x = self._store[-1]
+        del self._store[-1]
+        return x
+
+Note that no decl statement or in-line syntax is used for __init__; 
+this means that it takes no arguments (remember that __init__ never 
+returns anything).
+
+A future extension of the type checking syntax can easily be used to 
+declare private and protected variables, or static variables, or const 
+variables:
+
+decl protected _stack: [any]
+decl public static class_stats: int
+decl const MAXDEPTH: int
+
+In checked modules, no dynamic games may be played with classes.  
+(Eventually, we'll allow certain dynamic games; for now, it's best to 
+disallow them completely so we can get on with the goal of 
+typechecking.)
+
+The typechecker must ensure that all declared instance variables are 
+properly initialized.  For instance variables with a mutable types, 
+this means that they must be assigned to at least once before being 
+used in the __init__ method.  For instance variables with an immutable 
+type, if an assignment at the class level is present, this is allowed.
+
+A class in a checked module must declare all its instance variables.  
+Instance methods are implicitly declared by the presence of 'def' 
+statements.
+
+Here's another example:
+
+class Tree:
+    decl readonly label: string
+    decl private left, right, parent: Tree|None
+    def __init__(self, lab: string,
+                 l: Tree|None = None, r: Tree|None = None):
+        self.label = lab
+        self.parent = None
+        self.left = l
+        self.right = r
+        if l is not None:
+            assert l.parent is None
+            l.parent = self
+        if r is not None:
+            assert r.parent is None
+            r.parent = self
+    def unlink(self):
+        self.parent = None
+    def setleft(self, x: Tree):
+        assert x.parent is None
+        if self.left is not None:
+            self.left.unlink()
+        self.left = x
+        x.parent = self
+    def setright(self, x: Tree):
+        assert x.parent is None
+        if self. right is not None:
+            self. right.unlink()
+        self. right = x
+        x.parent = self
+    def prefixvisit(self, visitor: def(Tree)):
+        visitor(self)
+        if self.left is not None: self.left.prefixvisit(visitor)
+        if self.right is not None: self.right.prefixvisit(visitor)
+
+Here we see a tricky issue cropping up.  The links are declared to be 
+either a Tree node or None.  This means that whenever a link is 
+dereferenced, a check must be made.  The type inferencer thus must be 
+smart enough to detect these checks and notice that in the branch, the 
+tested variable has the more restricted type.  Most languages introduce 
+special syntax for this (e.g. Modula-3 uses the 'typecase' statement).  
+Can we get away with things like "if x is not None:" or the more 
+general "if isinstance(x, Tree)"?
+
+Subtyping
+
+If f is defined as "def f(x: any) -> any", and an argument is declared 
+as "def(int)", is f an acceptable argument value?  Yes.  However, if 
+the argument is declared as "def(int)->int", the answer is No!
+
+Note that no declared return type is different than a declared return 
+type of None here; no declared return type means that the return type 
+is not used.
+
+Otherwise I see the subtyping rules as pretty straightfoward.  I do 
+think that the subtyping rules will require that subclasses declare 
+their overriding methods with compatible signatures as base classes.  
+This may cause standard contravariance-related issues.  Given:
+
+class B:
+    def method(self, other: B) -> B: ...
+
+the following is valid:
+
+class D(B):
+    def method(self, other: B) -> D: ...
+
+but class D can't declare that its method requires a D:
+
+class D(B):
+    def method(self, other: D) -> D: ...
+
+(Read any text on contravariance if you don't understand this; this is 
+a well-known surprising requirement that C++ and Java also have.  
+Eiffel solves it with a runtime check; is this really better?)
+
+Idea: Eiffel allows covariance (e.g. declaring other as D in the 
+derived class) and inserts a run-time check.  We could do the same, as 
+it is so useful.  Most of the time this could probably be checked at 
+compile time; basically all casts of a D instance to a B are 
+suspicious, and all calls in the base class of such a method may be 
+suspicious (unless the instance and the argument are 'self').
+
+Parameterized types
+
+Of course, the Stack example is begging to be a parameterized type!  
+Let's suggest a syntax.  I don't like the syntax proposed before very 
+much; what's wrong with C++ template brackets?
+
+class Stack<T>:
+
+    decl _store: [T]
+
+    def __init__(self):
+        self._store = []
+
+    def push(self, x: T):
+        self._store.append(x)
+
+    def pop(self) -> T:
+        x = self._store[-1]
+        del self._store[-1]
+        return x
+
+A variant without in-line syntax is easy, for example:
+
+class Stack:
+    decl <T>
+    ...
+
+or (if you prefer):
+
+decl class Stack<T>
+class Stack:
+    ...
+
+The problem with this is how to write the instantiation, *and* how to 
+do the type checking when this is used from an unchecked module.  Let's 
+try:
+
+decl IntStack = Stack<int>
+
+decl x: IntStack
+x = IntStack()
+x.push(1)
+print x.pop()
+
+x.push("spam") # ERROR
+
+decl s: string
+s = x.pop() # ERROR
+
+print isinstance(x, IntStack) # True
+print isinstance(x, Stack) # True
+
+y = Stack() # ERROR
+
+The first (slight) problem here is that the first decl statement here 
+must introduce a new name in the *runtime* environment (which hitherto 
+we have carefully avoided).  This can be done; the syntax uses '=' to 
+signal this to the parser.
+
+The second problem is that when a checked module creates an IntStack 
+instance, and passes this out into an unchecked module, the instance 
+must contain added typechecking code so that attempts to push non-ints 
+are properly rejected (otherwise a later pop() in the checked code 
+could yield a surprise).
+
+This means that either the statement
+
+decl InstStack = Stack<int>
+
+must do template instantiation just like C++ (shrudder!); or the 
+statement
+
+x = IntStack()
+
+must pass a hidden extra parameter giving the parameter type ('int') to 
+the constructor, which store the type descriptor in a hidden instance 
+variable, and all the methods must contain explicit type checking 
+against the parameter type; this is slower but seems more Pythonic.
+
+In any case there will be little hope that we can fully support 
+parameterized types in the experimental version of the syntax where 
+decl statements are totally invisible to the parser.  The statement 
+"decl IntStack = Stack<int>" must be replaced by something like 
+"IntStack = Stack", at the very least.  This makes the string literal 
+experimental syntax hard to realize.
+
+Exceptions
+
+A checked module that passes the typecheck may still raise exceptions 
+when used.  Dereferencing None is a typecheck error, and so is using an 
+unknown name, an uninitialized name (hopefully), or an unknown or 
+uninitialized attribute; but indexing out of range, using an unknown 
+key, dividing by zerio, and a variety of other conditions (e.g. 
+MemoryError, IOError or KeyboardInterrupt) may cause exceptions.
+
+It would be nice if we could guarantee that no exceptions could be 
+raised (with the exception of MemoryError or KeyboardInterrupt, which 
+can never be prevented), but IndexError, KeyError and ZerodivisionError 
+are hard to chek for at compile time.  What do other languages do?
+
+Java and Modula-3 require such exceptions to be declared.  (C++ too?)  
+Maybe we should follow suit and do the same thing...  (However, I 
+believe that Java makes indexing errors non-declared exceptions, I 
+believe, and ditto for null pointer dereferencing.)
+
+Open issues / ideas for the future
+
+Paul Prescod has some examples of parameterized functions, e.g. (in my 
+syntax):
+
+def f<T> (a: T) -> T: ...
+
+This is only useful if there is a way to instantiate such "template" 
+functions; I could claim that if f(1) returns 1.0, it is valid because 
+I choose "number" for T.  I’m not sure that we need this much; 
+parameterized classes seem to take care of most cases, so I suggest not 
+to bother in version 1.0.
+
+
+Interfaces?  Paul Prescod suggests using 'interface' as the keyword and 
+otherwise using the class syntax, but without function bodies and 
+initializations.  Seems fine with me.  To declare that we’re using an 
+interface, we simply list it as a base class.  Interfaces should be 
+listed after all regular base classes.  But I wonder if we need to 
+bother in version 1.0.
+
+
+It may be useful to declare the type of a variable as conforming to 
+several interfaces.  This could be expressed with the '&' operator, 
+e.g. ``decl a: I1 & I2''.
+
+
+Checked modules and classes form a good basis to revisit the idea of 
+require/ensure (i.e., programmming by contract, as in Eiffel, and as 
+propagated for Python by Paul Dubois).
+
+
+Can an unchecked module subclass a class defined by a checked module in 
+such a way that it violates the type checks?  This could be detected 
+dynamically, either at class definition time or (at the latest) when a 
+method is called or an instance variable is assigned to.
+
+
+Since int is a subtype of any, does this mean that Stack<int> is a 
+subtype of Stack<any>?  No, I don’t think so.  Example:
+
+decl a: [int]
+decl b: [any]
+a = [1,2,3]
+b = a
+b.append("spam")
+
+The last statement is illegal because of the aliasing, but legal in the 
+light of the type of b.  The solution is either a dynamic typecheck or 
+to say that [int] is not a subtype of [any].  Note that Java calls it a 
+subtype and inserts the dynamic check -- apparently because it is 
+lacking parameterized types. (See [Bruce96].)
+
+
+This probably has consequences for many generic or polymorphic 
+functions; e.g. the bisect() function.  So, perhaps the idea of 
+parameterized functions does have a purpose?  Jeremy suggests that at 
+least for functions, parameterization should be explicit in the 
+declaration (e.g. def bisect<T>(a: [T], x: T) -> int) but implicit in 
+the function application (e.g. decl a: [int]; a = [1,2,10];
+i = bisect(a, 5)).
+
+
+There’s another problem here.  Without extra typechecking, lists or 
+dicts of specific types aren’t even safe as subtypes of 'any'; if I 
+declare x: [int], then passing x into unchecked code is unsafe unless 
+lists implement typechecking!  However this is a bit different than the 
+above example -- here we pass a checked object into unchecked 
+territory, so the object is required to defend itself; in the previous 
+example, the type error occurred within fully checked code (and 
+[Bruce96] explains why).
+
+
+What syntax to use to declare exceptions?
+
+
+Is there any hope for compile time checking of out-of-bounds indexing?  
+(The obsession of Pascal, in response to a hang-up from debugging too 
+many Fortran programs :-)
+
+
+The requirement to insert dynamic type checks when an unchecked module 
+calls a function defined in a checked module can easily be expensive; 
+consider passing a list of 1000 ints to a function taking an argument 
+of type [int].  Each of the ints must be checked!  Jeremy suggested 
+caching the union type of the elements in the list object, but this 
+slows down everything since we don’t know whether the list will ever be 
+used in a context where its type is needed (also deletions may cause 
+the cached type to be to big, so that a full check may still 
+occasionally be needed).  It may be better to accept the overhead.  (An 
+alternative idea is to generate code in the checked function that does 
+the type check only when items are extracted from the list, but of 
+course this means that all checked code must typecheck all items 
+extracted from all sequences, since sequences may be freely passed 
+around between checked code.)
+
+
+Do we need a way to refer to the type of self?  E.g.
+
+class C:
+    def __add__(self, other: typeof(self)) -> typeof(self): ...
+
+This would be especially useful in interfaces...
+
+
+After reading part of [Bruce96]: maybe we need to separate the notion 
+of subtyping and subclassing.  Can the type of a class’ instance be 
+determined automatically based on its class?  Is there a way to detect 
+the error pattern that Bertrand Meyer calls "polymorphic catcalls"?  (A 
+catcall is a call on self.foo(...args...) where a subclass could 
+redefine foo() to be incompatible with the given arguments.)
+
+
+We should allow redefining methods with subtypes for the return value 
+and supertypes for the arguments (but that’s not very useful).  
+Example: overriding the __copy__() method to return the type of the 
+current class.  We could even add a mechanism to automatically vary the 
+return type even if the method is not explicitly overridden.  (But how 
+to typecheck it?)
+
+After reading [Bruce96]: allowing MyType for argument and return value 
+types is helpful and can be made safe, although may lead to subclasses 
+not being subtypes.
+
+
+What *is* the type of self?  is it the (statically known) current 
+class?  Is it something special?  [Bruce96] explains that it is 
+something special (MyType, a free variable).  It is of course known to 
+be a subtype of the defining class; but otherwise it needs to be 
+considered a free variable.  Not clear how this affects the type 
+checking algorithm...
+
+References
+
+[Bruce96] Kim Bruce: Typing in object-oriented languages: Achieving 
+expressiveness and safety.  http://www.cs.williams.edu/~kim/README.html
+
+[Meyer] Bertrand Meyer: Beware of polymorphic catcalls. 
+http://www.eiffel.com/doc/manuals/technology/typing/cat.html
