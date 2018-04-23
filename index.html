@@ -1,118 +1,171 @@
-<HTML>
+<!DOCTYPE html>
+<html lang="en">
 
-<HEAD>
-<TITLE>Guido's Personal Home Page</TITLE>
-</HEAD>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Guido's Personal Home Page</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+</head>
 
-<BODY BGCOLOR="#FFFFFF" TEXT="#000000">
+<body>
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
+                    aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">Guido van Rossum</a>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a href="resume.html">Resume</a>
+                    </li>
+                    <li>
+                        <a href="publications.html">Publications</a>
+                    </li>
+                    <li>
+                        <a href="bio.html">Bio</a>
+                    </li>
+                    <li>
+                        <a href="interviews.html">Interviews</a>
+                    </li>
+                    <li>
+                        <a href="pics.html">Pics</a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Others
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="abstract.html">Abstract</a>
+                            </li>
+                            <li>
+                                <a href="python.html">Python</a>
+                            </li>
+                            <li>
+                                <a href="house.html">House</a>
+                            </li>
+                            <li>
+                                <a href="testimonials.html">Testimonials</a>
+                            </li>
+                            <li>
+                                <a href="trip.html">Trip</a>
+                            </li>
+                            <li>
+                                <a href="types-sig.html">Types-SIG</a>
+                            </li>
+                            <li>
+                                <a href="help.html">Help</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-<H1>
-<a href="pics.html"><img border="0" src="images/IMG_2192.jpg"></a>
-Guido van Rossum - Personal Home Page</H1>
+    <div class="container-fluid">
+        <h1>Guido van Rossum
+            <small>Personal Home Page</small>
+        </h1>
+        <img src="images/IMG_2192.jpg" class="img-responsive" alt="Guido van Rossum">
+        <p>
+            <blockquote>
+                <a href="http://www.washingtonpost.com/wp-srv/business/longterm/microsoft/stories/1998/raymond120398.htm" target="_blank">
+                    <i>"Gawky and proud of it."</i>
+                </a>
+            </blockquote>
+        </p>
+        <h3>
+            <a href="http://metalab.unc.edu/Dave/Dr-Fun/df200004/df20000406.jpg" target="_blank">Who I Am</a>
+        </h3>
+        <p>
+            Read my
+            <a href="http://neopythonic.blogspot.com/2016/04/kings-day-speech.html" target="_blank">"King's Day Speech"</a> for some inspiration.
+        </p>
+        <p>
+            I am the author of the
+            <a href="http://www.python.org" target="_blank">Python</a> programming language. See also my
+            <a href="Resume.html">resume</a> and my
+            <a href="Publications.html">publications list</a>, a
+            <a href="bio.html">brief bio</a>, assorted
+            <a href="http://legacy.python.org/doc/essays/" target="_blank">writings</a>,
+            <a href="http://legacy.python.org/doc/essays/ppt/" target="_blank">presentations</a> and
+            <a href="interviews.html">interviews</a> (all about Python), some
+            <a href="pics.html">pictures of me</a>,
+            <a href="http://neopythonic.blogspot.com" target="_blank">my new blog</a>, and my
+            <a href="http://www.artima.com/weblogs/index.jsp?blogger=12088" target="_blank">old blog</a> on Artima.com. I am
+            <a href="https://twitter.com/gvanrossum" target="_blank">@gvanrossum</a> on Twitter. I also have a
+            <a href="https://plus.google.com/u/0/115212051037621986145/posts" target="_blank">G+ profile</a>.
+        </p>
+        <p>
+            In January 2013 I joined
+            <a href="http://www.dropbox.com" target="_blank">Dropbox</a>. I work on various Dropbox products and have 50% for my Python work, no strings attached. Previously,
+            I have worked for Google, Elemental Security, Zope Corporation, BeOpen.com, CNRI, CWI, and SARA. (See my
+            <a href="Resume.html"> resume</a>.) I created Python while at CWI.
+        </p>
+        <h3>How to Reach Me</h3>
+        <p>
+            You can send email for me to guido (at) python.org. I read everything sent there, but if you ask me a question about using
+            Python, it's likely that I won't have time to answer it, and will instead refer you to help (at) python.org,
+            <a href="http://groups.google.com/groups?q=comp.lang.python" target="_blank">comp.lang.python</a> or
+            <a href="http://stackoverflow.com" target="_blank">StackOverflow</a>. If you need to talk to me on the phone or send me something by snail mail, send me an email
+            and I'll gladly email you instructions on how to reach me.
+        </p>
+        <h3>My Name</h3>
+        <p>My name often poses difficulties for Americans.</p>
+        <p>
+            <b>Pronunciation:</b> in Dutch, the "G" in Guido is a hard G, pronounced roughly like the "ch" in Scottish "loch".
+            (Listen to the
+            <a href="media/guido.au">sound clip</a>.) However, if you're American, you may also pronounce it as the Italian "Guido". I'm not too worried
+            about the associations with mob assassins that some people have. :-)
+        </p>
+        <p>
+            <b>Spelling:</b> my last name is two words, and I'd like to keep it that way, the spelling on some of my credit
+            cards notwithstanding. Dutch spelling rules dictate that when used in combination with my first name, "van" is
+            not capitalized: "Guido van Rossum". But when my last name is used alone to refer to me, it is capitalized, for
+            example: "As usual, Van Rossum was right."
+        </p>
+        <p>
+            <b>Alphabetization:</b> in America, I show up in the alphabet under "V". But in Europe, I show up under "R". And
+            some of my friends put me under "G" in their address book...
+        </p>
+        <h3>More Hyperlinks</h3>
+        <ul>
+            <li>Here's a collection of
+                <a href="http://legacy.python.org/doc/essays/" target="_blank">essays</a> relating to Python that I've written, including the foreword I wrote for Mark Lutz' book "Programming
+                Python".
+            </li>
+            <br>
+            <li>I own the official
+                <a href="images/license.jpg" target="_blank">
+                    <img align="center" border="0" width="100" height="75" src="images/license_thumb.jpg">
+                </a> Python license.
+            </li>
+        </ul>
+        <h3>The Audio File Formats FAQ</h3>
+        <p>I was the original creator and maintainer of the Audio File Formats FAQ. It is now maintained by Chris Bagwell at
+            <a href="http://www.cnpbagwell.com/audio-faq" target="_blank">http://www.cnpbagwell.com/audio-faq</a>. And here is a link to
+            <a href="http://sox.sourceforge.net/" target="_blank">SOX</a>, to which I contributed some early code.
+        </p>
+        <hr>
+        <p>
+            <blockquote>
+                <a href="images/internetdog.gif" target="_blank">"On the Internet, nobody knows you're a dog."</a>
+            </blockquote>
+        </p>
+    </div>
 
-<P><A
-HREF="http://www.washingtonpost.com/wp-srv/business/longterm/microsoft/stories/1998/raymond120398.htm" 
-><i>"Gawky and proud of it."</i></A>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+</body>
 
-
-<H3><a
-href="http://metalab.unc.edu/Dave/Dr-Fun/df200004/df20000406.jpg" >Who
-I Am</a></H3>
-
-<p>Read
-my <a href="http://neopythonic.blogspot.com/2016/04/kings-day-speech.html">"King's
-Day Speech"</a> for some inspiration.
-
-<P>I am the author of the <A HREF="http://www.python.org" >Python</A>
-programming language.  See also my <A HREF="Resume.html">resume</A>
-and my <A HREF="Publications.html">publications list</A>, a <A
-HREF="bio.html" >brief bio</A>, assorted <a
-href="http://legacy.python.org/doc/essays/">writings</a>, <a
-href="http://legacy.python.org/doc/essays/ppt/">presentations</a> and <a
-href="interviews.html">interviews</a> (all about Python), some
-<a href="pics.html">pictures of me</a>,
-<a href="http://neopythonic.blogspot.com">my new blog</a>, and
-my <a href="http://www.artima.com/weblogs/index.jsp?blogger=12088">old
-blog</a> on Artima.com.  I am
-<a href=https://twitter.com/gvanrossum>@gvanrossum</a> on Twitter.  I
-also have
-a <a href="https://plus.google.com/u/0/115212051037621986145/posts">G+
-profile</a>.
-
-<p>In January 2013 I joined
-<a href=http://www.dropbox.com>Dropbox</a>.  I work on various Dropbox
-products and have 50% for my Python work, no strings attached.
-Previously, I have worked for Google, Elemental Security, Zope
-Corporation, BeOpen.com, CNRI, CWI, and SARA.  (See
-my <a href=Resume.html>resume</a>.)  I created Python while at CWI.
-
-<H3>How to Reach Me</H3>
-
-<P>You can send email for me to guido (at) python.org.
-I read everything sent there, but if you ask
-me a question about using Python, it's likely that I won't have time
-to answer it, and will instead refer you to
-help (at) python.org,
-<a href="http://groups.google.com/groups?q=comp.lang.python"
->comp.lang.python</a> or
-<a href=http://stackoverflow.com>StackOverflow</a>.  If you need to
-talk to me on the phone or send me something by snail mail, send me an
-email and I'll gladly email you instructions on how to reach me.
-
-<H3>My Name</H3>
-
-<P>My name often poses difficulties for Americans.
-
-<P><b>Pronunciation:</b> in Dutch, the "G" in Guido is a hard G,
-pronounced roughly like the "ch" in Scottish "loch".  (Listen to the
-<A HREF="guido.au">sound clip</A>.)  However, if you're
-American, you may also pronounce it as the Italian "Guido".  I'm not
-too worried about the associations with mob assassins that some people
-have. :-)
-
-<P><b>Spelling:</b> my last name is two words, and I'd like to keep it
-that way, the spelling on some of my credit cards notwithstanding.
-Dutch spelling rules dictate that when used in combination with my
-first name, "van" is not capitalized: "Guido van Rossum".  But when my
-last name is used alone to refer to me, it is capitalized, for
-example: "As usual, Van Rossum was right."
-
-<P><b>Alphabetization:</b> in America, I show up in the alphabet under
-"V".  But in Europe, I show up under "R".  And some of my friends put
-me under "G" in their address book...
-
-
-<H3>More Hyperlinks</H3>
-
-<UL>
-
-<LI>Here's a collection of <A HREF =
-"http://legacy.python.org/doc/essays/" >essays</A> relating to Python
-that I've written, including the foreword I wrote for Mark Lutz' book
-"Programming Python".<P>
-
-<li>I own the official <a href="images/license.jpg"><img align="center"
-border="0" width="100" height="75" src="images/license_thumb.jpg">
-Python license.</a><p>
-
-</UL>
-
-<H3>The Audio File Formats FAQ</H3>
-
-<P>I was the original creator and maintainer of the Audio File Formats
-FAQ.  It is now maintained by Chris Bagwell
-at <A HREF="http://www.cnpbagwell.com/audio-faq"
->http://www.cnpbagwell.com/audio-faq</A>.  And here is a link to
-<a href=http://sox.sourceforge.net/>SOX</a>, to which I contributed
-some early code.
-
-</UL>
-
-<HR>
-
-<A HREF="images/internetdog.gif">"On the Internet, nobody knows you're
-a dog."</A>
-
-<HR>
-
-</BODY>
+</html>
