@@ -1,0 +1,183 @@
+<H1>Python Patterns - Implementing Graphs</H1>
+
+<HR>
+
+<I>Change notes: 2/22/98, 3/2/98, 12/4/00: This version of this essay
+fixes several bugs in the code.</I>
+
+<pre>
+Copyright (c) 1998, 2000, 2003 Python Software Foundation.
+All rights reserved.
+Licensed under the PSF license.
+</pre>
+
+<HR>
+
+Graphs are networks consisting of nodes connected by edges or arcs.  In
+directed graphs, the connections between nodes have a direction, and are
+called arcs; in undirected graphs, the connections have no direction and
+are called edges.  We mainly discuss directed graphs.  Algorithms in graphs
+include finding a path between two nodes, finding the shortest path between
+two nodes, determining cycles in the graph (a cycle is a non-empty path
+from a node to itself), finding a path that reaches all nodes (the famous
+"traveling salesman problem"), and so on.  Sometimes the nodes or arcs of a
+graph have weights or costs associated with them, and we are interested in
+finding the cheapest path.<P>
+
+There's considerable literature on graph algorithms, which are an important
+part of discrete mathematics.  Graphs also have much practical use in
+computer algorithms.  Obvious examples can be found in the management of
+networks, but examples abound in many other areas.  For instance,
+caller-callee relationships in a computer program can be seen as a graph
+(where cycles indicate recursion, and unreachable nodes represent dead
+code).<P>
+
+Few programming languages provide direct support for graphs as a data type,
+and Python is no exception.  However, graphs are easily built out of lists
+and dictionaries.  For instance, here's a simple graph (I can't use
+drawings in these columns, so I write down the graph's arcs):
+
+<PRE>
+    A -> B
+    A -> C
+    B -> C
+    B -> D
+    C -> D
+    D -> C
+    E -> F
+    F -> C
+</PRE>
+
+This graph has six nodes (A-F) and eight arcs.  It can be represented by
+the following Python data structure:
+
+<PRE>
+    graph = {'A': ['B', 'C'],
+             'B': ['C', 'D'],
+             'C': ['D'],
+             'D': ['C'],
+             'E': ['F'],
+             'F': ['C']}
+</PRE>
+
+This is a dictionary whose keys are the nodes of the graph.  For each key,
+the corresponding value is a list containing the nodes that are connected
+by a direct arc from this node.  This is about as simple as it gets (even
+simpler, the nodes could be represented by numbers instead of names, but
+names are more convenient and can easily be made to carry more
+information, such as city names).<P>
+
+Let's write a simple function to determine a path between two nodes.  It
+takes a graph and the start and end nodes as arguments.  It will return a
+list of nodes (including the start and end nodes) comprising the path.
+When no path can be found, it returns None.  The same node will not occur
+more than once on the path returned (i.e.  it won't contain cycles).  The
+algorithm uses an important technique called <i>backtracking</i>: it tries
+each possibility in turn until it finds a solution.<P>
+
+<PRE>
+    def find_path(graph, start, end, path=[]):
+        path = path + [start]
+        if start == end:
+            return path
+        if not graph.has_key(start):
+            return None
+        for node in graph[start]:
+            if node not in path:
+                newpath = find_path(graph, node, end, path)
+                if newpath: return newpath
+        return None
+</PRE>
+
+A sample run (using the graph above):
+
+<PRE>
+    >>> find_path(graph, 'A', 'D')
+    ['A', 'B', 'C', 'D']
+    >>>
+</PRE>
+
+The second 'if' statement is necessary only in case there are nodes that are
+listed as end points for arcs but that don't have outgoing arcs
+themselves, and aren't listed in the graph at all.  Such nodes could also
+be contained in the graph, with an empty list of outgoing arcs, but
+sometimes it is more convenient not to require this.<P>
+
+Note that while the user calls find_graph() with three arguments, it calls
+itself with a fourth argument: the path that has already been traversed.
+The default value for this argument is the empty list, '[]', meaning no
+nodes have been traversed yet.  This argument is used to avoid cycles (the
+first 'if' inside the 'for' loop).  The 'path' argument is not modified:
+the assignment "path = path + [start]" creates a new list.  If we had
+written "path.append(start)" instead, we would have modified the variable
+'path' in the caller, with disastrous results.  (Using tuples, we could
+have been sure this would not happen, at the cost of having to write
+"path = path + (start,)" since "(start)" isn't a singleton tuple -- it is
+just a parenthesized expression.)<P>
+
+It is simple to change this function to return a list of all paths (without
+cycles) instead of the first path it finds:
+
+<PRE>
+    def find_all_paths(graph, start, end, path=[]):
+        path = path + [start]
+        if start == end:
+            return [path]
+        if not graph.has_key(start):
+            return []
+        paths = []
+        for node in graph[start]:
+            if node not in path:
+                newpaths = find_all_paths(graph, node, end, path)
+                for newpath in newpaths:
+                    paths.append(newpath)
+        return paths
+</PRE>
+
+A sample run:
+
+<PRE>
+    >>> find_all_paths(graph, 'A', 'D')
+    [['A', 'B', 'C', 'D'], ['A', 'B', 'D'], ['A', 'C', 'D']]
+    >>>
+</PRE>
+
+Another variant finds the shortest path:
+
+<PRE>
+    def find_shortest_path(graph, start, end, path=[]):
+        path = path + [start]
+        if start == end:
+            return path
+        if not graph.has_key(start):
+            return None
+        shortest = None
+        for node in graph[start]:
+            if node not in path:
+                newpath = find_shortest_path(graph, node, end, path)
+                if newpath:
+                    if not shortest or len(newpath) &lt; len(shortest):
+                        shortest = newpath
+        return shortest
+</PRE>
+
+Sample run:
+
+<PRE>
+    >>> find_shortest_path(graph, 'A', 'D')
+    ['A', 'C', 'D']
+    >>>
+</PRE>
+
+These functions are about as simple as they get.  Yet, they are nearly
+optimal (for code written in Python).  In another Python Patterns
+column, I will try to analyze their running speed and improve their
+performance, at the cost of more code.<P>
+
+Another variation would be to add more data abstraction: create a class to
+represent graphs, whose methods implement the various algorithms.  While
+this appeals to the desire for structured programming, it doesn't make the
+code any more efficient (to the contrary).  It does make it easier to add
+various labels to the nodes or arcs and to add algorithms that take those
+labels into account (e.g. to find the shortest route between two cities on
+a map).  This, too, will be the subject of another column.<P>
