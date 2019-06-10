@@ -3,7 +3,9 @@
 <HR>
 
 <I>Change notes: 2/22/98, 3/2/98, 12/4/00: This version of this essay
-fixes several bugs in the code.</I>
+  fixes several bugs in the code.
+  6/10/19: retraction of <code>find_shortest_path</code> as "nearly optimal".
+</I>
 
 <pre>
 Copyright (c) 1998, 2000, 2003 Python Software Foundation.
@@ -169,10 +171,29 @@ Sample run:
     >>>
 </PRE>
 
-These functions are about as simple as they get.  Yet, they are nearly
+<strike>These functions are about as simple as they get.  Yet, they are nearly
 optimal (for code written in Python).  In another Python Patterns
 column, I will try to analyze their running speed and improve their
-performance, at the cost of more code.<P>
+performance, at the cost of more code.</strike><P>
+
+<B>UPDATE:</B> Eryk Kopczyński pointed out that these functions are
+not optimal.  To the contrary, "this program runs in exponential time,
+while find_shortest_path can be done in linear time using BFS [Breadth
+First Search]. Furthermore a linear BFS is simpler:"
+
+<PRE>
+    # Code by Eryk Kopczyński
+    def find_shortest_path(graph, start, end):
+        dist = {start: [start]}
+        q = deque(start)
+        while len(q):
+        at = q.popleft()
+            for next in graph[at]:
+                if next not in dist:
+                    dist[next] = [dist[at], next]
+                    q.append(next)
+        return dist[end]
+</PRE>
 
 Another variation would be to add more data abstraction: create a class to
 represent graphs, whose methods implement the various algorithms.  While
@@ -180,4 +201,4 @@ this appeals to the desire for structured programming, it doesn't make the
 code any more efficient (to the contrary).  It does make it easier to add
 various labels to the nodes or arcs and to add algorithms that take those
 labels into account (e.g. to find the shortest route between two cities on
-a map).  This, too, will be the subject of another column.<P>
+a map).  <STRIKE>This, too, will be the subject of another column.</STRIKE></P>
