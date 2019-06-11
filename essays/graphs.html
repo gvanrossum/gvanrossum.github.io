@@ -187,13 +187,22 @@ First Search]. Furthermore a linear BFS is simpler:"
         dist = {start: [start]}
         q = deque(start)
         while len(q):
-        at = q.popleft()
+            at = q.popleft()
             for next in graph[at]:
                 if next not in dist:
                     dist[next] = [dist[at], next]
                     q.append(next)
         return dist[end]
 </PRE>
+
+Note that this returns the path in a weird format, e.g.,
+<code>[[['A'], 'B'], 'D']</code>. In particular,
+<code>len(find_shortest_path(graph, 'A', 'D'))</code> will give
+the incorrect answer (2, because the outer list is of length 2). This is
+because append is done as <code>[dist[at], next]</code> instead of
+<code>dist[at]+[next]</code>. The second method would use quadratic
+time and memory, but still should be fine for relatively small graphs;
+otherwise, it is easy to turn the list into the correct format.<P>
 
 Another variation would be to add more data abstraction: create a class to
 represent graphs, whose methods implement the various algorithms.  While
