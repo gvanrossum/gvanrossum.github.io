@@ -1,0 +1,46 @@
+
+<HTML>
+
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+ <TITLE>Contravariance</TITLE> 
+</HEAD>
+
+<BODY     >
+
+ <H1>Contravariance</H1> 
+ <P><UL>
+<H2>class B:def method(self, x: number) -&#062 int|long: ...def other(self):    decl i: int|long    i = self.method(3.14)
+</H2>
+</UL><UL>
+<H2>
+</H2>
+</UL><UL>
+<H2>class D(B):
+</H2>
+</UL><UL>
+<H2>    def method(self, x: int) -&#062 int|long: ...	# ERROR
+</H2>
+</UL><UL>
+<H2>class D’(B):def method(self, x: any) -&#062 int: ...		# ok
+</H2>
+</UL><UL>
+<H2>class D’’(B):def method(self, x: number) -&#062 any: ...	# ERROR
+</H2>
+</UL></P>
+<P></P> 
+<P>
+<TABLE>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld016.htm">Previous slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=100></TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="tsld001.htm">Back to first slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="sld017.htm">View graphic version</A> </TD>
+</TABLE>
+<BR>
+</P>
+
+
+
+</Body>
+</HTML>

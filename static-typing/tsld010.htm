@@ -1,0 +1,40 @@
+
+<HTML>
+
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+ <TITLE>Parameterized Types</TITLE> 
+</HEAD>
+
+<BODY     >
+
+ <H1>Parameterized Types</H1> 
+ <P><UL>
+<LI><H2>Needed e.g. for container classes:
+</H2>
+<UL>
+class Stack&#060T&#062:decl st: Tdef __init__(self):    self.st = []def push(self, x: T): self.st.append(x)def pop(self) -&#062 T: x = self.st[-1]; del self.st[-1]; return x
+<BR><BR>
+<BR>decl IntStack = Stack&#060int&#062 # template instantiation
+<BR>decl s: IntStack
+<BR>s = IntStack() # or s = Stack() ???
+<BR>s.push(1)
+<BR>decl x: int
+<BR>x = s.pop()
+<BR>s.push("spam") # ERROR</UL></UL></P>
+<P></P> 
+<P>
+<TABLE>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld009.htm">Previous slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld011.htm">Next slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="tsld001.htm">Back to first slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="sld010.htm">View graphic version</A> </TD>
+</TABLE>
+<BR>
+</P>
+
+
+
+</Body>
+</HTML>

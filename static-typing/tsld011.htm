@@ -1,0 +1,39 @@
+
+<HTML>
+
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+ <TITLE>Parameterized Functions</TITLE> 
+</HEAD>
+
+<BODY     >
+
+ <H1>Parameterized Functions</H1> 
+ <P><UL>
+<LI><H2>Example:
+</H2>
+<UL>
+def bisect&#060T&#062(a: [T], x: T) -&#062 int:decl lo, mid, hi: intlo, hi = 0, len(a)while lo &#060 hi:    mid = (lo+hi)/2    if x &#060 a[mid]: hi = mid    else: lo = mid+1return lo
+<BR><BR>decl a: [int]
+</UL></UL><UL>
+<LI><H2>Idea:
+</H2>
+<UL>
+<LI>bisect() could be called without template instantiation
+<LI>argument types will be matched against the type parameters &#060T&#062</UL></UL></P>
+<P></P> 
+<P>
+<TABLE>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld010.htm">Previous slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld012.htm">Next slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="tsld001.htm">Back to first slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="sld011.htm">View graphic version</A> </TD>
+</TABLE>
+<BR>
+</P>
+
+
+
+</Body>
+</HTML>
