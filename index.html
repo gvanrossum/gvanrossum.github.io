@@ -1,106 +1,47 @@
-<HTML>
 
-<HEAD>
-<TITLE>Guido's Personal Home Page</TITLE>
-</HEAD>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Loading</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+.wrapper {
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:350px;
+  height:100px;
+}
 
-<BODY BGCOLOR="#FFFFFF" TEXT="#000000">
+.wrapper .loading {
+  width: 0%;
+  height: 5px;
+  background: linear-gradient(to right,rgb(52, 117, 169),rgb(71, 185, 236),rgb(42, 147, 245),rgb(41, 168, 222),rgb(52, 117, 169),rgb(255, 212, 66));
+  margin-top: 10px;
+  background-size: 353px 5px;
+  border-radius: 12px;
+  animation: loading 6s ease-in-out forwards;
+}
 
-<H1>
-<a href="pics.html"><img border="0" src="images/IMG_2192.jpg"></a>
-Guido van Rossum - Personal Home Page
-<a href="pics.html"><img border=0 width=270 height=216 src="images/guido-headshot-2019.jpg"></a>
-</H1>
+@keyframes loading {
+  to {
+  width:100%;
+  }
+}
 
-<P><A
-HREF="http://www.washingtonpost.com/wp-srv/business/longterm/microsoft/stories/1998/raymond120398.htm" 
-><i>"Gawky and proud of it."</i></A>
-
-
-<H3><a href="images/df20000406.jpg" >Who I Am</a></H3>
-
-<p>Read
-my <a href="http://neopythonic.blogspot.com/2016/04/kings-day-speech.html">"King's
-Day Speech"</a> for some inspiration.
-
-<P>I am the author of the <A HREF="http://www.python.org" >Python</A>
-programming language.  See also my <A HREF="Resume.html">resume</A>
-and my <A HREF="Publications.html">publications list</A>, a <A
-HREF="bio.html" >brief bio</A>, assorted <a
-href="http://legacy.python.org/doc/essays/">writings</a>, <a
-href="http://legacy.python.org/doc/essays/ppt/">presentations</a> and <a
-href="interviews.html">interviews</a> (all about Python), some
-<a href="pics.html">pictures of me</a>,
-<a href="http://neopythonic.blogspot.com">my new blog</a>, and
-my <a href="http://www.artima.com/weblogs/index.jsp?blogger=12088">old
-blog</a> on Artima.com.  I am
-<a href=https://twitter.com/gvanrossum>@gvanrossum</a> on Twitter.
-
-<p>I am retired, working on personal projects (and maybe a book).
-I have worked for Dropbox, Google, Elemental Security, Zope
-Corporation, BeOpen.com, CNRI, CWI, and SARA.  (See
-my <a href=Resume.html>resume</a>.)  I created Python while at CWI.
-
-<H3>How to Reach Me</H3>
-
-<P>You can send email for me to guido (at) python.org.
-I read everything sent there, but I receive too much email to respond
-to everything.
-
-<H3>My Name</H3>
-
-<P>My name often poses difficulties for Americans.
-
-<P><b>Pronunciation:</b> in Dutch, the "G" in Guido is a hard G,
-pronounced roughly like the "ch" in Scottish "loch".  (Listen to the
-<A HREF="guido.au">sound clip</A>.)  However, if you're
-American, you may also pronounce it as the Italian "Guido".  I'm not
-too worried about the associations with mob assassins that some people
-have. :-)
-
-<P><b>Spelling:</b> my last name is two words, and I'd like to keep it
-that way, the spelling on some of my credit cards notwithstanding.
-Dutch spelling rules dictate that when used in combination with my
-first name, "van" is not capitalized: "Guido van Rossum".  But when my
-last name is used alone to refer to me, it is capitalized, for
-example: "As usual, Van Rossum was right."
-
-<P><b>Alphabetization:</b> in America, I show up in the alphabet under
-"V".  But in Europe, I show up under "R".  And some of my friends put
-me under "G" in their address book...
-
-
-<H3>More Hyperlinks</H3>
-
-<UL>
-
-<LI>Here's a collection of <A HREF =
-"http://legacy.python.org/doc/essays/" >essays</A> relating to Python
-that I've written, including the foreword I wrote for Mark Lutz' book
-"Programming Python".<P>
-
-<li>I own the official <a href="images/license.jpg"><img align="center"
-border="0" width="100" height="75" src="images/license_thumb.jpg">
-Python license.</a><p>
-
-</UL>
-
-<H3>The Audio File Formats FAQ</H3>
-
-<P>I was the original creator and maintainer of the Audio File Formats
-FAQ.  It is now maintained by Chris Bagwell
-at <A HREF="http://www.cnpbagwell.com/audio-faq"
->http://www.cnpbagwell.com/audio-faq</A>.  And here is a link to
-<a href=http://sox.sourceforge.net/>SOX</a>, to which I contributed
-some early code.
-
-</UL>
-
-<HR>
-
-<A HREF="images/internetdog.gif">"On the Internet, nobody knows you're
-a dog."</A>
-
-<HR>
-
-</BODY>
+html, body {
+	background-color: #1E2933;
+}
+</style>
+</head>
+<body>
+	<div class="wrapper">
+    	<h2 style="text-align: center; font-family: monospace; color: #16701F;">>>> Loading website...</h2>
+        <div class="loading"></div>
+    </div>
+    <script>
+    	document.location.replace("about.html");
+    </script>
+</body>
+</html>
