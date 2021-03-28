@@ -1,2 +1,2 @@
 # gvanrossum.github.io
-BDFL website
+BDFL website.
