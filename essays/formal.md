@@ -1,5 +1,7 @@
 # Towards Formal Semantics For Pythoṇ
 
+Guido van Rossum, 2022
+
 ## Introduction
 
 Obviously this cannot be done in a single blog post.
@@ -292,7 +294,6 @@ As usual, the uses of `not` inside the intrinsic function are not expanded.
 
 ## Translating `while` statements
 
-The formal semantics use recursion (!).
 Input:
 
 ```py
@@ -324,6 +325,8 @@ def while$(cond$, body$, else$):
 Note that no result is returned upon completion.
 In particular, neither the body nor the else-part's return value is used.
 However, exceptions are propagated immediately.
+
+See below for `break` and `continue`, which cause us to revisit this.
 
 ## The `seq$` utility
 
@@ -565,3 +568,47 @@ This is just boring so we don't show the details here.
 
 [TO DO: We could use varargs call-by-name intrinsics for this.]
 
+## Loops with `break` and `continue`
+
+I took the original idea for this approach from Modula-3.
+Brett's take is [here](https://snarky.ca/unravelling-break-and-continue/).
+
+We implement `break` and `continue` as special `$Throwable` subclasses
+(uncatchable exceptions).
+
+The compiler translates `break` and `continue` into calls to
+`$break()` and `$continue()`.
+The compiler rejects these outside loops.
+
+```py
+class $BreakThrowable($Throwable):
+    pass
+
+class $ContinueThrowable($Throwable):
+    pass
+
+def $break():
+    return $Result(False, $BreakThrowable())
+
+def $continue():
+    return $Result(False, $ContinueThrowable())
+```
+
+Now we revisit the code for `while$`.
+
+```py
+def while$(cond$, body$, else$):
+    c = $bool(cond$)
+    if not c.ok:
+        return c
+    if not c.val:
+        return else$
+    b = body$
+    if b.ok:
+        return while$(cond$, body$, else$)
+    if $isinstance(b.err, $BreakThrowable):
+        return $Result(True, None)
+    if $isinstance(b.err, $ContinueThrowable):
+        return while$(cond$, body$, else$)
+    return b
+```
