@@ -119,6 +119,9 @@ E.g. `c = $bool(cond$())`.]
 
 Brett's version is
 [here](https://snarky.ca/unravelling-elif-else-from-if-statements/).
+However Brett sees the challenge is to implement `else`,
+for which he introduces a helper flag
+(and with multiple `elif` clauses it gets hairy).
 
 Here's a sketch of how the compiler translates various forms of `if` statements.
 
@@ -431,7 +434,7 @@ and also check their error returns.
 
 ## Translating `try`
 
-See also Brett's [post](https://snarky.ca/tag/syntactic-sugar/).
+See also Brett's [post](https://snarky.ca/unravelling-finally-and-else-from-try/).
 
 First, like Brett, we change
 
@@ -612,3 +615,84 @@ def while$(cond$, body$, else$):
         return while$(cond$, body$, else$)
     return b
 ```
+
+## Translating `for` loops
+
+Brett's version is [here](https://snarky.ca/unravelling-for-statements/).
+
+Brett explains how `iter()` and `next()` are defined along the way,
+which I'll put off (or maybe I'll borrow his definitions).
+We use `$iter` and `$next` to avoid namespace games.
+
+### Translating `for` without `else`
+
+Input:
+
+```py
+for var in iterable():
+    body()
+```
+
+Intermediate translation:
+
+```py
+$it = $iter(iterable())
+while True:
+    try:
+        var = $next($it)
+    except $StopIteration:
+        break
+    $body()
+```
+
+We can then translate the `while` loop.
+This supports `break` and `continue` in the body.
+The `$it` variable is unique to each loop
+(i.e. two nested loops use different variables).
+
+### Translating `for` with `else`
+
+Input:
+
+```py
+for var in iterable():
+    body()
+else:
+    otherwise()
+```
+
+Intermediate translation (first iteration):
+
+```py
+$it = $iter(iterable())
+while True:
+    try:
+        var = $next($it)
+    except $StopIteration:
+        otherwise()
+        break
+    $body()
+```
+
+However, this is wrong if there's a `break` or `continue` in `otherwise()`.
+This is legal if there is an outer loop.
+In that case the `break` or `continue` should affect the outer loop.
+
+So we use Brett's solution:
+
+```py
+$it = $iter(iterable())
+$looping = True
+while $looping:
+    try:
+        var = $next($it)
+    except $StopIteration:
+        $looping = False
+        continue
+    $body()
+else:
+    $otherwise()
+del $it, $looping
+```
+
+And then we translate the `while` loop.
