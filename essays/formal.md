@@ -15,6 +15,8 @@ Nor should we specify tracing and profiling.
 We also can't specify all stdlib modules (or even all builtin functions).
 But certain builtin types are part of the specification.
 
+[TODO: Go over all examples and add type annotations.]
+
 ## Calculations, actions and state
 
 Think of Python execution as a combination of *calculations* (computing a value) and *actions* (having side effects).
@@ -42,7 +44,8 @@ We can unify actions and calculations by defining an action as a calculation tha
 
 Now that we've established state and frames, we need to talk about exceptions.
 Everything that produces a value (an action or a calculation) may also raise an exception.
-We will redefine the return values as having the followintg structure (making up syntax as we go):
+We will redefine the return values as having the following structure
+(making up syntax as we go):
 
 ```py
 class $Result:
@@ -60,6 +63,8 @@ class $Result:
 
 [This is a very clumsy tagged union definition;
 if we use these a lot we'll need to invent a better syntax.]
+
+[TODO: Use `$Success(val)` and `$Failure(err)` aliases.]
 
 Here class `$Throwable` is a superclass of `BaseException`.
 There are a few throwable objects that can't be caught using `except`.
@@ -194,7 +199,7 @@ else:
 ```
 
 Then each individual `if` statement is translated.
-Nobody wants to see what the final looks like. :-)
+Nobody wants to see what the final translation looks like. :-)
 
 Finally, conditional expressions translate likewise:
 
@@ -696,3 +701,162 @@ del $it, $looping
 ```
 
 And then we translate the `while` loop.
+
+## Translating functions and calls
+
+Functions have several issues that make them very complex to specify.
+The most complex part is sorting out keyword arguments and defaults.
+There are also complexities around generators and `async` functions.
+Decorators provide another slight bump in the road
+(Brett addressed decorators [here](https://snarky.ca/unravelling-decorators/)).
+Finally there are subtleties around "callables" and `__call__`.
+
+When a pure Python functions gets called a new empty dict is created.
+The parameters are placed in this dict and a new frame is constructed
+(not necessarily in that order).
+Remember a frame is just an array of scopes, item 0 referencing the locals.
+The remaining scopes are copied not from the caller
+but from the _defining_ scope (where the `def` statement ran).
+
+[Maybe we should redefine frames as a linked list?
+That would make frame creation faster, but accessing nonlocals slower.]
+
+Once the frame is created we execute the code of the function in it.
+When the code finishes executing we have a `$Result` representing
+either a return value or an exception.
+
+We don't discuss memory management, but it is possible that
+the frame and/or the locals dict are still referenced.
+
+### Translating `return`
+
+Like `break` and `continue`, we implement `return` using a `$Throwable`
+that cannot be caught.
+
+```py
+class $ReturnThrowable($Throwable):
+    def __init__(self, val):
+        self.val = val
+
+def $return(val=None):
+    return $Result(False, $ReturnThrowable(val))
+```
+
+The translation of a function body is then as follows:
+
+```py
+r: $Result = BODY
+if r.ok:
+    return $Result(True, None)
+if $isinstance(r.err, $ReturnThrowable):
+    return $Result(True, r.err.val)
+return r  # Propagate exception
+```
+
+Here `BODY` is a (low-level) function representing the function body.
+If execution "falls through the end" it returns a success,
+if an error occurs or a `return` is executed it returns a failure.
+We turn failures raised by `$return` into successes.
+This gives the precise semantics of `return` statements
+in the presence of `finally` clauses,
+even if the `finally` clause contains another `return`
+or a `break` or `continue`.
+(Those all override the `return` in the `try` block.)
+
+### Translating `raise`
+
+We translate `raise X` to `$raise(X)`.
+We translate `raise X from Y` to `$raise_from(X, Y)`.
+We translate `raise` to `$reraise()`.
+Definitions:
+
+```py
+def $raise(exc):
+    return $Result(False, exc)
+
+def $raise_from(exc, cause):
+    exc.__cause__ = cause
+    return $Result(False, exc)
+
+def $reraise():
+    exc = $active_exception()
+    if exc is None:
+        return $Result(False, $RuntimeError("No active exception to raise")
+    return $Result(False, exc)
+```
+
+[I will owe the reader the definition of `$active_exception`.
+This lives in the thread state
+and is set whenever an exception is being handled.
+There is a stack of these.]
+
+### Translating calls
+
+Calls contain up to four types of arguments:
+
+- positional: `f(1, 2)`
+- keyword: `f(x=1, y=2)`
+- varargs: `f(*args)`
+- varargs keywords: `f(**kwds)`
+
+The syntax allows these to be combined (almost) freely.
+By the time the function is being called,
+positional and vararg arguments have been combined into a single tuple,
+and keywords and vararg keywords have been combined into a single dict.
+Duplicate keywords have also been diagnosed at this point.
+
+Now the function is called and the fireworks begin.
+In the formal semantics (as in very early Python)
+the function always receives a tuple and a dict,
+and it is up to the function to initialize the locals from those.
+The function also has a tuple of default values.
+
+For now, we ignore keywords but show what kind of code
+the compiler can generate for positional arguments.
+Suppose the definition is
+
+```py
+def foo(x, y, z=xyzzy):
+    BODY
+```
+
+The compiler generates something like this:
+
+```py
+def foo($args, $defaults):
+    x = $posarg($args, 0, $defaults, -3)
+    y = $posarg($args, 1, $defaults, -2)
+    z = $defarg($args, 2, $defaults, -1)
+    BODY
+```
+
+The `$defaults` argument is a tuple of (precomputed) default values
+passed from `foo.__defaults__` by the caller.
+Note that this is mutable!
+
+Here are the intrinsics:
+
+```py
+def $posargs(args, i, defaults, j):
+    assert i >= 0
+    if i < len(args):
+        return args[i]
+    assert j < 0
+    if j + len(defaults) >= 0:
+        return defaults[j]
+    raise TypeError(...)  # mandatory argument i missing
+```
+
+### Translating function definitions
+
+A function definition constructs a function object.
+It has a `__code__` attribute which we won't specify for now.
+It has an attribute `__dict__` initialized to `{}`.
+It has an attribute `__doc__` set by the compiler from the docstring literal.
+It has metadata attributes `__name__`, `__qualname__` and `__module__`,
+set by the compiler to values determined at compile time.
+It also has attributes `__annotations__`, `__defaults__` and `__kwdefaults__`,
+set by the compiler to values computed at function definition time.
+It has an attribute `__closure__` which reveals nested scopes.
+Finally it has attributes `__builtins__` and `__globals__`,
+which cause complications we'll put off till later.
