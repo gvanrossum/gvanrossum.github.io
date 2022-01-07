@@ -860,3 +860,187 @@ set by the compiler to values computed at function definition time.
 It has an attribute `__closure__` which reveals nested scopes.
 Finally it has attributes `__builtins__` and `__globals__`,
 which cause complications we'll put off till later.
+
+
+# A Virtual Machine Of Sorts
+
+All this made me realize that we might have to start in a different place.
+Let's define a tiny language which can be used to specify
+the runtime library (lists, dicts etc.)
+as well as being the compilation target
+(including interpreter and thread state).
+
+I'll call it _Tiny Python_.
+It should be a subset of Python that can be type-checked using mypy.
+Everything should be static though, so it can be translated to C.
+There should be no or very few arithmetic;
+instead we'll use function calls.
+
+Here's an attempt at specifying the grammar:
+
+```
+program: program_statement+
+
+program_statement: class | function | variable | alias
+
+class: 'class' NAME ['(' NAME ')'] ':' class_block
+class_block: NEWLINE INDENT class_statement+ DEDENT
+class_statement: method | variable
+
+method: 'def' NAME '(' 'self' [',' parameters]) '->' type ':' block
+
+function: 'def' NAME '(' [parameters] ')' '->' type ':' optional_block
+optional_block: NEWLINE INDENT '...' DEDENT | block
+# The body of an intrinsics is replaced by ellipsis
+
+parameters: parameter | parameters ',' parameter
+parameter: NAME ':' type
+
+variable: NAME ':' type '=' expression NEWLINE
+
+alias: NAME '=' optional_type NEWLINE
+
+block: NEWLINE INDENT statement+ DEDENT
+
+statement: variable | if | while | return | assignment | side_effect
+
+if: 'if' condition ':' block ['else' ':' block]
+
+while: 'while' condition ':' block
+
+return: 'return' expression NEWLINE
+# Only allowed inside a function
+
+assignment: target '=' expression NEWLINE
+# target must refer to a local variable or an attribute of one
+
+side_effect: call NEWLINE | STRING NEWLINE
+# STRING is allowed so we can have docstrings
+
+type: optional_type | atomic_type | 'object' | 'None'
+optional_type: atomic_type '|' None
+atomic_type: 'bool' | 'int' | 'float' | 'str' | STRING | NAME
+# NAME must be a class name
+
+# Syntax for condition, comparison and expression may need improvement
+condition:
+    | comparison 'and' comparison
+    | comparison 'or' comparison
+    | 'not' comparison
+    | comparison
+
+comparison: expression cmpop expression | '(' condition ')'
+cmpop: '==' | '!=' | '<' | '<=' | '>' | '>=' | 'is' 'not' | 'is'
+
+expression: call | target | literal | '(' condition ')'
+
+target: NAME | NAME '.' NAME
+
+call: target '(' [arguments[] ')'
+# target must refer to a class, function or method
+arguments: argument | arguments ',' argument
+argument: expression
+# arguments must match the target's arguments
+
+literal: INTEGER | FLOAT | STRING | 'True' | 'False' | 'None'
+```
+
+I'm hand-waiving about the range of integers:
+I don't want to have to implement bignums in Tiny Python,
+but I also don't really want to have to have them as primitives.
+I'll decide on that later.
+
+Similarly, I'm hand-waiving on strings:
+are they byte strings or unicode strings?
+
+Types will probably have to be extended with unions and possibly more.
+
+I'm dropping the silly stuff with dollar signs from before;
+name references in proper Python code will be compiled to a call,
+e.g. `bool` becomes `load_global('bool')`.
+
+Classes should not require dynamic method lookup at runtime:
+single inheritance is supported, but methods cannot be overridden.
+
+Class definitions, function definitions and type aliases
+are only allowed at the top level.
+
+There's a big gaping hole around code objects.
+I'll fill that when I get to it.
+
+Note the absence of tuples and other data structures.
+
+## A simple array
+
+Let's define an array.
+The implementation is actually a linked list:
+we don't care about performance (yet).
+
+```py
+def add(a: int, b: int) -> int:
+    ...
+
+def sub(a: int, b: int) -> int:
+    ...
+
+def panic(msg: str) -> None:
+    ...
+
+class Cell:
+    head: object
+    tail: "Cons"
+
+    def __init__(self, head: object, tail: "Cons") -> None:
+        self.head = head
+        self.tail = tail
+
+Cons = Cell | None
+
+# We don't have generics, alas
+class Array:
+    first: Cons
+
+    def __init__(self) -> None:
+        self.first = None
+    
+    def len(self) -> int:
+        n: int = 0
+        it: Cons = self.first
+        while it is not None:
+            n = add(n, 1)
+            it = it.tail
+        return n
+    
+    def insert(self, pos: int, data: object) -> None:
+        if pos < 0:
+            panic("negative position")
+        prev: Cons = None
+        next: Cons = self.first
+        while pos > 0:
+            if next is None:
+                return panic("position too large")
+            pos = sub(pos, 1)
+            prev = next
+            next = next.tail
+        cell: Cons = Cell(data, next)
+        if prev is None:
+            self.first = cell
+        else:
+            prev.tail = cell
+
+    def append(self, data: object) -> None:
+        self.insert(self.len(), data)
+
+    def delete(self, pos: int) -> None:
+        "delete item at pos (similar to insert)"
+    
+    def getitem(self, pos: int) -> object:
+        next = self.first
+        while pos > 0 and next is not None:
+            pos = sub(pos, 1)
+            next = next.tail
+        if pos != 0 or next is None:
+            panic("index out of range")
+            return None
+        return next.head
+```
