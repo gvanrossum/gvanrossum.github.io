@@ -515,7 +515,7 @@ def try_finally$(body$, cleanup$):
         return b
     if b.ok:
         return c
-    b.err.__context__ = c.err
+    c.err.__context__ = b.err
     return b
 ```
 
@@ -837,7 +837,7 @@ Note that this is mutable!
 Here are the intrinsics:
 
 ```py
-def $posargs(args, i, defaults, j):
+def $posarg(args, i, defaults, j):
     assert i >= 0
     if i < len(args):
         return args[i]
