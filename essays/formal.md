@@ -1,4 +1,4 @@
-# Towards Formal Semantics For Pythoṇ
+# Towards Semi-formal Semantics For Pythoṇ
 
 Guido van Rossum, 2022
 
