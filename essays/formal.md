@@ -2,6 +2,9 @@
 
 Guido van Rossum, 2022
 
+[This is not yet an essay.
+It's more like a stream of consciousness, where I explore different ideas.]
+
 ## Introduction
 
 Obviously this cannot be done in a single blog post.
@@ -1044,3 +1047,145 @@ class Array:
             return None
         return next.head
 ```
+
+[Well, that was fun. But I'd like to take a different tack again.]
+
+# Transforming and Translating
+
+The difference between _translating_ and _transforming_ is as follows:
+
+- Transforming is a function from Python AST to Python AST.
+  For example, the things described in Brett's blog are transformations
+  (e.g. rewriting `try`/`except`/`finally` into a `try`/`finally block
+  containing a `try`/`except` block).
+- Translating is a function from Python AST to Tiny Python AST.
+  Example: the translation of a Python `try`/`finally` block
+  into a Tiny Python `try_finally$()` call.
+
+The `Translate()` function may occasionally call `Transform()`,
+but not the other way around.
+For example:
+
+```py
+def Transform(a: AST) -> AST:
+    ...
+
+def Translate(a: AST) -> TinyCode:
+    a = Transform(a)
+    ...
+```
+
+(As written this example does not make much sense.
+Imagine `Transform` and `Translate` being methods on `AST` objects,
+or functions using `singledispatch` to specialize on specific `AST` nodes.
+A static type checker would accept `a.Transform().Translate()`
+and even `a.Transform().Transform()`,
+but not `a.Translate().Translate()` or `a.Translate().Transform()`.)
+
+## Transformation example
+
+Let's work through the transformation that separates `except` and `finally`.
+As shown earlier, the idea is that we transform
+
+```py
+try:
+    BLOCK1
+except E:
+    BLOCK2
+finally:
+    BLOCK3
+```
+
+into
+
+```py
+try:
+    try:
+        BLOCK1
+    except E:
+        BLOCK2
+finally:
+    BLOCK3
+```
+
+We can define a function to transform any `try` statement as necessary,
+as follows:
+
+```py
+import ast
+
+def TransformTry(a: ast.Try) -> ast.Try:
+    if not a.finalbody:
+        return a
+    if not a.handlers:
+        return a
+    return ast.Try(
+        body=ast.Try(body=a.body, handlers=a.handlers, orelse=a.orelse),
+        finally=a.finalbody
+    )
+```
+
+This leaves a `Try` node without a `finally` clause alone,
+and also leaves a `Try` node with only a `finally` clause alone,
+but separates the two when both `except` and `finally` are present.
+(The grammar ensures that `orelse` is only present with `handlers`.)
+
+Now we can also sketch out the translation for `try` statements.
+
+```py
+def TranslateTry(a: ast.Try) -> TinyCode:
+    if a.handlers and a.finalbody:
+        a = TransformTry(a)
+    if a.finalbody:
+        assert not a.handlers
+        return TranslateTryFinally(a)
+    assert a.handlers
+    return TranslateTryExcept(a)
+
+def TranslateTryFinally(a: ast.Try) -> TinyCode:
+    ...
+
+def TranslateTryExcept(a: ast.Try) -> TinyCode:
+    ...
+```
+
+Before we can flesh out the latter two functions we'll need to come up
+with an API for generating TinyCode.
+I tried constructing AST nodes, but this is too verbose,
+so instead I'll assume some API thatr translates to text.
+
+```py
+def TranslateTryFinally(a: ast.Try) -> TinyCode:
+    assert not a.handlers
+    body1 = Translate(a.body)
+    body2 = Translate(a.finalbody)
+    return generate_tiny_code(
+        "b: Result = {body1}\n"
+        "c: Result = {body2}\n"
+        "if c.ok:\n    return b\n"
+        "if b.ok:\n    return c\n"
+        "c.err.__context__ = b.err\n"
+        "return b",
+        locals()
+    )
+```
+
+We'll leave the translation for `try`/`except` to the imagination.
+
+There are some details here that are probably wrong --
+we generate some statements that form a function body.
+This should presumably be wrapped in a function definition,
+but really the translation would have to be a *call* to that function,
+and then we'd need to come up with a mechanism to return two things:
+a function definition and an expression to call.
+The assumption here is that Python *statements* are translated to
+Tiny Python *expressions* with type `Result`.
+It might be easier if Tiny Python had something like function blocks,
+but then it wouldn't be a subset of Python.
+(I guess this is why academics usually resolve to lambda calculus. :-)
+
+Anyway, before we're getting too excited,
+let me point out a complication.
+
+## Generators and Async Functions
+
