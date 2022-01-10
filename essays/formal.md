@@ -1189,3 +1189,103 @@ let me point out a complication.
 
 ## Generators and Async Functions
 
+Tiny Python doesn't have exceptions.
+Thus, the translation for even the simplest piece of Python code
+requires using the `Result` class (introduced above as `$Result`),
+and Python statements are translated into Tiny Python expressions.
+
+This is mildly annoying,
+but it's useful because it lets us specify exception semantics.
+Many other things are also missing (e.g. dynamic lookup, nested scopes).
+All those things are thus specified rigorously by their translation.
+
+Much more annoying, Tiny Python doesn't have generators or async functions.
+Hence, no `yield`, `yield from` or `await`.
+Why is this so annoying?
+Because it means that a sequence of statements containing `yield` cannot
+actually be translated to a function in Tiny Python!
+Take this example:
+
+```py
+def f(a):
+    x = a + 1
+    print(x)
+    yield 42
+    x = x + 1
+    print(x)
+```
+
+How do we translate this?
+One possibility would be to first transform it into a class definition:
+
+```py
+class f:
+    def __init__(self, a):
+        self.a = a
+        self.__state__ = 0
+    def __iter__(self):
+        return self
+    def __next__(self):
+        if self.__state__ == 0:
+            self.x = self.a + 1
+            print(self.x)
+            self.__state__ = 1
+            return 42
+        if self.__state__ == 1:
+            self.x = self.x + 1
+            print(self.x)
+            self.__state__ = 2
+        raise StopIteration
+```
+
+This might actually work,
+although it requires translating all local variable references
+to instance variable references.
+
+How would it work with `yield` inside some other statement?
+For example
+
+```py
+def f(a):
+    if a:
+        print("before")
+        yield 42
+        print("after")
+    yield 100
+```
+
+Here the `__next__` method would have to look like this:
+
+```py
+    def __next__(self):
+        if self.__state__ == 0:
+            if self.a:
+                print("before")
+                self.__state__ = 1
+                return 42
+            self.__state__ = 2
+        if self.__state__ == 1:
+            print("after")
+            self.__state__ = 2
+        if self.__state__ == 2:
+            self.__state__ = 3
+            return 100
+        raise StopIteration
+```
+
+There are also complications related to `send()` and `throw()`,
+but I think those can all be handled.
+(The arguments to `send` and `throw` become arguments to `__next__`,
+that default to `None`.)
+
+The principal annoyance is that
+we need to translate local variables to instance variables.
+Another major annoyance is how `__next__` must manipulate the `__state__`.
+Both these complicate all other translation code.
+
+Should we treat this as a translation or a transformation?
+I'm not sure yet.
+
+The translation of `yield from` is complicated but uses the same approach.
+Async functions and `await` are just a special case of that
+(with some extra bits to avoid mixing generators and async functions).
