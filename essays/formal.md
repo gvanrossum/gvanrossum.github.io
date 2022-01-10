@@ -1289,3 +1289,13 @@ I'm not sure yet.
 The translation of `yield from` is complicated but uses the same approach.
 Async functions and `await` are just a special case of that
 (with some extra bits to avoid mixing generators and async functions).
+
+**Alas, the above approach is likely to fail when there are loops
+or `try`/`except` statements.**
+The authors of
+[[1]](http://cs.brown.edu/research/plt/dl/lambda-py/lambda-py.pdf)
+appear to have solved this by using continuations,
+but Tiny Python doesn't (and IMO shouldn't) have those.
+Another approach would be to translate everything to a bytecode VM,
+but that sounds like a very complex target.
+I'm still hoping for inspiration to strike.
