@@ -1516,6 +1516,7 @@ class generator:
         try:
             ret = self._cont(val)
             if ret is None:
+                self._cont = None
                 raise StopIteration
             val, self._cont = ret
         except BaseException:
@@ -1553,3 +1554,144 @@ adding a second argument `err` to `_send()`, and a `throw()` method:
 (Various edge cases are left out here, for example,
 the `val` argument to `send()` must be `None` on the first call,
 but `throw()` is always allowed, even after the generator is exhausted.)
+
+### Exception Handling Using Continuations
+
+What if `yield` occurs inside a `try`/`except` statement?
+Example input:
+
+```py
+def f():
+    try:
+        print("before")
+        yield 42
+        print("after")
+    except RuntimeError:
+        print("handling")
+    else:
+        print("else")
+```
+
+We can translate this as follows:
+
+```py
+def _f():
+    def _cont0(val, err):
+        try:
+            print("before")
+            return 42, _cont1
+        except RuntimeError:
+            print("handling")
+        else:
+            print("else")
+    def _cont1(val, err):
+        try:
+            if err is not None:
+                raise err
+            print("after")
+        except RuntimeError:
+            print("handling")
+        else:
+            print("else")
+    return _cont0
+```
+
+### Finally: Another Snag, And A Solution
+
+How about `try`/`finally`?
+Example input:
+
+```py
+def f():
+    try:
+        print("before")
+        yield 42
+        print("after")
+    finally:
+        print("finally")
+```
+
+From the previous example one would think that this translation should work:
+
+```py
+def _f():
+    def _cont0(val, err):
+        try:
+            print("before")
+            return 42, _cont1
+        finally:
+            print("handling")
+    def _cont1(val, err):
+        try:
+            if err is not None:
+                raise err
+            print("after")
+        finally:
+            print("handling")
+    return cont0
+```
+
+Unfortunately this has a flaw: in `_cont0`,
+the `return` statement will make a detour via the `finally` block. :-(
+
+We can't just drop the `finally` clause from `cont0`,
+since an exception raised by `print("before")` (however rare)
+must execute the `finally` clause before propagating.
+
+Fortunately, Brett's blog has a
+[solution](https://snarky.ca/unravelling-finally-and-else-from-try/):
+implement `try`/`finally` in terms of `try`/`except`.
+
+This transforms
+
+```py
+try:
+    BLOCK1
+finally:
+    BLOCK2
+```
+
+into
+
+```py
+try:
+    BLOCK1
+except BaseException:
+    BLOCK2
+    raise
+BLOCK2
+```
+
+(Interestingly, that's pretty much how newer Python versions translate it.)
+
+Of course, there's still a snag:
+we decided earlier to translate `break`, `continue` and `return`
+using (non-catchable) throwables,
+precisely so that `finally` blocks will run when they should.
+
+Can we have it both ways?
+
+We probably can, since we are translating to Tiny Python.
+Tiny Python doesn't have exceptions and `try` statements,
+all exception handling is done by checking error codes
+(see earlier references to `$Result`).
+It does have `return` statements though.
+So we can translate the `return` statements that stand in for `yield`
+into actual Tiny Python `return` statements,
+while `return` statements from the original Python source
+are translated using the special throwables.
+
+There are still a few cases to be sorted out,
+since we need the continuation functions to be able to return the following:
+
+- Yielded values and their continuation
+- Catchable exceptions
+- Actual return values
+- Falling off the end
+
+We're probably best off to fold these options into the `Result` class,
+so that the `Result` from a continuation function can be either a success,
+a failure, or a yielded value with a continuation function.
+(Maybe the latter could be done via a subclass.)
+
+But in any case, I am no long losing sleep over this snag.
