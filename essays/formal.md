@@ -52,22 +52,20 @@ We will redefine the return values as having the following structure
 
 ```py
 class $Result:
-    @overload
-    def __init__(self, ok: True, val: object):
+    def __init__(self, ok: True, val: object, err: $Throwable):
         self.ok = True
-        self.err = None
         self.val = val
-    @overload
-    def __init__(self, ok: False, err: $Throwable):
-        self.ok = False
-        self.val = None
         self.err = err
+
+def $Success(val: object) -> $Result:
+    return $Result(True, val, None)
+
+def $Failure(err: $Throwable) -> $Result:
+    return $Result(True, None, err)
 ```
 
 [This is a very clumsy tagged union definition;
 if we use these a lot we'll need to invent a better syntax.]
-
-[TODO: Use `$Success(val)` and `$Failure(err)` aliases.]
 
 Here class `$Throwable` is a superclass of `BaseException`.
 There are a few throwable objects that can't be caught using `except`.
@@ -79,7 +77,7 @@ Brett's version is
 [here](https://snarky.ca/unravelling-the-pass-statement/).
 
 The translation of a `pass` statement is a successful empty result:
-`$Result(True, None)`.
+`$Success(None)`.
 
 ## Intrinsics
 
@@ -169,7 +167,7 @@ else:
 Final translation:
 
 ```py
-if$(foo(), bar(), $Result(True, None))
+if$(foo(), bar(), $Success(None))
 ```
 
 One or more `elif` clauses.
@@ -298,7 +296,7 @@ def $not(x):
     r = $bool(x)
     if not r.ok:
         return r
-    return $Result(True, not r.val)
+    return $Success(not r.val)
 ```
 
 As usual, the uses of `not` inside the intrinsic function are not expanded.
@@ -330,7 +328,7 @@ def while$(cond$, body$, else$):
             else$)
     if not c.ok:
         return c
-    return $Result(True, None)
+    return $Success(None)
 ```
 
 Note that no result is returned upon completion.
@@ -599,10 +597,10 @@ class $ContinueThrowable($Throwable):
     pass
 
 def $break():
-    return $Result(False, $BreakThrowable())
+    return $Failure($BreakThrowable())
 
 def $continue():
-    return $Result(False, $ContinueThrowable())
+    return $Failure($ContinueThrowable())
 ```
 
 Now we revisit the code for `while$`.
@@ -618,7 +616,7 @@ def while$(cond$, body$, else$):
     if b.ok:
         return while$(cond$, body$, else$)
     if $isinstance(b.err, $BreakThrowable):
-        return $Result(True, None)
+        return $Success(None)
     if $isinstance(b.err, $ContinueThrowable):
         return while$(cond$, body$, else$)
     return b
@@ -742,7 +740,7 @@ class $ReturnThrowable($Throwable):
         self.val = val
 
 def $return(val=None):
-    return $Result(False, $ReturnThrowable(val))
+    return $Failure($ReturnThrowable(val))
 ```
 
 The translation of a function body is then as follows:
@@ -750,9 +748,9 @@ The translation of a function body is then as follows:
 ```py
 r: $Result = BODY
 if r.ok:
-    return $Result(True, None)
+    return $Success(None)
 if $isinstance(r.err, $ReturnThrowable):
-    return $Result(True, r.err.val)
+    return $Success(r.err.val)
 return r  # Propagate exception
 ```
 
@@ -775,17 +773,17 @@ Definitions:
 
 ```py
 def $raise(exc):
-    return $Result(False, exc)
+    return $Failure(exc)
 
 def $raise_from(exc, cause):
     exc.__cause__ = cause
-    return $Result(False, exc)
+    return $Failure(exc)
 
 def $reraise():
     exc = $active_exception()
     if exc is None:
-        return $Result(False, $RuntimeError("No active exception to raise")
-    return $Result(False, exc)
+        return $Failure($RuntimeError("No active exception to raise")
+    return $Failure(exc)
 ```
 
 [I will owe the reader the definition of `$active_exception`.
@@ -1375,9 +1373,11 @@ There are a number of complications, from easy to hard:
 - `yield` inside a loop
 - `break` and `continue` statements
 - `yield` expressions (`.send()`)
-- `yield` inside a `try`/`except` or `try`/`finally`
 - `.throw()`
+- `yield` inside a `try`/`except` or `try`/`finally`
 - `yield` inside a `try`/`finally` inside a loop
+- `yield from`
+- `async def` and `await`
 - Things you cannot do to nonlocals (e.g. annotations)
 
 For `yield` inside `if`, the continuation function just contains the code
@@ -1409,6 +1409,7 @@ def _f(ARGS):
         if True:
             BLOCK3
         BLOCK4
+    return _cont0
 ```
 
 Adding an `else` clause should be straightforward.
@@ -1443,6 +1444,7 @@ def _f(ARGS):
             BLOCK2
             return VAL, _cont1()
         BLOCK4
+    return _cont0
 ```
 
 Adding an `else` clause would be straightforward (just add it to both).
@@ -1469,6 +1471,85 @@ def _f(ARGS):
                 _flag = False
                 BLOCK3
         BLOCK4
+    return _cont0
 ```
 
-[To be continued]
+Next let's tackle `yield` expressions and the `.send()` method.
+Example input:
+
+```py
+def f(a):
+    print(a + (yield 1))
+    yield 2
+```
+
+This should become something like this:
+
+```py
+def _f(a):
+    _tmp1: object
+    _tmp2: object
+    def _cont0(val):
+        nonlocal _tmp1, _tmp2
+        _tmp1 = print
+        _tmp2 = a
+        return 1, _cont1
+    def _cont1(val):
+        _tmp1(_tmp2 + val)
+        return 2, _cont2
+    def _cont2(val):
+        pass
+    return _cont0
+```
+
+The `generator class` is amended to:
+
+```py
+class generator:
+    def __init__(self, func, *args, **kwds):
+        self._cont_ = func(*args, **kwds)
+    def __iter__(self):
+        return self
+    def _send(self, val):
+        if self._cont_ = None:
+            raise StopIteration
+        try:
+            ret = self._cont(val)
+            if ret is None:
+                raise StopIteration
+            val, self._cont = ret
+        except BaseException:
+            self._cont_ = None
+            raise
+        else:
+            return val
+    def __next__(self):
+        return self._send(None)
+    def send(self, val):
+        return self._send(val)
+```
+
+(Alternatively, the `generator` class could keep track of
+whether it is pristine, and raise the `TypeError`.)
+
+To implement `.throw()` as well, we add the exception
+as a second parameter to the continuation function:
+
+```py
+    def _cont0(val, err):
+        if err is not None:
+            raise err
+        # etc.
+```
+
+A slight refactoring of the `generator` class is needed,
+adding a second argument `err` to `_send()`, and a `throw()` method:
+
+```py
+    def throw(self, err):
+        return self._send(None, err)
+```
+
+(Various edge cases are left out here, for example,
+the `val` argument to `send()` must be `None` on the first call,
+but `throw()` is always allowed, even after the generator is exhausted.)
