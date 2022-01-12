@@ -1216,6 +1216,9 @@ def f(a):
 ```
 
 How do we translate this?
+
+### Using Generator State
+
 One possibility would be to first transform it into a class definition:
 
 ```py
@@ -1290,6 +1293,8 @@ The translation of `yield from` is complicated but uses the same approach.
 Async functions and `await` are just a special case of that
 (with some extra bits to avoid mixing generators and async functions).
 
+### Trouble In Paradise
+
 **Alas, the above approach is likely to fail when there are loops
 or `try`/`except` statements.**
 The authors of
@@ -1299,3 +1304,171 @@ but Tiny Python doesn't (and IMO shouldn't) have those.
 Another approach would be to translate everything to a bytecode VM,
 but that sounds like a very complex target.
 I'm still hoping for inspiration to strike.
+
+### Using Continuation Functions
+
+Brett (in a comment) suggested to use continuation functions.
+His idea is that the generator's code is translated to
+a function that returns a `(value, closure)` tuple,
+where `closure` is a function that is executed when `__next__`
+(or `send` or `throw`) is called again.
+The original function would only serve to hold the locals,
+and the closure functions would contain `nonlocal` statements for those.
+
+We'd need a separate `closure` for each `yield` in the code.
+Take the first example again:
+
+```py
+def f(a):
+    x = a + 1
+    print(x)
+    yield 42
+    x = x + 1
+    print(x)
+```
+
+This would translate to something like this:
+
+```py
+def _f(a):
+    x: object  # Ensure it's defined in this scope
+    def _cont0():
+        nonlocal a, x
+        x = a + 1
+        print(x)
+        return 42, _cont1
+    def _cont1():
+        nonlocal a, x
+        x = x + 1
+        print(x)
+    return _cont0
+
+f = partial(generator, _f)
+```
+
+using these definitions:
+
+```py
+class generator:
+    def __init__(self, func, *args, **kwds):
+        self._cont_ = func(*args, **kwds)
+    def __iter__(self):
+        return self
+    def __next__(self):
+        if self._cont_ = None:
+            raise StopIteration
+        try:
+            ret = self._cont()
+            if ret is None:
+                raise StopIteration
+            val, self._cont = ret
+        except BaseException:
+            self._cont_ = None
+            raise
+        else:
+            return val
+```
+
+There are a number of complications, from easy to hard:
+
+- `yield` inside a condition
+- `yield` inside a loop
+- `break` and `continue` statements
+- `yield` expressions (`.send()`)
+- `yield` inside a `try`/`except` or `try`/`finally`
+- `.throw()`
+- `yield` inside a `try`/`finally` inside a loop
+- Things you cannot do to nonlocals (e.g. annotations)
+
+For `yield` inside `if`, the continuation function just contains the code
+from that point on (similar as in the generator state version).
+This means that there will be duplication.
+Example:
+
+```py
+def f(ARGS):
+    BLOCK1
+    if COND:
+        BLOCK2
+        yield VAL
+        BLOCK3
+    BLOCK4
+```
+
+Becomes
+
+```py
+def _f(ARGS):
+    def _cont0():
+        BLOCK1
+        if COND:
+            BLOCK2
+            return VAL, _cont1()
+        BLOCK4
+    def _cont1():
+        if True:
+            BLOCK3
+        BLOCK4
+```
+
+Adding an `else` clause should be straightforward.
+For `elif` we can use the transformation described earlier.
+Arbitrary nesting and combinations should be no problem either.
+
+For `yield` inside a loop, we have to generate code for "loop-and-a-half":
+
+```py
+def f(ARGS):
+    BLOCK1
+    while COND:
+        BLOCK2
+        yield VAL
+        BLOCK3
+    BLOCK4
+```
+
+Becomes
+
+```py
+def _f(ARGS):
+    def _cont0():
+        BLOCK1
+        while COND:
+            BLOCK2
+            return VAL, _cont1()
+        BLOCK4
+    def _cont1():
+        BLOCK3
+        while COND:
+            BLOCK2
+            return VAL, _cont1()
+        BLOCK4
+```
+
+Adding an `else` clause would be straightforward (just add it to both).
+
+To support `break` and `continue` (e.g. in `BLOCK3`)
+we have to do something new though:
+
+
+```py
+def _f(ARGS):
+    def _cont0():
+        BLOCK1
+        while COND:
+            BLOCK2
+            return VAL, _cont1()
+        BLOCK4
+    def _cont1():
+        _flag = True
+        while _flag or COND:
+            if not _flag:
+                BLOCK2
+                return VAL, _cont1()
+            else:
+                _flag = False
+                BLOCK3
+        BLOCK4
+```
+
+[To be continued]
