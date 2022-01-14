@@ -70,34 +70,59 @@ in the language reference.
 
 The task of this stage is to assign each identifier a scope.
 
-A _scope_ is either a comprehension, a function (which could be a lambda),
-a class, or a "toplevel" scope (module or `exec` or `eval`).
+A _scope_ is either a comprehension, a lambda, a function,
+a class, or a _toplevel scope_.
 
-Each occurrence of an identifier is assigned a scope
-by analyzing all code that _defines_ identifiers
-(e.g. arguments, assignments, imports, class/function definitions,
-for-loops, and more),
-plus syntax that _modifies_ identifier scope (i.e., `global` and `nonlocal`).
-It disregards dead-code analysis,
+Toplevel scopes are for modules and for `exec` and `eval`.
+For each invocation of the compiler there is a single toplevel scope.
+
+Scopes are closely related to _namespaces_,
+but while namespaces are a run-time concept,
+scopes are a compile-time concept.
+For example, a function may be called (or defined!) multiple times,
+and for each call a new namespace is created for the local variables.
+But a function has a single scope, in which all its locals are defined.
+
+Scopes may be lexically nested in each other,
+except for the toplevel scope,
+which is never nested in another scope
+(but may contain other scopes nested inside it).
+Note that the grammar restricts some nesting
+(e.g. a class definition cannot occur inside a lambda).
+
+#### Scope assignment
+
+Each occurrence of an identifier is assigned to a scope
+by analyzing all code that potentially _defines_ identifiers
+(e.g., assignments, class/function definitions, and more),
+plus syntax that _modifies_ identifier scope
+(i.e., `global` and `nonlocal`).
+Scope analysis must ignore dead-code analysis (if any),
 so that e.g. `if False: x = 1` still counts as defining `x`.
 
-Scopes can be either dynamic or static.
-For example, functions scopes are static,
-but class and global scopes are dynamic.
-The key difference between dynamic and static scopes is
-that if an identifier searched for in a static scope is not found,
-it is considered "unset" (which is a failure),
-while if an identifier is searched for in a dynamic scope,
-if it is not found the search continues in the next linked scope.
+The _syntactic scope_ of an identifier as the nearest enclosing
+grammar element that qualifies as a scope
+(i.e., toplevel, class, function, lambda, or comprehension).
 
-Scopes are linked by the semantic analysis.
-This linkage is always static (it happens during AST analysis),
-and the linked scopes form a DAG.
-The linkage is a bit complicated because when functions nest,
-identifiers defined in outer functions are visible in inner functions
-(unless overridden), while identifiers defined in classes are only
-visible in that class scope.
-(Scopes are unrelated to attribute namespaces.)
+The _lexical scope_ of an identifier
+is usually the same as its syntactic scope, with the following
+exceptions, which belong to the next outer scope:
+
+- The class name in a class definition
+- The function name in a function definition
+- The base classes and keyword parameters in a class definition
+  (e.g., `base, flag=1` in `class C(base, flag=1): ...`)
+- Default values and annotations in functions and lambdas
+- The rightmost iterable in a comprehension
+  (e.g., `BAR` in `[x+y for x in FOO for y in BAR]`)
+  and a condition following it, if any
+- Walrus targets in comprehensions
+
+[TODO, HIRO]
+
+#### Name lookup algorithm
+
+[TODO]
 
 ### Code generation
 
