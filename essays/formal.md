@@ -33,33 +33,17 @@ I'll briefly go over each of these.
 
 ### Lexical analysis
 
-See [Lexical analysis in the language
-reference](https://docs.python.org/3/reference/lexical_analysis.html).
-
-The tokenizer is written in C, and hence most likely has bugs.
-There's an alternative tokenizer written in Python,
-and we know there are occasional differences between the two.
-The bugs tend to be about obscure edge cases of whitespace handling.
-I'd rather not spend time on this right now.
-
-One thing to note is that there is another layer in front of this:
-Unicode decoding.
-Most source code is stored in UTF-8,
-but Python is defined in terms of Unicode code points.
-In addition, for identifiers we apply some Unicode normalization (which?).
-AFAIK we don't normalize string literals.
-There are probably many weirdnesses due to Unicode.
-(For example, there are alternative digits that may or may not work.)
-
-There are no practical size limits on the input due to the lexer:
-files, lines, identifiers and strings may be as long as we have space for.
+This is specified well in [Lexical analysis
+](https://docs.python.org/3/reference/lexical_analysis.html)
+in the language reference.
 
 ### Syntactic analysis
 
-See [Full Grammar specification in the language
-reference](https://docs.python.org/3/reference/grammar.html).
+See [Full Grammar specification
+](https://docs.python.org/3/reference/grammar.html)
+in the language reference.
 
-Here we're in a fairly good spot.
+Here we're also in a fairly good spot.
 There is a formal grammar
 (albeit using PEG, which is more complicated than context-free grammars)
 and a formal definition of AST nodes.
@@ -70,24 +54,21 @@ are not expressed in the grammar,
 e.g. the placement of `return` and `yield` inside functions,
 the placement of `await`, `async for` and `async with` inside `async def`,
 and the placement of `break` and `continue` inside loops.
-These are checked ad-hoc in the next stage of compilation
+These are checked ad-hoc in a separate next stage of compilation
 (perhaps as part of semantic analysis).
-
-### Semantic analysis
-
-See [Naming and binding in the language
-reference](https://docs.python.org/3/reference/executionmodel.html#naming-and-binding).
-
-A few things close to syntax are done here
-(and often raise `SyntaxError`),
-like the placement of certain statements (see above).
 
 Other examples include the requirement that parameter names are unique
 (rejecting function definitionas like `def f(x, x):`)
 and that keyword arguments are unique
 (rejecting calls like `f(x=1, x=1)`).
 
-The main task of this stage however is to assign each identifier a scope.
+### Semantic analysis
+
+See [Naming and binding
+](https://docs.python.org/3/reference/executionmodel.html#naming-and-binding)
+in the language reference.
+
+The task of this stage is to assign each identifier a scope.
 
 A _scope_ is either a comprehension, a function (which could be a lambda),
 a class, or a "toplevel" scope (module or `exec` or `eval`).
