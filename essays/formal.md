@@ -269,8 +269,6 @@ In this case, stores and deletions always use the local namespace,
 but lookups reaching this scope first try the local namespace,
 then the global namespace, and finally the built-in namespace.
 
-[TODO]
-
 ### Code generation
 
 [TODO]
