@@ -121,10 +121,8 @@ which lexically belong to the nearest enclosing non-comprehension scope:
   (e.g., `base, flag=1` in `class C(base, flag=1): ...`)
 - The default values and annotations in functions and lambdas
 - The rightmost iterable in a comprehension
-  (e.g., `BAR` in `[x+y for x in FOO for y in BAR]`)
-- The condition following the rightmost iterable in a comprehension,
-  if any
-  (e.g., `if BAZ` in [x+y for x in FOO for y in BAR if BAZ]`)
+  (e.g., `BAR` in `[x+y for x in FOO for y in BAR if BAZ]`),
+  but not the condition following it (here, `BAZ`)
 - Walrus targets in comprehensions
   (see [PEP 572](https://www.python.org/dev/peps/pep-0572/#scope-of-the-target);
   this states that for nested comprehensions,
