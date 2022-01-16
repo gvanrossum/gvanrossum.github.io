@@ -179,9 +179,9 @@ is its defining scope unless that defining scope contains a
 `global` or `local` statement naming that identifier.
 In particular:
 
-- If the defining scope for `x` have `global x`,
+- If the defining scope for `x` has `global x`,
   then the binding scope for `x` is the toplevel scope.
-- If the defining scope for `x` have `nonlocal x`,
+- If the defining scope for `x` has `nonlocal x`,
   then the binding scope for `x` is
   the nearest enclosing defining function scope
   that doesn't have `global x` or `nonlocal x`,
