@@ -67,6 +67,7 @@ and that keyword arguments are unique
 See [Naming and binding
 ](https://docs.python.org/3/reference/executionmodel.html#naming-and-binding)
 in the language reference.
+It's not clear to me that that explains all the rules, though.
 
 The task of this stage is to assign each identifier a scope.
 
@@ -77,8 +78,8 @@ Toplevel scopes are for modules and for `exec` and `eval`.
 For each invocation of the compiler there is a single toplevel scope.
 
 Scopes are closely related to _namespaces_,
-but while namespaces are a run-time concept,
-scopes are a compile-time concept.
+but while namespaces are a runtime concept,
+scopes are a compile time concept.
 For example, a function may be called (or defined!) multiple times,
 and for each call a new namespace is created for the local variables.
 But a function has a single scope, in which all its locals are defined.
@@ -89,6 +90,12 @@ which is never nested in another scope
 (but may contain other scopes nested inside it).
 Note that the grammar restricts some nesting
 (e.g. a class definition cannot occur inside a lambda).
+
+[TODO: Simplify the following sections.
+For example, the description of global/local vs. toplevel scopes
+and namespaces is a mess,
+we could use a name for function/lambda/comprehension scope,
+the definition of target should be lifted and improved.]
 
 #### Scope assignment
 
@@ -150,7 +157,7 @@ The following are positions where target roles occur
 - Walrus, e.g. `(FOO := ...)`
 - Deletion, e.g. `del FOO`
 - Target of a `for` statement, e.g. `for FOO in ...: ...`
-- Target of a comprehension,
+- Target of a comprehension
   (list/set/dict comprehensions and generator expressions),
   e.g. `[... for FOO in ...]`
 - Target of a `with` statement, e.g. `with ... as FOO: ...`
@@ -163,6 +170,7 @@ The following are positions where target roles occur
 - `from` `import` without `as`, e.g. `from lala import FOO`
 - Import with `as`,
   e.g. `import lala as FOO` or `from la import lala as FOO`
+- Name mentioned in a `global` or `local` statement
 
 [TODO: Did I forget anything?]
 
@@ -176,16 +184,24 @@ is an attribute or subscript, like `obj.attr = 0` or `a[i] = 0`.
 
 Finally, the _binding scope_ of an identifier
 is its defining scope unless that defining scope contains a
-`global` or `local` statement naming that identifier.
+`global` or `local` statement naming that identifier,
+or unless it has no defining scope.
 In particular:
 
+- If there is no defining scope for `x`,
+  the defining scope is considered the local scope
+  if it is a class or toplevel scope,
+  or the global scope if the local scope is
+  a function, lambda or comprehension;
+  then the following bullets apply.
 - If the defining scope for `x` has `global x`,
   then the binding scope for `x` is the toplevel scope.
 - If the defining scope for `x` has `nonlocal x`,
   then the binding scope for `x` is
-  the nearest enclosing defining function scope
-  that doesn't have `global x` or `nonlocal x`,
-  and such a scope must exist.
+  the nearest enclosing function scope
+  that is a defining scope for `x`,
+  and that doesn't have `nonlocal x`;
+  such a scope must exist and it must not have `global x`.
 
 Note that the definition for `nonlocal` skips class scopes
 and scopes that don't define `x`.
@@ -219,7 +235,6 @@ Since lambdas and comprehensions cannot syntactically contain
 if an identifier's lexical scope is a lambda or comprehension,
 its binding scope is its defining scope.
 
-
 #### Name binding, unbinding and lookup algorithm
 
 At runtime, operations that bind or unbind (delete) an identifier
@@ -238,10 +253,11 @@ depending on the syntactic category of its binding scope.
   then the built-in namespace.
 - If the binding scope is the toplevel scope,
   then the search continues in the built-in namespace.
+  (But see below for a wrinkle relating to `exec` and `eval`.)
 
-If the search reaches the built-in scope
+If the search reaches the built-in namespace
 and the name is not found there,
-it the search raises `NameError`.
+the search raises `NameError`.
 
 Note that augmented assignment (e.g. `x += 1`)
 combines a lookup and an assignment.
@@ -263,9 +279,8 @@ but the assignment writes the local `x`.
 There is one final wrinkle at runtime.
 In `exec` and `eval`, the global and local namespaces
 corresponding to the toplevel scope may be separate.
-In this case, stores and deletions always use the local namespace,
-but lookups reaching this scope first try the local namespace,
-then the global namespace, and finally the built-in namespace.
+Code occurring directly in the toplevel scope is treated as
+having a local scope nested inside the toplevel scope.
 
 ### Code generation
 
