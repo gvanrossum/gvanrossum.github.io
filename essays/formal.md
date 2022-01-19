@@ -282,6 +282,32 @@ corresponding to the toplevel scope may be separate.
 Code occurring directly in the toplevel scope is treated as
 having a local scope nested inside the toplevel scope.
 
+#### Notes about the preceding sections
+
+- Move definition of target to another section.
+- Need terms for "class or toplevel scope" (including `exec`/`eval`)
+  and for "function, lambda or comprehension scope",
+  to avoid repetition.
+- These terms must also convey "chained lookup" vs. "final lookup".
+- Maybe use the sequence toplevel scope, global scope, builtin scope?
+- Terms for syntactic and lexical scope are confusing;
+  avoid lexical scope (since people assume they know what it means).
+  Possibly _naive scope_ and _syntactic scope_?
+  Or _containment scope_ and _technical scope_?
+  Keep looking! :-)
+- Terms for defining and binding scope are backwards (?).
+- Perhaps only _variables_ have a scope,
+  and we need a different term for *use* or *assignment*.
+- Let's not use "definition".
+- There's wisdom in other languages' consistent use of syntactic categories.
+- We could define _context_ (load or store, the latter including delete).
+- I still missed [a case](https://bugs.python.org/issue17853)!
+  The `CLASS_DEREF` opcode first checks the locals dict,
+  then the corresponding cell (!).
+  This is a unique case of a lookup chained to a final lookup,
+  and was prompted by the `__prepare__` metaclass feature.
+
+
 ### Code generation
 
 [TODO]
