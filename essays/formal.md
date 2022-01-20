@@ -306,6 +306,11 @@ having a local scope nested inside the toplevel scope.
   then the corresponding cell (!).
   This is a unique case of a lookup chained to a final lookup,
   and was prompted by the `__prepare__` metaclass feature.
+- I'm starting over in scopes.md.
+- I missed several other special cases related to comprehensions
+  being function scopes, e.g. a comprehension, being a function scope,
+  if it's in a class, cannot reference variables in that class scope;
+  and other things added by PEP 572 under "Scope of the target".
 
 
 ### Code generation
