@@ -127,9 +127,9 @@ which lexically belong to the nearest enclosing non-comprehension scope:
 - The base classes and keyword arguments in a class definition
   (e.g., `base, flag=1` in `class C(base, flag=1): ...`)
 - The default values and annotations in functions and lambdas
-- The rightmost iterable in a comprehension
-  (e.g., `BAR` in `[x+y for x in FOO for y in BAR if BAZ]`),
-  but not the condition following it (here, `BAZ`)
+- The leftmost iterable in a comprehension
+  (e.g., `FOO` in `[x+y for x in FOO if HAM for y in BAR if SPAM]`,
+  but not `BAR` or `HAM` or `SPAM`)
 - Walrus targets in comprehensions
   (see [PEP 572](https://www.python.org/dev/peps/pep-0572/#scope-of-the-target);
   this states that for nested comprehensions,
