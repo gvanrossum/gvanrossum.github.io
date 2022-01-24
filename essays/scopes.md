@@ -1,6 +1,4 @@
-# Everything You Always Wanted To Know About Scopes
-
-## (But were afraid to ask)
+# Everything You Always Wanted to Know About Scopes But Were Afraid to Ask
 
 Guido van Rossum, 2022
 
@@ -21,7 +19,7 @@ Identifiers can have different _roles_:
 
 - _Variables_
 - _Attributes_
-- _Other_: e.g. import names, keyword parameter names in calls
+- _Other_: e.g. some import names, keyword parameter names in calls
 
 This essay is concerned only with variables.
 
@@ -29,9 +27,9 @@ Examples:
 
 ```py
 foo = bar  # Both 'foo' and 'bar' have role Variable
-foo.append(1)  # 'foo' has role Variable; 'append' has role Attribute
-import foo  # 'foo' has roles Other and Variable
-import foo.bar  # 'foo' has role Variable; 'foo' and 'bar' have role Other
+foo.append(1)  # 'foo': Variable; 'append': Attribute
+import foo  # 'foo': Variable
+import foo.bar  # 'foo': Variable; 'bar': Other
 ```
 
 Each occurrence of an identifier has exactly one role.
@@ -39,7 +37,7 @@ Role is determined purely by the grammar.
 
 ## Context
 
-Identifiers can occur in several different _contexts_:
+Variables (and attributes) can occur in several different _contexts_:
 
 - _Load context_: uses a variable that must be bound elsewhere
 - _Store context_: binds, rebinds or unbinds a variable
@@ -47,9 +45,9 @@ Identifiers can occur in several different _contexts_:
 Examples:
 
 ```py
-foo = bar  # 'foo' is in a Store context, bar is in a Load context
-foo.append(1)  # 'foo' is in a Load context (!)
-import foo  # 'foo' is in a Store context
+foo = bar  # 'foo': Store; bar: Load
+foo.append(1)  # 'foo': Load; 'append': Store
+def foo(arg): pass  # 'foo': Store; 'arg': Store
 ```
 
 Each occurrence of an identifier has exactly one context.
@@ -63,7 +61,7 @@ A _scope_ is the area of the program text where a variable is _visible_.
 but for Python we consider that a separate concept.)
 
 Scope is a _compile-time_ concept.
-The scope of a Python variable is determined by rules (specified later)
+The scope of a Python variable is determined by rules
 that take into account the syntactic position of the variable
 and the presence of `global` and `nonlocal` statements.
 
@@ -100,9 +98,9 @@ that corresponds to a scope.
 
 The following syntactic elements are scope-forming:
 
-- Toplevel
-- Class
-- Function
+- Toplevel (all code not contained in any of the following)
+- Class definition
+- Function definition
 - Lambda
 - Comprehension
 
@@ -123,8 +121,8 @@ All other scopes are _open scopes_, and correspond to _open namespaces_.
 
 ### Chained namespace
 
-A _chained namespace_ is one that delegates search to another namespace
-if the search key is not found.
+A _chained namespace_ is one that delegates search (at runtime)
+to another namespace if the search key is not found.
 Chained namespaces are always open
 (but the chained-to namespace may be closed).
 
@@ -167,7 +165,7 @@ with the following exceptions:
 
 - In addition, the syntactic scope of
   walrus targets occurring in comprehensions
-  is the next outer enclosing non-comprehension scope
+  is the nearest enclosing non-comprehension scope
   (i.e., skipping enclosing comprehensions)
 
 ### Assignment scope
@@ -176,9 +174,54 @@ The _assignment scope_ of a given identifier occurrence is
 the nearest enclosing scope, starting with its syntactic scope,
 where that identifier occurs in a store context.
 
-### Definition scope
+### Binding scope
 
-The _definition scope_ of a given identifier occurrence is
+The _binding scope_ of a given identifier occurrence is
 the scope corresponding to the namespace where the identifier
 will be looked up at runtime (or the start of the chain,
 if it's a chained namespace).
+
+This is equal to the identifier's assignment scope
+unless a `global` or `nonlocal` statement mentioning the identifier
+is present in the assignment scope:
+
+- If a `global` statement for the identifier is present,
+  the binding scope is the global scope.
+- If a `nonlocal` statement for the identifier is present,
+  the binding scope is the next enclosing function scope
+  that does not contain a `nonlocal` statement
+  for the same identifier
+  where it occurs in a store context.
+  It is a compile-time error if no such scope exists.
+  It is also a compile-time error if the scope thus found
+  contains a `global` statement for the identifier,
+  or if any scope contains a `nonlocal` statement
+  as well as a `global` statement for the same identifier.
+
+# Compile time and runtime search
+
+At compile time any occurrence of an identifier with a Variable role
+(regardless of Load/Store context) is assigned a binding scope.
+The algorithm is specified through the definition of binding scope,
+above.
+
+At runtime a Store operation (corresponding to a Store Context)
+always updates the namespace corresponding to the binding scope.
+
+A Load operation can do one of the following:
+
+- If the binding scope is an open scope,
+  the search tries the corresponding binding namespace,
+  then the global namespace, and finally the builtin namespace.
+  If the search fails, `NameError` is raised.
+
+- If the binding scope and the syntactic scope are both closed scopes,
+  the closed namespace corresponding to the binding scope is searched.
+  If the search fails, `UnboundLocalError` is raised.
+
+- If the binding scope is a closed scope
+  and the syntactic scope is an open scope,
+  the class namespace is searched before the binding namespace.
+  If the search fails, `NameError` is raised.
+  (The reason is [bpo-17853](https://bugs.python.org/issue17853).)
+
