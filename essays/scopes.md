@@ -21,6 +21,8 @@ Identifiers can have different _roles_:
 - _Attributes_
 - _Other_: e.g. some import names, keyword parameter names in calls
 
+Note that `nonlocal` and `global` statements imply Variable role.
+
 This essay is concerned only with variables.
 
 Examples:
@@ -42,6 +44,8 @@ Variables (and attributes) can occur in several different _contexts_:
 - _Load context_: uses a variable that must be bound elsewhere
 - _Store context_: binds, rebinds or unbinds a variable
 
+Note that `nonlocal` and `global` statements imply Store context.
+
 Examples:
 
 ```py
@@ -60,7 +64,7 @@ A _scope_ is the area of the program text where a variable is _visible_.
 (In some languages it is also related to _lifetime_,
 but for Python we consider that a separate concept.)
 
-Scope is a _compile-time_ concept.
+Scope is a _compile time_ concept.
 The scope of a Python variable is determined by rules
 that take into account the syntactic position of the variable
 and the presence of `global` and `nonlocal` statements.
@@ -119,19 +123,6 @@ A closed namespace cannot be extended dynamically
 
 All other scopes are _open scopes_, and correspond to _open namespaces_.
 
-### Chained namespace
-
-A _chained namespace_ is one that delegates search (at runtime)
-to another namespace if the search key is not found.
-Chained namespaces are always open
-(but the chained-to namespace may be closed).
-
-### Terminal namespace
-
-A _terminal namespace_ is the opposite of a chained namespace.
-Closed namespaces are always terminal
-(but they may be chained to from open namespaces).
-
 ### Textual scope
 
 The _textual scope_ of an identifier occurring in the program text is
@@ -142,7 +133,7 @@ This concept is only used to simplify the next definition.
 ### Syntactic scope
 
 The _syntactic scope_ of a specific identifier occurrence is
-the scope where the compile-time lookup process starts.
+the scope where the compile time lookup process starts.
 This is usually the identifier's textual scope,
 with the following exceptions:
 
@@ -161,7 +152,7 @@ with the following exceptions:
   - In a lambda definition:
     - default expressions
   - In a comprehension:
-    - the leftmost iterable
+    - the leftmost iterable clause
 
 - In addition, the syntactic scope of
   walrus targets occurring in comprehensions
@@ -172,14 +163,16 @@ with the following exceptions:
 
 The _assignment scope_ of a given identifier occurrence is
 the nearest enclosing scope, starting with its syntactic scope,
-where that identifier occurs in a store context.
+where that identifier occurs in a Store context.
+(If the given identifier has a Store context,
+the assignment scope is the syntactic scope.)
 
 ### Binding scope
 
 The _binding scope_ of a given identifier occurrence is
 the scope corresponding to the namespace where the identifier
-will be looked up at runtime (or the start of the chain,
-if it's a chained namespace).
+will be searched at runtime
+(or where it will be searched first, for chained lookups).
 
 This is equal to the identifier's assignment scope
 unless a `global` or `nonlocal` statement mentioning the identifier
@@ -187,28 +180,61 @@ is present in the assignment scope:
 
 - If a `global` statement for the identifier is present,
   the binding scope is the global scope.
+
 - If a `nonlocal` statement for the identifier is present,
   the binding scope is the next enclosing function scope
-  that does not contain a `nonlocal` statement
-  for the same identifier
-  where it occurs in a store context.
-  It is a compile-time error if no such scope exists.
-  It is also a compile-time error if the scope thus found
+  that does not contain a `nonlocal` statement for that identifier
+  where it occurs in a Store context.
+  It is a compile time error if no such scope exists.
+  It is also a compile time error if the scope thus found
   contains a `global` statement for the identifier,
   or if any scope contains a `nonlocal` statement
   as well as a `global` statement for the same identifier.
 
+### Scope for identifiers in comprehensions
+
+Special rules apply to identifiers (with Variable role)
+occurring in comprehensions:
+
+- The syntactic scope for identifiers in the leftmost iterable clause is
+  the nearest enclosing scope (this was mentioned above).
+- The syntactic, assignment and binding scope
+  for name targets in a `for` clause is that comprehension
+  (this follows from other rules).
+- The assignment scope for walrus targets is
+  the nearest enclosing non-comprehension scope;
+  it is an error if this is a class scope.
+- The syntactic scope for other identifiers is
+  the nearest non-class scope enclosing the comprehension
+  (this acts as if the comprehension were a lambda).
+
+In addition, the following conditions are errors:
+
+- A walrus target binds a `for` clause target for a comprehension
+  containing that walrus (directly or indirectly).
+- A walrus occurs in an iterable clause in that comprehension
+  (even if as part of a lambda or another comprehension).
+
+(For the walrus-related rules, see
+[PEP 572](https://www.python.org/dev/peps/pep-0572/#scope-of-the-target).)
+
 # Compile time and runtime search
+
+## Compile time search
 
 At compile time any occurrence of an identifier with a Variable role
 (regardless of Load/Store context) is assigned a binding scope.
 The algorithm is specified through the definition of binding scope,
 above.
 
-At runtime a Store operation (corresponding to a Store Context)
+## Runtime search
+
+A Store operation (corresponding to a Store context)
 always updates the namespace corresponding to the binding scope.
 
-A Load operation can do one of the following:
+A Load operation (corresponding to a Load context)
+does one of the following,
+depending on the nature of the binding scope and the syntactic scope:
 
 - If the binding scope is an open scope,
   the search tries the corresponding binding namespace,
@@ -217,11 +243,12 @@ A Load operation can do one of the following:
 
 - If the binding scope and the syntactic scope are both closed scopes,
   the closed namespace corresponding to the binding scope is searched.
-  If the search fails, `UnboundLocalError` is raised.
+  If the search fails, `NameError` is raised.
+  (If the binding scope *is* the syntactic scope,
+  `UnboundLocalError`, a subclass of `NameError`, is raised.)
 
 - If the binding scope is a closed scope
   and the syntactic scope is an open scope,
   the class namespace is searched before the binding namespace.
   If the search fails, `NameError` is raised.
-  (The reason is [bpo-17853](https://bugs.python.org/issue17853).)
-
+  (This supports [bpo-17853](https://bugs.python.org/issue17853).)
