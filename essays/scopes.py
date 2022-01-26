@@ -1,16 +1,19 @@
 from __future__ import annotations
 
+
 class Context:
     type: str
 
     def __init__(self, type: str):
         self.type = type
-    
+
     def __repr__(self) -> str:
         return self.type
 
+
 Load = Context("Load")
 Store = Context("Store")
+
 
 class Scope:
     scope_name: str
@@ -27,18 +30,18 @@ class Scope:
         self.globals = set()
         self.bindings = set()  # TODO: Compute this
         self.parent = parent
-    
+
     def __repr__(self) -> str:
         return f"Scope({self.scope_name!r})"
-    
+
     def store(self, name: str) -> None:
         self.stores.add(name)
-    
+
     def add_nonlocal(self, name: str) -> None:
         assert name not in self.globals
         self.nonlocals.add(name)
         self.store(name)
-    
+
     def add_global(self, name: str) -> None:
         assert name not in self.nonlocals
         self.globals.add(name)
@@ -65,45 +68,65 @@ class Scope:
                 s = s.parent
         return None  # It's a global by default
 
+
 class OpenScope(Scope):
     pass
+
 
 class GlobalScope(Scope):
     def __init__(self):
         super().__init__("<globals>", None)
 
+
 class ClosedScope(Scope):
     pass
+
 
 class ClassScope(OpenScope):
     def __init__(self, name: str, parent: Scope):
         super().__init__(name, parent)
         parent.store(name)
 
+
 class FunctionScope(ClosedScope):
     def __init__(self, name: str, parent: Scope):
         super().__init__(name, parent)
         parent.store(name)
 
+
 # No rules distinguish between lambda and function scope
 LambdaScope = FunctionScope
+
 
 class ComprehensionScope(ClosedScope):
     pass
 
-# Set up a sample program
-# class C:
-#   def foo(self, a = blah):
-#     global x
-#     x = a
 
-globals = GlobalScope()
-class_c = ClassScope("C", globals)
-def_foo = FunctionScope("foo", class_c)
-def_foo.store("self")
-def_foo.store("a")
-def_foo.add_global("x")
+def test():
+    # Set up a sample program
+    # class C:
+    #   def foo(self, a = blah):
+    #     global x
+    #     x = a
 
-for name in "a", "self", "x", "blah", "C", "foo":
-    print("The scope of", name, "in foo is", def_foo.lookup(name))
-    print("  The scope of", name, "in C is", class_c.lookup(name))
+    globals = GlobalScope()
+    class_c = ClassScope("C", globals)
+    def_foo = FunctionScope("foo", class_c)
+    def_foo.store("self")
+    def_foo.store("a")
+    def_foo.add_global("x")
+
+    for name, in_foo, in_c in [
+        ("C", globals, globals),
+        ("foo", None, class_c),
+        ("self", def_foo, None),
+        ("a", def_foo, None),
+        ("blah", None, None),
+        ("x", globals, globals),
+    ]:
+        assert def_foo.lookup(name) == in_foo, (name, in_foo)
+        assert class_c.lookup(name) == in_c, (name, in_c)
+
+
+if __name__ == "__main__":
+    test()
