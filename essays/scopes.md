@@ -84,6 +84,9 @@ The difference between global and toplevel scope is subtle:
 - In a module, they are the same.
 - In `exec` and `eval`, they *may* be different.
 
+[TODO: Merge Lambda and Function]
+[TODO: Drop builtin scope (but not builtin namespace)]
+
 ## Namespace
 
 A _namespace_ is a mapping from variable identifiers to values.
