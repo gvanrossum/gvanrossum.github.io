@@ -102,8 +102,8 @@ class_c = ClassScope("C", globals)
 def_foo = FunctionScope("foo", class_c)
 def_foo.store("self")
 def_foo.store("a")
-def_foo.parent.store("blah")
 def_foo.add_global("x")
 
 for name in "a", "self", "x", "blah", "C", "foo":
     print("The scope of", name, "in foo is", def_foo.lookup(name))
+    print("  The scope of", name, "in C is", class_c.lookup(name))
