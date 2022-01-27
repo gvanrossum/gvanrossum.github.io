@@ -17,75 +17,104 @@ Store = Context("Store")
 
 class Scope:
     scope_name: str
-    stores: set[str]
+    parent: Scope | None
+    locals: set[str]
     nonlocals: set[str]
     globals: set[str]
-    bindings: set[str]
-    parent: Scope | None
 
     def __init__(self, scope_name: str, parent: Scope | None):
         self.scope_name = scope_name
-        self.stores = set()
+        self.parent = parent
+        self.locals = set()
         self.nonlocals = set()
         self.globals = set()
-        self.bindings = set()  # TODO: Compute this
-        self.parent = parent
+        # locals, nonlocals and globals are all disjunct
 
     def __repr__(self) -> str:
-        return f"Scope({self.scope_name!r})"
+        return f"{self.__class__.__qualname__}({self.scope_name!r})"
 
     def store(self, name: str) -> None:
-        self.stores.add(name)
+        if name in self.locals or name in self.nonlocals or name in self.globals:
+            return
+        self.locals.add(name)
 
     def add_nonlocal(self, name: str) -> None:
-        assert name not in self.globals
+        assert name not in self.locals, "name assigned before nonlocal declaration"
+        assert name not in self.globals, "name is global and nonlocal"
         self.nonlocals.add(name)
-        self.store(name)
 
     def add_global(self, name: str) -> None:
-        assert name not in self.nonlocals
+        assert name not in self.locals, "name assigned before global declaration"
+        assert name not in self.nonlocals, "name is nonlocal and global"
         self.globals.add(name)
-        self.store(name)
+
+    def global_scope(self) -> GlobalScope:
+        assert self.parent is not None
+        return self.parent.global_scope()
 
     def lookup(self, name: str) -> Scope | None:
-        s = self
-        is_nonlocal = False
-        while s is not None:
-            # print(f"  Looking for {name} in {s}")
-            if name in s.stores and name not in s.globals and name not in s.nonlocals:
-                return s  # It's a local
-            if name in s.globals:
-                assert not is_nonlocal
-                # It's a global, skip to the global scope
-                while not isinstance(s, GlobalScope):
-                    s = s.parent
-                return s
-            if name in s.nonlocals:
-                is_nonlocal = True
-            s = s.parent
-            # Skip class scopes after the first
-            while isinstance(s, ClassScope):
-                s = s.parent
-        return None  # It's a global by default
+        raise NotImplementedError
+
+    def enclosing_scope(self) -> ClosedScope | None:
+        if self.parent is None:
+            return None
+        elif isinstance(self.parent, ClosedScope):
+            return self.parent
+        else:
+            return self.parent.enclosing_scope()
 
 
 class OpenScope(Scope):
-    pass
+    def lookup(self, name: str) -> Scope | None:
+        if name in self.locals:
+            return self
+        else:
+            return self.global_scope().lookup(name)
 
 
-class GlobalScope(Scope):
+class GlobalScope(OpenScope):
     def __init__(self):
         super().__init__("<globals>", None)
 
+    def global_scope(self) -> GlobalScope:
+        return self
 
-class ClosedScope(Scope):
-    pass
+    def lookup(self, name: str) -> Scope | None:
+        if name in self.locals:
+            return self
+        else:
+            return None
+
+    def add_nonlocal(self, name: str) -> None:
+        assert False, "nonlocal declaration not allowed at module level"
+
+    def add_global(self, name: str) -> None:
+        return self.store(name)
 
 
 class ClassScope(OpenScope):
     def __init__(self, name: str, parent: Scope):
         super().__init__(name, parent)
         parent.store(name)
+
+
+class ClosedScope(Scope):
+    def lookup(self, name: str) -> Scope | None:
+        if name in self.locals:
+            return self
+        elif name in self.globals:
+            return self.global_scope()
+        elif name in self.nonlocals:
+            s = self.enclosing_scope()
+            assert s is not None, "nonlocal not found"
+            s = s.lookup(name)
+            assert s is not None, "nonlocal not found"
+            assert isinstance(s, ClosedScope), "nonlocal not found"
+        else:
+            s = self.enclosing_scope()
+            if s is None:
+                s = self.global_scope()
+            return s.lookup(name)
 
 
 class FunctionScope(ClosedScope):
@@ -99,6 +128,7 @@ LambdaScope = FunctionScope
 
 
 class ComprehensionScope(ClosedScope):
+    # TODO
     pass
 
 
@@ -110,22 +140,29 @@ def test():
     #     x = a
 
     globals = GlobalScope()
-    class_c = ClassScope("C", globals)
-    def_foo = FunctionScope("foo", class_c)
-    def_foo.store("self")
-    def_foo.store("a")
-    def_foo.add_global("x")
+    c = ClassScope("C", globals)
+    foo = FunctionScope("foo", c)
+    foo.store("self")
+    foo.store("a")
+    foo.add_global("x")
 
-    for name, in_foo, in_c in [
-        ("C", globals, globals),
-        ("foo", None, class_c),
-        ("self", def_foo, None),
-        ("a", def_foo, None),
-        ("blah", None, None),
-        ("x", globals, globals),
-    ]:
-        assert def_foo.lookup(name) == in_foo, (name, in_foo)
-        assert class_c.lookup(name) == in_c, (name, in_c)
+    assert foo.lookup("C") is globals
+    assert c.lookup("C") is globals
+
+    assert foo.lookup("foo") is None
+    assert c.lookup("foo") is c
+
+    assert foo.lookup("self") is foo
+    assert c.lookup("self") is None
+
+    assert foo.lookup("a") is foo
+    assert c.lookup("a") is None
+
+    assert foo.lookup("blah") is None
+    assert c.lookup("blah") is None
+
+    assert foo.lookup("x") is globals
+    assert c.lookup("x") is None
 
 
 if __name__ == "__main__":
