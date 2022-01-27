@@ -4,6 +4,8 @@ There are lots of invariants and ideas not yet expressed in code:
 
 - scopes form a tree with a GlobalScope at the root
 - there are no GlobalScopes elsewhere in the tree
+- *using* a name before a nonlocal declaration is also an error
+- a way to check a scope's invariants
 - locals/nonlocals/globals are disjunct
 - everything about comprehensions
 - translating the AST into a tree of scopes
@@ -18,6 +20,7 @@ from __future__ import annotations
 class Scope:
     scope_name: str
     parent: Scope | None
+    uses: set[str]
     locals: set[str]
     nonlocals: set[str]
     globals: set[str]
@@ -25,6 +28,7 @@ class Scope:
     def __init__(self, scope_name: str, parent: Scope | None):
         self.scope_name = scope_name
         self.parent = parent
+        self.uses = set()
         self.locals = set()
         self.nonlocals = set()
         self.globals = set()
@@ -38,7 +42,12 @@ class Scope:
             return
         self.locals.add(name)
 
+    def load(self, name: str) -> None:
+        self.uses.add(name)
+
     def add_nonlocal(self, name: str) -> None:
+        if name in self.uses:
+            raise SyntaxError("name used prior to nonlocal declaration")
         if name in self.locals:
             raise SyntaxError("name assigned before nonlocal declaration")
         if name in self.globals:
@@ -46,6 +55,8 @@ class Scope:
         self.nonlocals.add(name)
 
     def add_global(self, name: str) -> None:
+        if name in self.uses:
+            raise SyntaxError("name used prior to global declaration")
         if name in self.locals:
             raise SyntaxError("name assigned before global declaration")
         if name in self.nonlocals:
@@ -109,27 +120,27 @@ class ClassScope(OpenScope):
 
 
 class ClosedScope(Scope):
+    def lookup_nonlocal(self, name: str) -> Scope | None:
+        s = self.enclosing_scope()
+        if s is None:
+            raise SyntaxError("no enclosing scope for nonlocal")
+        res = s.lookup_nonlocal(name)
+        if res is None:
+            raise SyntaxError("name not found in enclosing scope")
+        return res
+
     def lookup(self, name: str) -> Scope | None:
-        # TODO: If there's a nonlocal x, there must be an x in a closed scope;
-        # otherwise, it may be global or missing.
-        # (add_global() and add_nonlocal() already check for inconsistency.)
         if name in self.locals:
             return self
         elif name in self.globals:
             return self.global_scope()
         elif name in self.nonlocals:
-            s = self.enclosing_scope()
-            if s is None:
-                raise SyntaxError("no enclosing scope for nonlocal")
-            res = s.lookup(name)
-            if res is None:
-                raise SyntaxError("name not found in enclosing scope")
-            return res
+            return self.lookup_nonlocal(name)
         else:
-            t: Scope | None = self.enclosing_scope()
-            if t is None:
-                t = self.global_scope()
-            return t.lookup(name)
+            s: Scope | None = self.enclosing_scope()
+            if s is None:
+                s = self.global_scope()
+            return s.lookup(name)
 
 
 class FunctionScope(ClosedScope):
