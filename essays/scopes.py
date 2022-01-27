@@ -107,14 +107,16 @@ class ClosedScope(Scope):
         elif name in self.nonlocals:
             s = self.enclosing_scope()
             assert s is not None, "nonlocal not found"
-            s = s.lookup(name)
-            assert s is not None, "nonlocal not found"
-            assert isinstance(s, ClosedScope), "nonlocal not found"
+            res = s.lookup(name)
+            assert res is not None, "nonlocal not found"
+            assert isinstance(res, ClosedScope), "nonlocal not found"
+            return res
         else:
-            s = self.enclosing_scope()
-            if s is None:
-                s = self.global_scope()
-            return s.lookup(name)
+            res = self.enclosing_scope()
+            if res is None:
+                res = self.global_scope()
+            assert res is not None
+            return res.lookup(name)
 
 
 class FunctionScope(ClosedScope):
