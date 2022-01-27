@@ -1,20 +1,6 @@
 from __future__ import annotations
 
 
-class Context:
-    type: str
-
-    def __init__(self, type: str):
-        self.type = type
-
-    def __repr__(self) -> str:
-        return self.type
-
-
-Load = Context("Load")
-Store = Context("Store")
-
-
 class Scope:
     scope_name: str
     parent: Scope | None
