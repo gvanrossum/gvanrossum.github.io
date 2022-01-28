@@ -19,9 +19,7 @@ class Builder:
 
     def build(self, node: object | None) -> None:
         match node:
-            case None:
-                pass
-            case str():
+            case None | bool() | str() | int() | float() | complex():
                 pass
             case list():
                 for n in node:
@@ -58,15 +56,15 @@ class Builder:
                     self.current = save_current
             case ast.AST():
                 for key, value in node.__dict__.items():
-                    if not key.startswith("_") and isinstance(value, (ast.AST, list)):
+                    if not key.startswith("_"):
                         self.build(value)
             case _:
-                assert False, node
+                assert False, repr(node)
 
 
 example = """
 class C:
-    def foo(self, a = b):
+    def foo(self, a = b + 0.1):
         global x
         x = 1
         nonlocal y
