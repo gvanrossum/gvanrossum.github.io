@@ -22,9 +22,16 @@ class Builder:
 
     def build(self, node: object | None) -> None:
         match node:
-            case (None | str() | bytes()
-                 | bool() | int() | float() | complex()
-                 | types.EllipsisType()):
+            case (
+                None
+                | str()
+                | bytes()
+                | bool()
+                | int()
+                | float()
+                | complex()
+                | types.EllipsisType()
+            ):
                 pass
             case list():
                 for n in node:
@@ -90,6 +97,7 @@ class C:
 """
 
 tab = "    "
+
 
 def test():
     dump = False

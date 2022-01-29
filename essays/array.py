@@ -1,11 +1,14 @@
 def add(a: int, b: int) -> int:
     ...
 
+
 def sub(a: int, b: int) -> int:
     ...
 
+
 def panic(msg: str) -> None:
     ...
+
 
 class Cell:
     head: object
@@ -15,6 +18,7 @@ class Cell:
         self.head = head
         self.tail = tail
 
+
 Cons = Cell | None
 
 # We don't have generics, alas
@@ -23,7 +27,7 @@ class Array:
 
     def __init__(self) -> None:
         self.first = None
-    
+
     def len(self) -> int:
         n: int = 0
         it: Cons = self.first
@@ -31,7 +35,7 @@ class Array:
             n = add(n, 1)
             it = it.tail
         return n
-    
+
     def insert(self, pos: int, data: object) -> None:
         if pos < 0:
             panic("negative position")
@@ -54,7 +58,7 @@ class Array:
 
     def delete(self, pos: int) -> None:
         "delete item at pos (similar to insert)"
-    
+
     def getitem(self, pos: int) -> object:
         next = self.first
         while pos > 0 and next is not None:
