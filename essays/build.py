@@ -6,7 +6,14 @@ import sys
 import types
 from typing import Iterator
 
-from scopes import Scope, ClassScope, GlobalScope, FunctionScope, LambdaScope
+from scopes import (
+    ClassScope,
+    ComprehensionScope,
+    FunctionScope,
+    GlobalScope,
+    LambdaScope,
+    Scope,
+)
 
 LOAD = ast.Load()
 STORE = ast.Store()
@@ -36,7 +43,7 @@ class Builder:
             self.current = parent
 
     def build(self, node: object | None) -> None:
-        # TODO: comprehensions, and walrus in comprehensions
+        # TODO: walrus in comprehensions
         match node:
             case (
                 None
@@ -84,6 +91,27 @@ class Builder:
                 self.build(args)  # defaults
                 with self.push(LambdaScope("<lambda>", self.current)):
                     self.build(body)
+            case ast.comprehension(target=target, ifs=ifs):
+                self.build(target)
+                # node.iter is built by the next two cases
+                self.build(ifs)
+            case ast.ListComp(elt=elt, generators=gens) | ast.SetComp(
+                elt=elt, generators=gens
+            ) | ast.GeneratorExp(elt=elt, generators=gens):
+                self.build(gens[0].iter)
+                name = f"<{node.__class__.__name__}>"
+                with self.push(ComprehensionScope(name, self.current)):
+                    self.build(elt)
+                    self.build(gens)
+                    self.build([g.iter for g in gens[1:]])
+            case ast.DictComp(key=key, value=value, generators=gens):
+                self.build(gens[0].iter)
+                with self.push(ComprehensionScope(f"<DictComp>", self.current)):
+                    self.build(key)
+                    self.build(value)
+                    self.build(gens)
+                    self.build([g.iter for g in gens[1:]])
+
             case ast.FunctionDef(
                 name=name,
                 args=args,
