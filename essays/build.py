@@ -1,10 +1,12 @@
 """Build scope structure from AST."""
 
 import ast
+import contextlib
 import sys
 import types
+from typing import Iterator
 
-from scopes import Scope, GlobalScope, FunctionScope, ClassScope
+from scopes import Scope, ClassScope, GlobalScope, FunctionScope, LambdaScope
 
 LOAD = ast.Load()
 STORE = ast.Store()
@@ -20,7 +22,21 @@ class Builder:
         self.current = self.globals
         self.scopes = [self.globals]
 
+    def store(self, name: str) -> None:
+        self.current.store(name)
+
+    @contextlib.contextmanager
+    def push(self, scope: Scope) -> Iterator[Scope]:
+        parent = self.current
+        try:
+            self.current = scope
+            self.scopes.append(scope)
+            yield scope
+        finally:
+            self.current = parent
+
     def build(self, node: object | None) -> None:
+        # TODO: comprehensions, and walrus in comprehensions
         match node:
             case (
                 None
@@ -37,7 +53,7 @@ class Builder:
                 for n in node:
                     self.build(n)
             case ast.Name(id=name, ctx=ast.Store()):
-                self.current.store(name)
+                self.store(name)
             case ast.Name(id=name, ctx=ast.Load()):
                 self.current.load(name)
             case ast.Nonlocal(names=names) | ast.Global(names=names):
@@ -46,23 +62,28 @@ class Builder:
             case ast.ImportFrom(names=names):
                 for a in names:
                     if a.asname:
-                        self.current.store(a.asname)
-                    elif a.name != '*':
-                        self.current.store(a.name)
+                        self.store(a.asname)
+                    elif a.name != "*":
+                        self.store(a.name)
             case ast.Import(names=names):
                 for a in names:
                     if a.asname:
-                        self.current.store(a.asname)
+                        self.store(a.asname)
                     else:
-                        name = a.name.split('.')[0]
-                        self.current.store(name)
+                        name = a.name.split(".")[0]
+                        self.store(name)
             case ast.ExceptHandler(type=typ, name=name, body=body):
                 self.build(typ)
                 if name:
-                    self.current.store(name)
+                    self.store(name)
                 self.build(body)
             case ast.MatchAs(name=name) | ast.MatchStar(name=name):
-                self.current.store(name)
+                if name:
+                    self.store(name)
+            case ast.Lambda(args=args, body=body):
+                self.build(args)  # defaults
+                with self.push(LambdaScope("<lambda>", self.current)):
+                    self.build(body)
             case ast.FunctionDef(
                 name=name,
                 args=args,
@@ -73,16 +94,11 @@ class Builder:
                 self.build(decorator_list)
                 self.build(args)  # Annotations and defaults
                 self.build(returns)
-                parent = self.current
-                try:
-                    self.current = FunctionScope(name, parent)
-                    self.scopes.append(self.current)
+                with self.push(FunctionScope(name, self.current)):
                     for a in args.posonlyargs + args.args + args.kwonlyargs:
-                        self.current.store(a.arg)
+                        self.store(a.arg)
                     self.build(body)
-                finally:
-                    self.current = parent
-                parent.store(name)
+                self.store(name)
             case ast.ClassDef(
                 name=name,
                 bases=bases,
@@ -93,14 +109,9 @@ class Builder:
                 self.build(decorator_list)
                 self.build(bases)
                 self.build(keywords)
-                parent = self.current
-                try:
-                    self.current = ClassScope(name, parent)
-                    self.scopes.append(self.current)
+                with self.push(ClassScope(name, self.current)):
                     self.build(body)
-                finally:
-                    self.current = parent
-                parent.store(name)
+                self.store(name)
             case ast.AST():
                 for key, value in node.__dict__.items():
                     if not key.startswith("_"):
@@ -117,15 +128,6 @@ def depth(s: Scope) -> int:
     return n
 
 
-example = """
-class C:
-    def foo(self, a = b + 0.1):
-        global x
-        x = 1
-        nonlocal y
-        y = 0
-"""
-
 tab = "    "
 
 
@@ -134,23 +136,24 @@ def test():
     if sys.argv[1:] and sys.argv[1] == "-d":
         dump = True
         del sys.argv[1]
-    if sys.argv[1:]:
-        data = open(sys.argv[1]).read()
-    else:
-        data = example
-    root = ast.parse(data)
-    if dump:
-        print(ast.dump(root, indent=2))
-    b = Builder()
-    b.build(root)
-    for scope in b.scopes:
-        indent = tab * depth(scope)
-        print(f"{indent}{scope}: L={scope.locals}", end="")
-        if scope.nonlocals:
-            print(f"; NL={scope.nonlocals}", end="")
-        if scope.globals:
-            print(f"; G={scope.globals}", end="")
-        print(f"; U={scope.uses}")
+    for file in sys.argv[1:]:
+        print()
+        print(file + ":")
+        with open(file, "rb") as f:
+            data = f.read()
+        root = ast.parse(data)
+        if dump:
+            print(ast.dump(root, indent=2))
+        b = Builder()
+        b.build(root)
+        for scope in b.scopes:
+            indent = tab * depth(scope)
+            print(f"{indent}{scope}: L={scope.locals}", end="")
+            if scope.nonlocals:
+                print(f"; NL={scope.nonlocals}", end="")
+            if scope.globals:
+                print(f"; G={scope.globals}", end="")
+            print(f"; U={scope.uses}")
 
 
 if __name__ == "__main__":

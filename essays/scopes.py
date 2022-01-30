@@ -149,12 +149,11 @@ class FunctionScope(ClosedScope):
         parent.store(name)
 
 
-# No rules distinguish between lambda and function scope
-LambdaScope = FunctionScope
+class LambdaScope(FunctionScope):
+    pass
 
 
 class ComprehensionScope(ClosedScope):
-    # TODO
     pass
 
 
