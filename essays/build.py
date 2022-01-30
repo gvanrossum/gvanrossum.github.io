@@ -21,7 +21,7 @@ class Builder:
         self.scopes = [self.globals]
 
     def build(self, node: object | None) -> None:
-        # TODO: import, MatchAs, who knows what else
+        # TODO: MatchAs, who knows what else
         match node:
             case (
                 None
@@ -44,6 +44,24 @@ class Builder:
             case ast.Nonlocal(names=names) | ast.Global(names=names):
                 for name in names:
                     self.current.add_nonlocal(name)
+            case ast.ImportFrom(names=names):
+                for a in names:
+                    if a.asname:
+                        self.current.store(a.asname)
+                    elif a.name != '*':
+                        self.current.store(a.name)
+            case ast.Import(names=names):
+                for a in names:
+                    if a.asname:
+                        self.current.store(a.asname)
+                    else:
+                        name = a.name.split('.')[0]
+                        self.current.store(name)
+            case ast.ExceptHandler(type=typ, name=name, body=body):
+                self.build(typ)
+                if name:
+                    self.current.store(name)
+                self.build(body)
             case ast.FunctionDef(
                 name=name,
                 args=args,
