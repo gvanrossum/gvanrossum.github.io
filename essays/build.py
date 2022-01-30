@@ -43,7 +43,6 @@ class Builder:
             self.current = parent
 
     def build(self, node: object | None) -> None:
-        # TODO: walrus in comprehensions
         match node:
             case (
                 None
@@ -91,6 +90,17 @@ class Builder:
                 self.build(args)  # defaults
                 with self.push(LambdaScope("<lambda>", self.current)):
                     self.build(body)
+            case ast.NamedExpr(target=target, value=value):
+                # TODO: Various other forbidden cases from PEP 572,
+                # e.g. [i := 0 for i in a] and [i for i in x := a].
+                assert isinstance(target, ast.Name)
+                self.build(value)
+                s = self.current
+                while isinstance(s, ComprehensionScope):
+                    s = s.parent
+                if isinstance(s, ClassScope):
+                    raise SyntaxError("walrus in comprehension cannot target class")
+                s.store(target.id)
             case ast.comprehension(target=target, ifs=ifs):
                 self.build(target)
                 # node.iter is built by the next two cases
