@@ -21,7 +21,6 @@ class Builder:
         self.scopes = [self.globals]
 
     def build(self, node: object | None) -> None:
-        # TODO: MatchAs, who knows what else
         match node:
             case (
                 None
@@ -62,6 +61,8 @@ class Builder:
                 if name:
                     self.current.store(name)
                 self.build(body)
+            case ast.MatchAs(name=name) | ast.MatchStar(name=name):
+                self.current.store(name)
             case ast.FunctionDef(
                 name=name,
                 args=args,
