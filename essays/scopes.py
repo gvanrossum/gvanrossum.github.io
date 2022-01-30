@@ -110,16 +110,21 @@ class GlobalScope(OpenScope):
 
 
 # For modules, exec and eval
-ToplevelScope = OpenScope
+class ToplevelScope(OpenScope):
+    parent: Scope  # Cannot be None
 
 
 class ClassScope(OpenScope):
+    parent: Scope  # Cannot be None
+
     def __init__(self, name: str, parent: Scope):
         super().__init__(name, parent)
         parent.store(name)
 
 
 class ClosedScope(Scope):
+    parent: Scope  # Cannot be None
+
     def lookup_nonlocal(self, name: str) -> Scope | None:
         s = self.enclosing_scope()
         if s is None:
