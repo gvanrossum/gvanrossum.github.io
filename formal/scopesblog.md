@@ -140,5 +140,105 @@ The `GlobalScope` class overrides `add_nonlocal()` to always raise.
 (It doesn't override `add_global()`, since that is legal -- if redundant -- at the top level.)
 
 It is also illegal to *use* a variable prior to a `nonlocal` or `global` declaration.
-This is solved by an additional `uses` attribute; I am leaving that out of the discussion for now because it just adds clutter and doesn't affect valid programs.
-(Scope is determined by assignments and `nonlocal`/`global` declarations, not by use.)
+This can be solved by an additional `uses` attribute managed by a `load()` method.
+I am leaving this out for now because it just adds clutter and doesn't affect valid programs.
+(Note that scope is determined by assignments and `nonlocal`/`global` declarations, not by use.)
+
+Once the Scope tree has been created and populated, the compiler is ready to generated code.
+This is done by another pass over the AST.
+During code generation, a key operation is looking up the scope of a variable, as this determines what code to generate for both loads and stores.
+For this purpose we define a method `lookup()` that various subclasses override.
+A few helpers are also defined.
+
+The simplest version is `GlobalScope.lookup()`:
+
+```py
+class GlobalScope(OpenScope):
+    ...
+
+    def lookup(self, name: str) -> GlobalScope:
+        if name in self.locals:
+            return self
+        else:
+            raise LookupError
+```
+
+For other `OpenScope` subclasses we use `OpenScope.lookup()`:
+
+```py
+class OpenScope(Scope):
+    ...
+
+    def lookup(self, name: str) -> OpenScope:
+        if name in self.locals:
+            return self
+        else:
+            return self.global_scope().lookup(name)
+```
+
+This requires a helper method, `global_scope()`:
+
+```py
+class Scope:
+    ...
+
+    def global_scope(self) -> GlobalScope:
+        assert self.parent is not None
+        return self.parent.global_scope()
+```
+
+To end the recursion, `GlobalScope` overrides this:
+
+```py
+class GlobalScope(OpenScope):
+    ...
+
+    def global_scope(self) -> GlobalScope:
+        return self
+```
+
+(Why not use a loop? The recursive version let a static type checker prove more properties of the code. :-)
+
+For open scopes (global, toplevel, and class scopes) this is the whole story.
+Before we tackle closed scopes, let's look at the code generation a bit.
+Suppose we're generating code for the body of a class `C`, and we're encountering a load of a variable `x`.
+There are only two possibilities:
+
+- it's a local variable in `C`
+- it's a global
+
+(The compiler doesn't know or care about builtins. It treats the same code for them as for globals.)
+
+Looking through the above method definitions, we see that there are actually three outcomes when you call `s.lookup("x")`, if `s` is an `OpenScope` instance:
+
+- it can return the local scope
+- it can return the global scope
+- it can raise `LookupError`
+
+If it returns the local scope, the compiler emits a chained load operation that searches through the local, global, and builtin namespaces, in that order.
+If it returns the global scope, the compiler emits a chained load operation searching through globals and builtins.
+If the `lookup()` call raises `LookupError`, the compiler treats this as if it returned the local scope.
+
+However, something seems wrong with this description!
+Consider this example:
+
+```py
+x = 0
+class C:
+    locals()["x"] = 1
+    print(x)
+```
+
+If you run this, it prints `1`.
+But the `s.lookup("x")` call returns the global scope, because `x` is a global!
+Or does it?
+No, it doesn't -- `x` is defined in the *toplevel* scope, not in the *global* scope.
+(When the `x = 0` statement is recorded in the Scope tree, it calls the toplevel scope's `store()` method, not the global scope's!)
+Phew. (I almost started doubting myself there for a moment. For real.)
+
+We'll see this when we look at what the compiler emits for stores.
+The compiler uses the same `lookup()` method, which can return the same three things (the local scope, the global scope, or raise `LookupError`).
+If it returns the local scope, it emits a local store operation.
+If it returns the global scope, it emits a global store operation.
+If it raises `LookupError`, again it treats this as the local scope, and returns a local store operation.
+Store operations are never chained -- this is a fundamental Python rule.
