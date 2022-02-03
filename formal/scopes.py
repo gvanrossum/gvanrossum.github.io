@@ -90,6 +90,8 @@ class OpenScope(Scope):
 
 
 class GlobalScope(OpenScope):
+    parent: None  # Must be None
+
     def __init__(self):
         super().__init__("<globals>", None)
 
@@ -111,7 +113,10 @@ class GlobalScope(OpenScope):
 
 # For modules, exec and eval
 class ToplevelScope(OpenScope):
-    parent: Scope  # Cannot be None
+    parent: GlobalScope  # Cannot be None
+
+    def __init__(self, parent: GlobalScope):
+        super().__init__("<toplevel>", parent)
 
 
 class ClassScope(OpenScope):

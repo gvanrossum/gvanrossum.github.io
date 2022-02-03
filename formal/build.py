@@ -7,6 +7,7 @@ import types
 from typing import Iterator
 
 from scopes import (
+    ToplevelScope,
     ClassScope,
     ComprehensionScope,
     FunctionScope,
@@ -26,8 +27,8 @@ class Builder:
 
     def __init__(self):
         self.globals = GlobalScope()
-        self.current = self.globals
-        self.scopes = [self.globals]
+        self.current = ToplevelScope(self.globals)
+        self.scopes = [self.globals, self.current]
 
     def store(self, name: str) -> None:
         self.current.store(name)
