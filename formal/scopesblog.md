@@ -76,16 +76,69 @@ This generated code refers to one or more namespaces, never to scopes (which don
 Below, I will just talk about scopes.
 The class hierarchy for scopes is as follows:
 
-- Scope
-  - OpenScope
-    - GlobalScope
-    - ClassScope
-  - ClosedScope
-    - FunctionScope
-      - LambdaScope
-    - ComprehensionScope
+- `Scope`
+  - `OpenScope`
+    - `GlobalScope`
+    - `ToplevelScope`
+    - `ClassScope`
+  - `ClosedScope`
+    - `FunctionScope`
+      - `LambdaScope`
+    - `ComprehensionScope`
+
+The `Scope`, `OpenScope` and `ClosedScope` classes are abstract; the others are concrete.
 
 Scopes are organized in a tree using a `parent` link (there is no need for a list of children).
 The parent is `None` for `GlobalScope` (and only for that).
 There is no "builtin scope" -- Python's compiler doesn't care about it, and at runtime the builtin namespace is always chained from the global namespace.
 
+The difference between `GlobalScope` and `ToplevelScope` is only apparent when using `exec()` or `eval()` with separate `globals` and `locals` namespaces; in that case the `locals` namespace corresponds to the `ToplevelScope`.
+Since the compiler doesn't know or care whether these namespaces are different, it always distinguishes between these two scopes (both unique).
+
+All scopes have three attributes that are sets of variable names:
+
+- `locals`: variables owned by this scope
+- `nonlocals`: variables for which this scope has a `nonlocal` declaration
+- `globals`: variables for which this scope has a `global` declaration
+
+A single top-down pass on the AST creates all scope objects for a compilation unit and fills these sets.
+Filling the sets is done by three methods:
+
+- `store(name)`: called for each assignment to a variable
+- `add_nonlocal(name)`: called for each variable in a `nonlocal` declaration
+- `add_global(name)`: called for each variable in a `global` declaration
+
+Their definitions are as follows (some details simplified):
+
+```py
+def store(self, name: str) -> None:
+    if name not in (self.locals | self.nonlocals | self.globals):
+        self.locals.add(name)
+
+def add_nonlocal(self, name: str) -> None:
+    if name in (self.locals | self.globals):
+        raise SyntaxError
+    self.nonlocals.add(name)
+
+def add_global(self, name: str) -> None:
+    if name in (self.locals | self.nonlocals):
+        raise SyntaxError
+    self.globals.add(name)
+```
+
+The term "assignment" is interpreted broadly here: it includes function names, argument names, `for` control variables, and so on.
+It even includes deletions.
+Thus, the following code raises `SyntaxError`, because `del x` adds `"x"` to the `locals` set, which makes the subsequent `add_nonlocal()` call fail:
+
+```py
+def f():
+    del x
+    nonlocal x
+```
+
+The `GlobalScope` class overrides `add_nonlocal()` to always raise.
+(It doesn't override `add_global()`, since that is legal -- if redundant -- at the top level.)
+
+It is also illegal to *use* a variable prior to a `nonlocal` or `global` declaration.
+This is solved by an additional `uses` attribute; I am leaving that out of the discussion for now because it just adds clutter and doesn't affect valid programs.
+(Scope is determined by assignments and `nonlocal`/`global` declarations, not by use.)
