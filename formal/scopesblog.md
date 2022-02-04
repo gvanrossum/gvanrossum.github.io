@@ -242,3 +242,28 @@ If it returns the local scope, it emits a local store operation.
 If it returns the global scope, it emits a global store operation.
 If it raises `LookupError`, again it treats this as the local scope, and returns a local store operation.
 Store operations are never chained -- this is a fundamental Python rule.
+
+What I've shown so far is how *all* scopes used to work in very early versions of Python, back in 1990.
+Local variables were stored in a dictionary, and lookups used the "LGB" (Locals, Globals, Builtins) lookup rule.
+This was nice and simple.
+
+Unfortunately it was also very slow.
+Soon (I don't recall when exactly) we redesigned variable lookup in functions to rely on a simple form of scope analysis in the compiler.
+The namespace for function locals is now implemented as an array, and the compiler assigns each local variable a unique index in this array.
+This is done by a pass over the function body that collects all assignments (in the wider sense mentioned above), and honoring `global` declarations.
+(Nothing changed for globals and builtins.)
+
+When this redesign was done, we changed the semantics, to make things easier for the bytecode compiler and interpreter!
+The "LGB" search at runtime was abandoned (or better, moved to the compiler).
+Under the new rule, for any variable found to be a local, *only* the "slot" in the local namespace (i.e., the array mentioned above indexed by the variable's index) is checked at runtime.
+If the slot is empty (in CPython, `NULL`), the interpreter doesn't search the global and builtin namespaces -- it just raises `UnboundLocalError`.
+
+I don't recall whether this semantic change was entirely by choice, or if it was simply expedient for the implementation.
+Apparently backward compatibility was a small price to pay.
+(True, `LOAD_FAST` is still one of the fastest bytecodes. :-)
+In any case, it's too late to change (backward compatibility is the law now :-).
+
+On top of this, in Python 2.1, we implemented a new feature, *nested scopes*, that led to the modern "LEGB" lookup rule -- at compile time.
+The implementation used something called *cells*, but for the formal description of scopes we don't need those (they are only an optimization).
+
+[TODO: formal description of full scope rules]
