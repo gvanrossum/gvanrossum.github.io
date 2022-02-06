@@ -1,5 +1,7 @@
 # Everything You Always Wanted to Know About Scopes But Were Afraid to Ask
 
+Guido van Rossum (February 2022)
+
 The [Faster CPython](https://github.com/faster-cpython/ideas) project made me think about how we can be sure that we don't accidentally change the language.
 The standard answer to this question is usually a thorough test suite, and I don't want to dismiss the importance of that.
 
@@ -265,5 +267,50 @@ In any case, it's too late to change (backward compatibility is the law now :-).
 
 On top of this, in Python 2.1, we implemented a new feature, *nested scopes*, that led to the modern "LEGB" lookup rule -- at compile time.
 The implementation used something called *cells*, but for the formal description of scopes we don't need those (they are only an optimization).
+Other (later) additions included the `nonlocal` declaration (added in Python 3.0 by PEP 3014) and the peculiar scoping rules for comprehensions, and later the walrus.
 
-[TODO: formal description of full scope rules]
+Anyway, the point of this blog is to write down the exact scoping rules in unambiguous code.
+
+This is where the the `ClosedScope` class becomes relevant.
+`FunctionScope`, `LambdaScope` and `ComprehensionScope` are just marker classes, they don't add new functionality beyond `ClosedScope`.
+The `store()`, `add_nonlocal()` and `add_global()` methods are also unchanged from before.
+The only difference is the `lookup()` method, which has to implement `LEGB`.
+Here's the code:
+
+```py
+# TODO: REWRITE
+class ClosedScope(Scope):
+    parent: Scope  # Cannot be None
+
+    def lookup(self, name: str) -> Scope | None:
+        if name in self.locals:
+            return self
+        elif name in self.globals:
+            return self.global_scope()
+        elif name in self.nonlocals:
+            return self.lookup_nonlocal(name)
+        else:
+            s: Scope | None = self.enclosing_closed_scope()
+            if s is None:
+                # TODO: never search global scope?
+                s = self.global_scope()
+            return s.lookup(name)
+
+    def lookup_nonlocal(self, name: str) -> Scope | None:
+        s = self.enclosing_closed_scope()
+        if s is None:
+            raise SyntaxError
+        res = s.lookup_nonlocal(name)
+        if res is None:
+            raise SyntaxError
+        return res
+
+    def enclosing_closed_scope(self) -> ClosedScope | None:
+        p = self.parent
+        while p and not isinstance(p, ClosedScope):
+            p = p.parent
+        assert p is None or isinstance(p, ClosedScope)
+        return p
+```
+
+[TODO: explanation and more]
