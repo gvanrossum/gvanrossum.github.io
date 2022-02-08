@@ -97,7 +97,7 @@ class Builder:
                     self.build(body)
             case ast.NamedExpr(target=target, value=value):
                 # TODO: Various other forbidden cases from PEP 572,
-                # e.g. [i := 0 for i in a] and [i for i in x := a].
+                # e.g. [i := 0 for i in a] and [i for i in (x := a)].
                 assert isinstance(target, ast.Name)
                 self.build(value)
                 s = self.current
