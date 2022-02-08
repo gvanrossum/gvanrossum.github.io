@@ -11,10 +11,14 @@ class TaskGroup:
         self.tasks.append(t)
         return t
     async def __aexit__(self, typ, exc, tb):
-        res = await asyncio.gather(*self.tasks,
-                                   return_exceptions=True)
-        errors = [r for r in res
-                    if isinstance(r, BaseException)]
+        errors = []
+        for fut in asyncio.as_completed(self.tasks):
+            try:
+                await fut
+            except BaseException as err:
+                errors.append(err)
+                for t in self.tasks:
+                    t.cancel()
         if errors:
             raise BaseExceptionGroup("EG(TaskGroup)", errors)
 
@@ -33,6 +37,7 @@ def test_run():
             print("coro2: exit")
         except asyncio.CancelledError:
             print("coro2 cancelled")
+            raise
             return "coro2-cancelled"
         return "coro2"
         

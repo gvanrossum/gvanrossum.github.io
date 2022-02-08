@@ -11,12 +11,8 @@ class TaskGroup:
         self.tasks.append(t)
         return t
     async def __aexit__(self, typ, exc, tb):
-        res = await asyncio.gather(*self.tasks,
-                                   return_exceptions=True)
-        errors = [r for r in res
-                    if isinstance(r, BaseException)]
-        if errors:
-            raise BaseExceptionGroup("EG(TaskGroup)", errors)
+        # This doesn't work yet
+        await asyncio.gather(*self.tasks, raise_group=True)
 
 
 def test_run():
