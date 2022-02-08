@@ -86,7 +86,11 @@ class OpenScope(Scope):
         if name in self.locals:
             return self
         else:
-            return self.global_scope().lookup(name)
+            s = self.enclosing_closed_scope()
+            if s is not None:
+                return s.lookup(name)
+            else:
+                return self.global_scope()
 
 
 class GlobalScope(OpenScope):
