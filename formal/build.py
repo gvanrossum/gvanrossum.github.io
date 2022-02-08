@@ -63,9 +63,12 @@ class Builder:
                 self.store(name)
             case ast.Name(id=name, ctx=ast.Load()):
                 self.current.load(name)
-            case ast.Nonlocal(names=names) | ast.Global(names=names):
+            case ast.Nonlocal(names=names):
                 for name in names:
                     self.current.add_nonlocal(name)
+            case ast.Global(names=names):
+                for name in names:
+                    self.current.add_global(name)
             case ast.ImportFrom(names=names):
                 for a in names:
                     if a.asname:
