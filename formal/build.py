@@ -174,7 +174,7 @@ def depth(s: Scope) -> int:
 tab = "  "
 
 
-def expand_globs(filenames):
+def expand_globs(filenames: list[str]) -> Iterator[str]:
     for filename in filenames:
         if "*" in filename and sys.platform == "win32":
             import glob
@@ -184,12 +184,15 @@ def expand_globs(filenames):
             yield filename
 
 
-def test():
+def main():
     dump = False
-    if sys.argv[1:] and sys.argv[1] == "-d":
+    files = sys.argv[1:]
+    if files and files[0] == "-d":
         dump = True
-        del sys.argv[1]
-    for file in expand_globs(sys.argv[1:]):
+        del files[0]
+    if not files:
+        files.append(os.path.join(os.path.dirname(__file__), "test.py"))
+    for file in expand_globs(files):
         print()
         print(file + ":")
         with open(file, "rb") as f:
@@ -213,6 +216,4 @@ def test():
 
 
 if __name__ == "__main__":
-    if not sys.argv[1:]:
-        sys.argv.append(os.path.join(os.path.dirname(__file__), "test.py"))
-    test()
+    main()
