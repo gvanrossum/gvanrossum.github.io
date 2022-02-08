@@ -206,7 +206,7 @@ There are only two possibilities:
 - it's a local variable in `C`
 - it's a global
 
-(The compiler doesn't know or care about builtins. It treats the same code for them as for globals.)
+(The compiler doesn't know or care about builtins. It generates the same code for them as for globals.)
 
 Looking through the above method definitions, we see that there are actually three outcomes when you call `s.lookup("x")`, if `s` is an `OpenScope` instance:
 
