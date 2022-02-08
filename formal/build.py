@@ -2,6 +2,7 @@
 
 import ast
 import contextlib
+import os
 import sys
 import types
 from typing import Iterator
@@ -170,7 +171,17 @@ def depth(s: Scope) -> int:
     return n
 
 
-tab = "    "
+tab = "  "
+
+
+def expand_globs(filenames):
+    for filename in filenames:
+        if "*" in filename and sys.platform == "win32":
+            import glob
+            for fn in glob.glob(filename):
+                yield fn
+        else:
+            yield filename
 
 
 def test():
@@ -178,7 +189,7 @@ def test():
     if sys.argv[1:] and sys.argv[1] == "-d":
         dump = True
         del sys.argv[1]
-    for file in sys.argv[1:]:
+    for file in expand_globs(sys.argv[1:]):
         print()
         print(file + ":")
         with open(file, "rb") as f:
@@ -190,13 +201,18 @@ def test():
         b.build(root)
         for scope in b.scopes:
             indent = tab * depth(scope)
-            print(f"{indent}{scope}: L={scope.locals}", end="")
+            print(f"{indent}{scope}: L={sorted(scope.locals)}", end="")
             if scope.nonlocals:
-                print(f"; NL={scope.nonlocals}", end="")
+                print(f"; NL={sorted(scope.nonlocals)}", end="")
             if scope.globals:
-                print(f"; G={scope.globals}", end="")
-            print(f"; U={scope.uses}")
+                print(f"; G={sorted(scope.globals)}", end="")
+            uses = {}
+            for name in sorted(scope.uses):
+                uses[name] = scope.lookup(name)
+            print(f"; U={uses}")
 
 
 if __name__ == "__main__":
+    if not sys.argv[1:]:
+        sys.argv.append(os.path.join(os.path.dirname(__file__), "test.py"))
     test()
