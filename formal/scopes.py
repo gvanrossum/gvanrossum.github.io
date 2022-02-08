@@ -68,13 +68,13 @@ class Scope:
         assert self.parent is not None
         return self.parent.global_scope()
 
-    def enclosing_scope(self) -> ClosedScope | None:
+    def enclosing_closed_scope(self) -> ClosedScope | None:
         if self.parent is None:
             return None
         elif isinstance(self.parent, ClosedScope):
             return self.parent
         else:
-            return self.parent.enclosing_scope()
+            return self.parent.enclosing_closed_scope()
 
     def lookup(self, name: str) -> Scope | None:
         # Implemented differently in OpenScope, GlobalScope and ClosedScope
@@ -137,7 +137,7 @@ class ClosedScope(Scope):
             return self.global_scope()
         else:
             res: Scope | None = None
-            p: Scope | None = self.enclosing_scope()
+            p: Scope | None = self.enclosing_closed_scope()
             if p is None:
                 res = None
             else:
