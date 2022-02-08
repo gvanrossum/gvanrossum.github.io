@@ -130,28 +130,23 @@ class ClassScope(OpenScope):
 class ClosedScope(Scope):
     parent: Scope  # Cannot be None
 
-    def lookup_nonlocal(self, name: str) -> Scope | None:
-        s = self.enclosing_scope()
-        if s is None:
-            raise SyntaxError("no enclosing scope for nonlocal")
-        res = s.lookup_nonlocal(name)
-        if res is None:
-            raise SyntaxError("name not found in enclosing scope")
-        return res
-
     def lookup(self, name: str) -> Scope | None:
         if name in self.locals:
             return self
         elif name in self.globals:
             return self.global_scope()
-        elif name in self.nonlocals:
-            return self.lookup_nonlocal(name)
         else:
-            s: Scope | None = self.enclosing_scope()
-            if s is None:
-                s = self.global_scope()
-            return s.lookup(name)
-
+            res: Scope | None = None
+            p: Scope | None = self.enclosing_scope()
+            if p is None:
+                res = None
+            else:
+                res = p.lookup(name)
+            if name in self.nonlocals and not isinstance(res, ClosedScope):
+                # res could be None or GlobalScope
+                raise SyntaxError(f"nonlocal name {name!r} not found")
+            else:
+                return res
 
 class FunctionScope(ClosedScope):
     def __init__(self, name: str, parent: Scope):
