@@ -198,3 +198,5 @@ I do have some open questions for Yury and Irit:
 - If the first exception caught is `CancelledError`, but the parent task wasn't cancelled, what should we do? (Can we even tell the difference?)
 
 (I suppose I could read the EdgeDb implementation more carefully and find some of the answers. Maybe later.)
+
+**UPDATE:** Yury pointed out something I missed so far: there can be `await` calls (for tasks, or for e.g. `asyncio.sleep()`) before `__aexit__` is even called, and those may have to be cancelled, so `as_completed()` doesn't cut it.
