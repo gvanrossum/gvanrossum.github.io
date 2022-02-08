@@ -113,19 +113,21 @@ Filling the sets is done by three methods:
 Their definitions are as follows (some details simplified):
 
 ```py
-def store(self, name: str) -> None:
-    if name not in (self.locals | self.nonlocals | self.globals):
-        self.locals.add(name)
+class Scope:
+    ...
+    def store(self, name: str) -> None:
+        if name not in (self.locals | self.nonlocals | self.globals):
+            self.locals.add(name)
 
-def add_nonlocal(self, name: str) -> None:
-    if name in (self.locals | self.globals):
-        raise SyntaxError
-    self.nonlocals.add(name)
+    def add_nonlocal(self, name: str) -> None:
+        if name in (self.locals | self.globals):
+            raise SyntaxError
+        self.nonlocals.add(name)
 
-def add_global(self, name: str) -> None:
-    if name in (self.locals | self.nonlocals):
-        raise SyntaxError
-    self.globals.add(name)
+    def add_global(self, name: str) -> None:
+        if name in (self.locals | self.nonlocals):
+            raise SyntaxError
+        self.globals.add(name)
 ```
 
 The term "assignment" is interpreted broadly here: it includes function names, argument names, `for` control variables, and so on.
@@ -157,7 +159,6 @@ The simplest version is `GlobalScope.lookup()`:
 ```py
 class GlobalScope(OpenScope):
     ...
-
     def lookup(self, name: str) -> GlobalScope:
         if name in self.locals:
             return self
@@ -169,8 +170,6 @@ For other `OpenScope` subclasses we use `OpenScope.lookup()`:
 
 ```py
 class OpenScope(Scope):
-    ...
-
     def lookup(self, name: str) -> OpenScope:
         if name in self.locals:
             return self
@@ -183,7 +182,6 @@ This requires a helper method, `global_scope()`:
 ```py
 class Scope:
     ...
-
     def global_scope(self) -> GlobalScope:
         assert self.parent is not None
         return self.parent.global_scope()
@@ -194,7 +192,6 @@ To end the recursion, `GlobalScope` overrides this:
 ```py
 class GlobalScope(OpenScope):
     ...
-
     def global_scope(self) -> GlobalScope:
         return self
 ```
@@ -278,7 +275,6 @@ The only difference is the `lookup()` method, which has to implement `LEGB`.
 Here's the code:
 
 ```py
-# TODO: REWRITE
 class ClosedScope(Scope):
     parent: Scope  # Cannot be None
 
@@ -287,30 +283,89 @@ class ClosedScope(Scope):
             return self
         elif name in self.globals:
             return self.global_scope()
-        elif name in self.nonlocals:
-            return self.lookup_nonlocal(name)
         else:
-            s: Scope | None = self.enclosing_closed_scope()
-            if s is None:
-                # TODO: never search global scope?
-                s = self.global_scope()
-            return s.lookup(name)
-
-    def lookup_nonlocal(self, name: str) -> Scope | None:
-        s = self.enclosing_closed_scope()
-        if s is None:
-            raise SyntaxError
-        res = s.lookup_nonlocal(name)
-        if res is None:
-            raise SyntaxError
-        return res
-
-    def enclosing_closed_scope(self) -> ClosedScope | None:
-        p = self.parent
-        while p and not isinstance(p, ClosedScope):
-            p = p.parent
-        assert p is None or isinstance(p, ClosedScope)
-        return p
+            res: Scope | None = None
+            p: Scope | None = self.enclosing_closed_scope()
+            if p is None:
+                res = None
+            else:
+                res = p.lookup(name)
+            if name in self.nonlocals and not isinstance(res, ClosedScope):
+                # res could be None or GlobalScope
+                raise SyntaxError(f"nonlocal name {name!r} not found")
+            else:
+                return res
 ```
 
-[TODO: explanation and more]
+The `enclosing_closed_scope()` helper is defined recursively on the base class, `Scope`:
+
+```py
+class Scope:
+    ...
+
+    def enclosing_closed_scope(self) -> ClosedScope | None:
+        if self.parent is None:
+            return None
+        elif isinstance(self.parent, ClosedScope):
+            return self.parent
+        else:
+            return self.parent.enclosing_closed_scope()
+```
+
+I am fairly confident that the above code correctly describes scope lookups when starting in a function scope: in particular, enclosing class scopes are ignored.
+(I was 100% confident until I found and fixed a bug. :-)
+
+However. we need to adjust `OpenScope.lookup()`, because when a class is nested inside a function, that function's locals are visible in the class!
+Here's the new and improved code:
+
+```py
+class OpenScope(Scope):
+    def lookup(self, name: str) -> Scope | None:
+        if name in self.locals:
+            return self
+        else:
+            s = self.enclosing_closed_scope()
+            if s is not None:
+                return s.lookup(name)
+            else:
+                return self.global_scope()
+```
+
+And I think that's it, as far as the scopes themselves go.
+You can check out the complete code: [scopes.py](scopes.py).
+
+But of course there's more to scopes than lookup.
+We also need to define the mapping from the AST to `Scope` instances, and that's slightly more involved.
+I wrote the code, and I think it's decent, but I don't want to explain it from first principles.
+You can look at it here: [build.py](build.py).
+
+The basic idea is that there's a recursive function `build(node)` which takes an AST node and contains a big `match` statement (so it requires Python 3.10 or higher to run).
+Especially important here is the default case:
+
+```py
+            case ast.AST():
+                for key, value in node.__dict__.items():
+                    if not key.startswith("_"):
+                        self.build(value)
+```
+
+which matches any AST node type that isn't explicitly specified in an earlier case and just invokes `build() ` recursively for all public attributes.
+Other cases mostly speak for themselves (atomic types are ignored, `Name` nodes are classified as loads or stores, and so on).
+One interesting case handles the walrus, which contains some special code for comprehension scopes:
+
+```py
+            case ast.NamedExpr(target=target, value=value):
+                # TODO: Various other forbidden cases from PEP 572,
+                # e.g. [i := 0 for i in a] and [i for i in (x := a)].
+                assert isinstance(target, ast.Name)
+                self.build(value)
+                s = self.current
+                while isinstance(s, ComprehensionScope):
+                    s = s.parent
+                if isinstance(s, ClassScope):
+                    raise SyntaxError("walrus in comprehension cannot target class")
+                s.store(target.id)
+```
+
+The rest of the cases should speak for themselves.
+Note for example that function annotations and argument default values are "evaluated" in the parent scope.
