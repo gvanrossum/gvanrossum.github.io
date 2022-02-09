@@ -246,7 +246,7 @@ We then create a new task, add our callback, and add it to the set of active tas
     def on_task_done(self, task: asyncio.Task[Any]) -> None:
         self.tasks.remove(task)
         if task.cancelled():
-            err = asyncio.CancelledError()
+            err: BaseException | None = asyncio.CancelledError()
         else:
             err = task.exception()
         if err is not None:
@@ -262,6 +262,7 @@ This is the "done callback" for all our tasks.
 It removes the task from the active tasks set.
 If the task has an exception, we add the error to our list of errors.
 If the task is cancelled, we treat this as if it has raised `CancelledError`.
+(The type annotation on `err` is needed to keep mypy happy.)
 If the task failed, we also cancel all remaining tasks, if we haven't done so already (we don't want duplicate cancellations).
 (A clever bit: iff `self.errors` is empty this is the first error and we must cancel other tasks.)
 Finally, if there are no remaining tasks and `__aexit__()` is already waiting, we wake it up.
@@ -290,3 +291,113 @@ Here we wait for all tasks to complete (or fail, or get cancelled).
 If there are no tasks we can't wait (since there are no callbacks that will ever wake us up) but we still create the event, to cause late `create_task()` calls to fail.
 The error handling code hasn't changed except it now uses `self.errors`, where errors have been collected by the callbacks.
 
+Alas, this code is not much better than the `as_completed()` version.
+It improves one thing: if you await a task before leaving the body of the `async with` block, and that task fails, the other tasks will be cancelled immediately, rather than upon entering `__aexit__()`.
+For example:
+
+```py
+async def coro1():
+    await asyncio.sleep(2)
+async def coro2():
+    await asyncio.sleep(1)
+    1/0
+async with TaskGroup() as g:
+    t1 = g.create_task(coro1)
+    t2 = g.create_task(coro2)
+    await t1
+```
+
+The `await` on the last line will be cancelled when `coro2()` fails after 1 second, rather than waiting the full 2 seconds until `coro1()` finishes.
+
+However, this example still doesn't work as expected:
+
+```py
+async def coro1():
+    await asyncio.sleep(1)
+    1/0
+async with TaskGroup() as g:
+    t1 = g.create_task(coro1)
+    await asyncio.sleep(2)
+```
+Here, when `coro1()` fails after 1 second, we still sleep the full 2 seconds.
+
+To do this, we need to squirrel away a reference to the parent task when we start, so that the callback can cancel it.
+
+[tg8]: tg8.py
+
+1. Add this to `__init__()`:
+```py
+        self.parent: asyncio.Task[Any] | None = None
+```
+2. Insert this at the top of `__aenter__()`:
+```py
+        self.parent = asyncio.current_task()
+        assert self.parent is not None
+```
+3. Insert this at the top of `create_task()`:
+```py
+        if self.parent is None:
+            raise RuntimeError("Too soon to create a task")
+```
+4. Insert this in `on_task_done()`, below `if not self.errors`:
+```py
+                if self.aexit_waiting is None:
+                    assert self.parent is not None
+                    self.parent.cancel()
+```
+
+There's one final thing that requires our attention.
+If we cancel the parent task (which can only happen before `__aexit__()` is called), and all remaining tasks either complete successfully or are cancelled, `__aexit__()` should just end up raising `CancelledError` rather than wrapping it in an exception group.
+One way to accomplish this is to insert the following right before we raise `CancelledError` wrapped in an exception group:
+```py
+            if isinstance(exc, asyncio.CancelledError):
+                return None
+```
+The `return None` returns from `__aexit__()` at which point the origial exception (which `__aexit__()` was handling) is re-raised.
+
+Consider this test program:
+
+```py
+async def main():
+    parent = asyncio.current_task()
+    async def coro1():
+        await asyncio.sleep(1)
+        parent.cancel()
+    async with TaskGroup() as g:
+        t1 = g.create_task(coro1())
+        await asyncio.sleep(10)
+
+asyncio.run(main())
+```
+
+I found that this reports a `CancelledError` in the context of another `CancelledError` ("During handling of the above exception, another exception occurred:") which I cannot quite explain away, although it *seems* to be the case that the cancelled `sleep(10)` call is the original exception and the subsequent error is due to `run()` also being cancelled.
+
+A more serious problem is that if we add a second task that sleeps for 2 seconds, that task is not cancelled when the parent task is cancelled, so we end up with the following timeline:
+
+- T=0:
+  - create tasks
+  - enter `sleep(10)`
+- T=1:
+  - `coro1()` cancels parent and exits successfully
+  - `sleep(10)` exits with `CancelledError`
+  - `__aenter__()` is called with `exc=CancelledError()`
+  - it waits for remaining tasks
+- T=2:
+  - `coro2()` exits successfully
+  - `__aexit__()` exits successfully
+
+Instead, at T=1 we would like all remaining tasks to be cancelled immediately.
+A fix is to check the type of `exc` upon entering `__aexit__()`, and if it's a `CancelledError`, conclude that the parent task was cancelled and cancel all remaining tasks, using the same precautions against cancelling multiple times as we do in `on_task_done()`:
+
+```py
+        if isinstance(exc, asyncio.CancelledError) and not self.errors:
+            for t in self.tasks:
+                t.cancel()
+```
+However, this exposes the weakness of the "clever" trick where we save ourselves a flag variable to remember whether we've cancelled the remaining tasks yet.
+We just need to introduce a `cancelled` flag.
+You can see the final code in [tg8.py](tg8.py).
+
+Next, I'm going to read through EdgeDb's implementation and test cases.
+I know it has a few more tricks up its sleeve; in particular, it monkey-patches the parent task's `cancel()` method.
+I will study that code until I understand the reason.
