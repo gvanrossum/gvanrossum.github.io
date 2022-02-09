@@ -200,3 +200,93 @@ I do have some open questions for Yury and Irit:
 (I suppose I could read the EdgeDb implementation more carefully and find some of the answers. Maybe later.)
 
 **UPDATE:** Yury pointed out something I missed so far: there can be `await` calls (for tasks, or for e.g. `asyncio.sleep()`) before `__aexit__` is even called, and those may have to be cancelled, so `as_completed()` doesn't cut it.
+
+So let's do this using callbacks.
+The basic idea is that our `create_task()` adds a "done callback" to the created task that updates some state in the task group, and when the last task finishes `__aexit__()` can finish.
+Here's a sketch (which I'll refine later).
+I'll insert comments after each function.
+
+[tg7]: tg7.py
+
+```py
+import asyncio
+from typing import Any, Awaitable, Type
+
+class TaskGroup:
+    def __init__(self):
+        self.tasks: set[asyncio.Task[Any]] = set()
+        self.errors: list[BaseException] = []
+        self.aexit_waiting: asyncio.Event | None = None
+```
+
+We need a set of "active" tasks (i.e., that haven't completed yet); `create_task()` adds to it, and the "done callback" subtracts from it.
+We also need a list of errors that we can pass to `BaseExceptionGroup()`.
+The `aexit_waiting` event will be created and awaited by `__aexit__()`; its presence indicates that we have entered `__aexit__`.
+
+```py
+    async def __aenter__(self):
+        return self
+
+    def create_task(self, coro: Awaitable[Any]) -> asyncio.Task[Any]:
+        if self.errors:
+            raise RuntimeError("Cannot create tasks after cancellation")
+        if self.aexit_waiting is not None and self.aexit_waiting.is_set():
+            raise RuntimeError("Too late to create another task")
+        task = asyncio.get_event_loop().create_task(coro)
+        task.add_done_callback(self.on_task_done)
+        self.tasks.add(task)
+        return task
+```
+
+We disallow creating tasks if we've already seen a failed task (since that implies we've also already cancelled all remaining tasks).
+We also disallow creating tasks once `__aexit__` has received word that the last task is done.
+We then create a new task, add our callback, and add it to the set of active tasks.
+
+```py
+    def on_task_done(self, task: asyncio.Task[Any]) -> None:
+        self.tasks.remove(task)
+        if task.cancelled():
+            err = asyncio.CancelledError()
+        else:
+            err = task.exception()
+        if err is not None:
+            if not self.errors:
+                for t in self.tasks:
+                    t.cancel()
+            self.errors.append(err)
+        if not self.tasks and self.aexit_waiting is not None:
+            self.aexit_waiting.set()
+```
+
+This is the "done callback" for all our tasks.
+It removes the task from the active tasks set.
+If the task has an exception, we add the error to our list of errors.
+If the task is cancelled, we treat this as if it has raised `CancelledError`.
+If the task failed, we also cancel all remaining tasks, if we haven't done so already (we don't want duplicate cancellations).
+(A clever bit: iff `self.errors` is empty this is the first error and we must cancel other tasks.)
+Finally, if there are no remaining tasks and `__aexit__()` is already waiting, we wake it up.
+
+```py
+    async def __aexit__(
+        self, typ: Type[BaseException] | None, exc: BaseException | None, tb: Any
+    ) -> None:
+        self.aexit_waiting = asyncio.Event()
+        if self.tasks:
+            await self.aexit_waiting.wait()
+        else:
+            self.aexit_waiting.set()
+        if self.errors:
+            eg = BaseExceptionGroup("EG(TaskGroup)", self.errors)
+            cancelled, other = eg.split(asyncio.CancelledError)
+            if other is not None:
+                raise other
+            assert cancelled is not None
+            raise BaseExceptionGroup(
+                "EG(TaskGroup cancelled)", [asyncio.CancelledError()]
+            )
+```
+
+Here we wait for all tasks to complete (or fail, or get cancelled).
+If there are no tasks we can't wait (since there are no callbacks that will ever wake us up) but we still create the event, to cause late `create_task()` calls to fail.
+The error handling code hasn't changed except it now uses `self.errors`, where errors have been collected by the callbacks.
+
