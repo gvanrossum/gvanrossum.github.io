@@ -401,3 +401,17 @@ You can see the final code in [tg8.py](tg8.py).
 Next, I'm going to read through EdgeDb's implementation and test cases.
 I know it has a few more tricks up its sleeve; in particular, it monkey-patches the parent task's `cancel()` method.
 I will study that code until I understand the reason.
+
+(Later.)
+Okay, I figured it out, plus a bunch of other things.
+
+- The monkey-patch of the parent task's `cancel()` is so that we can avoid cancelling the parent task if it's already been cancelled, *and* so that we can clear the parent task's cancellation status when we exit if we cancelled it ourselves. (Or something. There seem to be a bunch of edge cases around this.)
+- Yury's version doesn't treat `CancelledError` as an error. When a task is cancelled, it is treated the same as if it exited. (In particular, this is not a reason to cancel the remaining tasks.)
+- Yury's code has special handling to correctly propagate cancellation up (out of `__aexit__()`).
+- Yury has special handling for `SystemExit` and `KeyboardInterrupt`.
+- Yury has some provisions to reduce GC cycles.
+
+There's probably more.
+I would not have been able to truly appreciate or understand Yury's code if I hadn't tried to reproduce it from scratch though, so I think this was a valuable experience.
+
+In conclusion, I'm now focusing my efforts on porting Yury's code to the stdlib ([GH-31270](https://github.com/python/cpython/pull/31270)), which is going well.
