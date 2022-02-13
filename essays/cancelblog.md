@@ -91,3 +91,9 @@ I tried a task group inside a cancel group, and it appears to behave as expected
 
 So now let me read the code for [`async-timeout`](https://github.com/aio-libs/async-timeout/blob/master/async_timeout/__init__.py).
 I don't see any surprises here (it's basically what I do above, with a bunch of convenience APIs).
+
+Concluding, on the [question asked in the PR](https://github.com/python/cpython/pull/31270#issuecomment-1037360984):
+
+> The problem arises when the task is cancelled as a whole and the timeout expires, both before the event loop has a chance to raise the cancellation exception in the task. How, then, do you know if you need to simply exit the timeout() context manager or the entire task?
+
+I think the answer lies in the monkey-patching of the parent task to make its `cancel()` method set a new flag, `__cancel_requested__`, and the checking around it.
