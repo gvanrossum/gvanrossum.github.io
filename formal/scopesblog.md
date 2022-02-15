@@ -50,7 +50,7 @@ def f(s):
 ```
 
 If we call this function as `f("pass")`, it will print `1`, but if we call `f("n = 2")` it will print `2`!
-In this case, the LEGB rule predicts the result, but the compiler and runtime have to jump through [hoops(https://github.com/python/cpython/blob/a0e55a571cf01885fd5826266c37abaee307c309/Python/ceval.c#L3089-L3123)] to make this happen given how [closures](https://en.wikipedia.org/wiki/Closure_(computer_programming)) are implemented in Python.
+In this case, the LEGB rule predicts the result, but the compiler and runtime have to jump through [hoops](https://github.com/python/cpython/blob/a0e55a571cf01885fd5826266c37abaee307c309/Python/ceval.c#L3089-L3123) to make this happen given how [closures](https://en.wikipedia.org/wiki/Closure_(computer_programming)) are implemented in Python.
 
 Another odd case is a walrus operator (`:=`) in a comprehension.
 Here we find that the walrus target goes in the scope *outside* the comprehension.
