@@ -5,7 +5,7 @@ from typing import Callable
 Namespace = dict[str, object]
 
 
-class Interpreter:
+class InterpreterState:
 
     # A module may be any object
     modules: dict[str, object]
@@ -13,17 +13,17 @@ class Interpreter:
     builtins: Namespace
 
     # Threads have a unique integer ID (t.ident)
-    threads: dict[int, Thread]
+    threads: dict[int, ThreadState]
 
 
-class Thread:
-    istate: Interpreter
+class ThreadState:
+    istate: InterpreterState
     ident: int
     current_frame: Frame | None
 
 
 class Frame:
-    tstate: Thread
+    tstate: ThreadState
     locals: Namespace  # Includes arguments and temporaries
     enclosing: Frame | None  # static, enclosing *closed* scope
     globals: Namespace  # Shared with other frames
@@ -55,7 +55,7 @@ class Frame:
     def set_name(self, name: str, value: object) -> None:
         self.locals[name] = value
 
-    def delete_name(self, name: str, value: object) -> object:
+    def delete_name(self, name: str, value: object) -> None:
         try:
             del self.locals[name]
         except KeyError:
@@ -105,7 +105,7 @@ class Frame:
             raise NameError
 
     # Get nonlocal in class inside function (cf. LOAD_CLASSDEREF)
-    def get_class_nonlocal(self, level: int, name: str) -> value:
+    def get_class_nonlocal(self, level: int, name: str) -> object:
         try:
             return self.locals[name]
         except KeyError:
