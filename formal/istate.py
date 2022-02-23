@@ -31,45 +31,53 @@ class Frame:
     continuation: Code | None
 
     def get_local(self, name: str) -> object:
-        if name not in self.locals:
+        try:
+            return self.locals[name]
+        except KeyError:
             raise UnboundLocalError
-        return self.locals[name]
 
     def set_local(self, name: str, value: object) -> None:
         self.locals[name] = value
 
     def delete_local(self, name: str) -> None:
-        if name not in self.locals:
+        try:
+            del self.locals[name]
+        except KeyError:
             raise UnboundLocalError
-        del self.locals[name]
+
 
     def get_name(self, name: str) -> object:
-        if name in self.locals:
+        try:
             return self.locals[name]
-        return self.get_global(name)
+        except KeyError:
+            return self.get_global(name)
 
     def set_name(self, name: str, value: object) -> None:
         self.locals[name] = value
 
     def delete_name(self, name: str, value: object) -> object:
-        if name not in self.locals:
+        try:
+            del self.locals[name]
+        except KeyError:
             raise NameError
-        del self.locals[name]
 
     def get_global(self, name: str) -> object:
-        if name in self.globals:
+        try:
             return self.globals[name]
-        if name in self.tstate.istate.builtins:
-            return self.tstate.istate.builtins[name]
-        raise NameError
+        except KeyError:
+            try:
+                return self.tstate.istate.builtins[name]
+            except KeyError:
+                raise NameError
 
     def set_global(self, name: str, value: object) -> None:
         self.globals[name] = value
 
     def delete_global(self, name: str) -> None:
-        if name not in self.globals:
+        try:
+            del self.globals[name]
+        except KeyError:
             raise NameError
-        del self.globals[name]
 
     def _get_enclosing(self, level: int) -> Frame:
         f = self
@@ -80,9 +88,10 @@ class Frame:
 
     def get_nonlocal(self, level: int, name: str) -> object:
         f = self._get_enclosing(level)
-        if name not in f.locals:
+        try:
+            return f.locals[name]
+        except KeyError:
             raise NameError
-        return f.locals[name]
 
     def set_nonlocal(self, level: int, name: str, value: object) -> None:
         f = self._get_enclosing(level)
@@ -90,15 +99,17 @@ class Frame:
 
     def delete_nonlocal(self, level: int, name: str) -> None:
         f = self._get_enclosing(level)
-        if name not in f.locals:
+        try:
+            del f.locals[name]
+        except KeyError:
             raise NameError
-        del f.locals[name]
 
     # Get nonlocal in class inside function (cf. LOAD_CLASSDEREF)
     def get_class_nonlocal(self, level: int, name: str) -> value:
-        if name in self.locals:
+        try:
             return self.locals[name]
-        return self.get_nonlocal(level, name)
+        except KeyError:
+            return self.get_nonlocal(level, name)
 
 
 class Function:
