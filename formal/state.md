@@ -111,3 +111,49 @@ However, the interpreter state should be all that the code needs;
 the code itself should be read-only (once it is generated).
 (The code may implicitly use an evaluation stack or registers,
 but those should not be counted on to be preserved across calls.)
+
+## Memory model
+
+Now that we are describing threads we should really describe
+the _memory model_,
+i.e. which operations are atomic with respect to each other.
+This is not an easy thing!
+It could easily take a Master's or Ph.D. Thesis.
+
+For now I'm taking the position that all dict operations
+(at least when the keys are all strings) are atomic,
+all list operations are atomic,
+and attribute operations are atomic.
+That makes pretty much everything atomic.
+We may be able to be more open-minded for dict operations,
+for example, dict operations involving different keys should commute.
+We may also have attributes that never change (e.g. `Frame.enclosing`),
+whereas other attributes could change (e.g. `Frame.back`).
+
+A specific example of code that is *not* thread-safe would be:
+
+```py
+def get_local(self, name: str) -> object:
+    if name not in self.locals:
+        raise UnboundLocalError
+    return self.locals[name]
+```
+
+This may raise `KeyError` on the last line if another thread removes
+the key from the dict after the `in` check passes.
+So we should write this instead like this:
+
+```py
+def get_local(self, name: str) -> object:
+    try:
+        return self.locals[name]
+    except KeyError:
+        raise UnboundLocalError
+```
+
+Note that frame locals may be shared,
+e.g. a nested function may be called in another thread.
+(In CPython, this implies that *cells* require protection,
+while _fast locals_ don't.)
+
+That's all I'm saying about the memory model for now.
