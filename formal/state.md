@@ -99,3 +99,15 @@ This may be used for a frame currently involved in a call,
 to record where execution continues after the call returns;
 or it may be used for a generator function suspended in `yield`,
 or for a coroutine suspended in `await`.
+
+The suspension point is an abstraction for the program counter
+in a traditional (virtual or real) machine.
+Similarly, the temporary values are abstractions for registers
+or an evaluation stack which traditionally hold intermediate values.
+
+We do not specify the exact way code is generated or executed;
+that will be the topic of a separate treatise.
+However, the interpreter state should be all that the code needs;
+the code itself should be read-only (once it is generated).
+(The code may implicitly use an evaluation stack or registers,
+but those should not be counted on to be preserved across calls.)
