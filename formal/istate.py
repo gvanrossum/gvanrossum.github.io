@@ -116,6 +116,7 @@ class Function:
     enclosing: Frame | None  # Level 1 nonlocals
     code: Code | None  # Continuation, unless exited
     defaults: list[object]
+    globals: Namespace
 
 
 class Code:

@@ -31,6 +31,40 @@ _global state_, _module state_, and _thread state_.
   Apart from a small amount of per-thread metadata (e.g. its name),
   most thread state is stored in the form of _frames_.
 
+## Global state
+
+Also known as _interpreter state_.
+This is modeled by the following class:
+
+```py
+class InterpreterState:
+    modules: dict[str, object]
+    builtins: Namespace
+    threads: dict[int, ThreadState]
+```
+
+The `modules` dict maps module names
+(which are technically _dotted names_, e.g. `foo.bar.baz`)
+to objects.
+There is no constraint on module objects --
+typically these are instances of the `Module` class,
+but they may be instances of any other class,
+as long as it has a `__dict__` attribute
+that evaluates to a dict.
+Documented module attributes like `__name__` and `__file__`
+are stored as corresponding entries in the module's `__dict__`.
+The module's `__dict__` is also used (by reference)
+as the `globals` dict for all code defined in the module,
+with the exception of code compiled using `eval()` or `exec()`
+when passing an explicit globals argument.
+
+The `builtins` attribute gives the namespace used to look up
+builtin functions, classes and other objects (e.g. exceptions).
+All code belonging to a given interpreter uses the same namespace
+for builtins.
+(In CPython this can be overridded in various ways;
+that is not part of the reference semantics though.)
+
 ## Thread state
 
 The most elusive state is thread state, so let's focus on that first.
