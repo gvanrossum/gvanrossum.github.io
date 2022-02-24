@@ -112,6 +112,28 @@ class Frame:
             return self.get_nonlocal(level, name)
 
 
+class Module:
+    __name__: str
+    __doc__: str | None
+    __file__: str
+
+
+class Class:
+    name: str
+    bases: list[Class]
+    ns: Namespace
+    mro: list[Class]
+
+    def __init__(self, name: str, bases: list[Class], ns: Namespace):
+        self.name = name
+        self.bases = bases
+        self.ns = ns
+        self.mro = ...  # Calculated from bases using C4 algorithm
+
+    # The truth is much more complicated,
+    # e.g. __module__, __qualname__, metaclasses, slots (both kinds).
+
+
 class Function:
     enclosing: Frame | None  # Level 1 nonlocals
     code: Code | None  # Continuation, unless exited
