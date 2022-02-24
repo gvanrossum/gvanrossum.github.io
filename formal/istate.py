@@ -1,8 +1,16 @@
 from __future__ import annotations
 
-from typing import Callable
+from typing import ClassVar, NoReturn as Never
 
 Namespace = dict[str, object]
+
+
+def TRANSFER(code: Code) -> Never:
+    "Transfer control to code"
+
+
+def CALCULATE_C3(bases: list[Class]) -> list[Class]:
+    "Calculate MRO using C3 algorithm"
 
 
 class InterpreterState:
@@ -15,11 +23,29 @@ class InterpreterState:
     # Threads have a unique integer ID (t.ident)
     threads: dict[int, ThreadState]
 
+    # InterpreterState is a singleton
+    instance: ClassVar[InterpreterState]
+
+
+InterpreterState.instance = InterpreterState()
+
 
 class ThreadState:
     istate: InterpreterState
     ident: int
     current_frame: Frame | None
+
+    current_tstate: ClassVar[ThreadState]
+
+    _id_counter: int = 0
+
+    def __init__(self, istate: InterpreterState):
+        self.istate = istate
+        ThreadState._id_counter += 1
+        self.ident = ThreadState._id_counter
+
+
+ThreadState.current_tstate = ThreadState(InterpreterState.instance)
 
 
 class Frame:
@@ -28,7 +54,15 @@ class Frame:
     enclosing: Frame | None  # static, enclosing *closed* scope
     globals: Namespace  # Shared with other frames
     back: Frame | None  # dynamic, caller
-    continuation: Code | None
+    continuation: Code
+
+    def __init__(self, func: Function):
+        self.tstate = ThreadState.current_tstate
+        self.locals = {}
+        self.enclosing = func.enclosing
+        self.globals = func.globals
+        self.back = self.tstate.current_frame
+        self.continuation = func.code
 
     def get_local(self, name: str) -> object:
         try:
@@ -128,7 +162,7 @@ class Class:
         self.name = name
         self.bases = bases
         self.ns = ns
-        self.mro = ...  # Calculated from bases using C4 algorithm
+        self.mro = CALCULATE_C3(bases)
 
     # The truth is much more complicated,
     # e.g. __module__, __qualname__, metaclasses, slots (both kinds).
@@ -136,11 +170,20 @@ class Class:
 
 class Function:
     enclosing: Frame | None  # Level 1 nonlocals
-    code: Code | None  # Continuation, unless exited
+    code: Code
     defaults: list[object]
     globals: Namespace
 
+    def call(
+        self, frame: Frame, args: list[object], kwds: dict[str, object]
+    ):
+        tstate = ThreadState.current_tstate
+        frame = Frame(self)
+        frame.locals[".args"] = args
+        frame.locals[".kwds"] = kwds
+        tstate.current_frame = frame
+        TRANSFER(frame.continuation)
+
 
 class Code:
-    def call(self, f: Frame):
-        ...
+    "All attributes private"
