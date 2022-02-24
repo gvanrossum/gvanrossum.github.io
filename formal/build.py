@@ -191,7 +191,7 @@ def main():
         dump = True
         del files[0]
     if not files:
-        files.append(os.path.join(os.path.dirname(__file__), "test.py"))
+        files.append(os.path.join(os.path.dirname(__file__), "default.py"))
     for file in expand_globs(files):
         print()
         print(file + ":")
