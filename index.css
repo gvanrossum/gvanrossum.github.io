@@ -1,0 +1,247 @@
+:root {
+  --primary-color: rgb(31, 31, 233);
+  --black: rgb(28, 28, 28);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  margin: 0 auto;
+  max-width: 600px;
+}
+
+img {
+  color: white;
+}
+
+h3 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: normal;
+  line-height: 2.3rem;
+}
+
+h1 {
+  font-size: 2.3rem;
+  margin: 0;
+}
+
+.sidebar {
+  min-width: 278px;
+  width: 278px;
+}
+
+[role="heading"] {
+  font-size: 2rem;
+}
+
+[role="feed"] {
+  display: flex;
+  flex-direction: column;
+}
+
+[role="list"],
+[role="article"] {
+  padding-top: 1rem;
+}
+
+[role="list"] {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+[role="listitem"]:first-child {
+  margin-top: 0;
+}
+
+[role="listitem"] {
+  box-sizing: border-box;
+  margin: 2rem 2rem 0;
+}
+
+[role="document"] {
+  padding: 0 1rem 1rem 1rem;
+  box-sizing: border-box;
+}
+
+[role="document"] p {
+  max-width: 900px;
+}
+
+time {
+  background: black;
+  color: white;
+  padding: 0.1rem 0.3rem;
+  display: inline-block;
+  margin-top: 1rem;
+}
+
+[role="navigation"] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 1rem;
+  padding: 0.6rem 1rem;
+}
+
+[role="navigation"] a {
+  padding: 0.3rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+[role="navigation"] a img {
+  width: 32px;
+  height: 32px;
+}
+
+[role="doc-subtitle"] {
+  margin: 0;
+  font-size: 0.5em;
+  padding: 0.6rem 2rem 0.6rem 2rem;
+}
+
+a {
+  color: blue;
+  text-decoration: none;
+}
+a:hover {
+  color: var(--primary-color);
+}
+
+figure {
+  margin: 0;
+  background-color: rgb(245, 244, 244);
+}
+
+figcaption {
+  text-align: center;
+  padding: 10px;
+}
+
+article {
+  margin: 0;
+}
+
+h3 a {
+  text-decoration: none;
+}
+
+p code {
+  background-color: rgb(231, 229, 229);
+  color: rgb(235, 34, 155);
+  border-radius: 3px;
+  display: inline-block;
+  padding: 0.1rem 0.3rem;
+}
+
+pre,
+code {
+  font-family: Monaco, "Courier New", monospace;
+  font-size: 0.9rem;
+}
+
+::selection {
+  background-color: rgb(237, 237, 237);
+  color: var(--primary-color);
+}
+
+svg {
+  margin: 15px 5px 5px 5px;
+  background: #fff;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 15px;
+}
+
+a:focus svg {
+  background: rgb(247, 247, 247);
+}
+
+#home-link {
+  display: flex;
+  flex-direction: column;
+  padding-left: 2rem;
+}
+
+h3[role="heading"] {
+  font-size: 2.5rem;
+  line-height: 2.7rem;
+  padding: 1rem;
+  box-sizing: border-box;
+  width: auto;
+}
+
+.other-posts {
+  gap: 0;
+}
+
+.other-posts article[role="listitem"] {
+  padding: 1rem;
+}
+
+.projects {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 1rem;
+  padding: 0.6rem 2rem;
+}
+
+.projects h5 {
+  margin: 0 0 0.5rem;
+  padding: 0;
+  font-size: 1rem;
+  font-weight: normal;
+}
+
+.projects a span {
+  width: 40px;
+  height: 40px;
+  display: inline-block;
+}
+
+.projects a {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+}
+
+.projects p {
+  margin-top: 0;
+}
+
+[role="list"] figure {
+  width: 50%;
+}
+
+@media (min-width: 900px) {
+  [role="feed"] {
+    flex-direction: row;
+  }
+
+  [role="listitem"] {
+    width: calc(100% / 2);
+    margin: 0;
+    padding: 1rem;
+  }
+}
+
+@media (min-width: 1400px) {
+  [role="listitem"] {
+    width: calc(100% / 3);
+  }
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    width: auto;
+    padding-right: 1rem;
+  }
+
+  #home-link {
+    align-items: center;
+  }
+}
