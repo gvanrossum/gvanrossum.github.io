@@ -217,15 +217,19 @@ the following things happen:
 
 Eventually the function either returns a value or raises an exception.
 
+### Function objects
+
 When we write `add(x, 1)`, how is the code object found?
 We require `add` to refer to a variable
 whose value is a _function object_.
 The function object's `enclosing` attribute is used to set
 the frame's `enclosing` attribute.
 (This may be NULL.)
-The functions `globals` are copied to `frame.globals`,
+The function's `globals` are copied to `frame.globals`,
 the current frame (maybe NULL) is used to initialize `frame.back`,
 and the function's `code` is placed in `frame.continuation`.
+
+### Calling a function
 
 Then the arguments are placed in the frame for the code to find.
 The exact mechanism is unspecified (only the code cares),
@@ -261,6 +265,8 @@ frame.set_local("b", args[1])
 are copied into the corresponding local variables of the frame
 by the caller or by the callee,
 but it's simpler to specify to do this in the callee.)
+
+### Returning from a function
 
 When the code has computed its result, the calling frame is resumed.
 The calling frame is identified by the current frame's `back` pointer.
@@ -321,3 +327,199 @@ class Frame:
             TRANSFER(caller.continuation)
         # else, the return value is lost
 ```
+
+## Thoughts on code generation
+
+Interpreter state and code generation are tightly linked
+(more than I previously appreciated).
+The generated code must access the runtime state
+using the APIs provided (no matter how informal or undocumented).
+
+APIs themselves are implemented in some language,
+and it is useful if this is (mostly) the same language
+that is used as the target for the code generator.
+For example, take the compilation of the expression `a + b`.
+The specification for such a binary operator is pretty complex:
+one has to call `type(a).__add__()` and/or `type(b).__radd__()`,
+and which is called first depends on the subclass relationship
+between `type(a)` and `type(b)`.
+
+Therefore it would be nice
+if the generated code could be as simple as `ADD(A, B)`,
+where `A` and `B` are the code generated
+to load the expressions `a` and `b`, respectively,
+and `ADD()` is some API function taking care of the details.
+(In CPython, the bytecode compiler targets a different language,
+and the result is that there must be bytecode instructions
+corresponding to all the necessary helper functions,
+from addition to loading variables of different kinds.)
+
+### Tiny Python
+
+Let's name our compilation target _Tiny Python_,
+to be defined as a very small subset of Python that is still
+usable for this purpose.
+(The idea is that it is much easier to reason about
+correctness of Tiny Python code than about Python code.)
+
+Tiny Python must obviously support function definitions and calls,
+else `ADD(a, b)` could not be a Tiny Python function call.
+It must have a `return` statement so that functions can return values.
+It must also support function pointers (!) so we can refer to code
+(for example, in the `continuation` of a function object, see above).
+
+It must also support some basic control structures,
+at least `if` and `while`,
+and local and global variables
+(maybe the latter can only be read, not written, inside functions).
+
+In terms of data types it will need at least Booleans, integers,
+strings, some form of arrays, and some form of records.
+(Records could be emulated using arrays,
+but the code would be miserable.)
+Integers don't need to have unlimited range -- 64-bit is fine.
+
+Tiny Python must support function-local memory,
+to hold local (to a Tiny Python function) variables
+and intermediate values (for e.g. `x + 1`).
+
+Ideally we could write things like `get_local()` (see above)
+in Tiny Python, although the `try`/`except` statement
+would have to be replaced with something else;
+and we'd either need a built-in `dict` type
+or a way to implement it using arrays and records.
+
+Tiny Python's memory model may require some thought,
+since functions like `get_global()` and `set_global()`
+have critical sections that need to be locked
+(ideally the locking is per-dict and per-name).
+
+Finally, Tiny Python may have to have some form of
+extension mechanism whereby certain functionality
+or data types (e.g. `float` or bignum)
+would be implemented outside Tiny Python.
+
+### What does Tiny Python lack?
+
+Tiny Python lacks introspective features.
+It does however use dynamic memory allocation.
+
+Tiny Python might not have classes and methods
+(records and functions may suffice).
+It might not have tuples (records would do).
+It may not have a `for`-loop (`while` can do it).
+
+It most definitely won't have `try` or exceptions
+-- these are complex functionality whose implementation
+should be possible using Tiny Python's primitives.
+This means there won't be a `with` statement either.
+
+### Error checking in Tiny Python
+
+Python code that may raise exceptions (i.e., all Python code)
+will have to be translated into an idiom that uses
+explicit error checks.
+
+For operations returning arbitrary values (objects)
+we can use a record with the following fields:
+
+```py
+ok: bool  # True if the calculation was a success
+value: object  # Value, if a success (else NULL)
+error: object  # Exception, if a failure (else NULL)
+```
+
+For operations returning a bool (or an error)
+we can use a variant with a field `truth: bool` instead of `value`.
+(There may also be other variants, e.g. one for integer returns.)
+
+For example, the statement `y = f(x)` might translate to
+
+```py
+# 'frame' is the current frame (tstate.current_frame).
+x = frame.get_local("x")
+if not x.ok:
+    <error handling>
+newf = new_frame(<code for f>)
+args = array(1)
+args[0] = x.value
+newf.set_local(".args", args)
+kwds = array(0)
+newf.set_local(".kwds", kwds)
+newf.back = frame
+# call() transfers control to the code in the frame,
+# and returns when that code exits.
+# It adjusts tstate.current_frame both ways.
+res = newf.call()
+if not res.ok:
+    <error handling>
+frame.set_local("y", res.value)
+```
+
+(This assumes slightly different primitives than I have above.)
+
+The `<error handling>` sections should probably use `return`
+with an error indicator (possibly just `return x`).
+
+The `<code for f>` blank should be a function pointer
+to the code generated for the function `f`.
+This should actually be constructed from a function object
+(briefly described earlier).
+
+### Loops in Tiny Python
+
+How would we translate a `while` loop from Python to Tiny Python?
+Since Tiny Python (being a subset of Python) doesn't have `goto`,
+we'll have to translate it to a Tiny Python `while` loop.
+Let's say we have
+
+```py
+while x != 0:
+    <body>
+```
+
+This might translate into
+
+```py
+ok = True
+while ok:
+    x = frame.get_local("x")
+    if not x.ok:
+        <error handling>
+    # 'zero' must be a global object with value 0
+    cmp = cmp_ne(x.value, zero)
+    if not cmp.ok:
+        <error handling>
+    ok = cmp.truth
+    if ok:
+        <translation of <body>>
+```
+
+(This would be slightly more elegant
+if Tiny Python had a "loop-and-a-half" construct,
+but since Python doesn't have one, neither does Tiny Python.)
+
+### What to do for generators and async functions
+
+In an earlier [document](informal.md) I've already rambled
+about generators and async functions,
+in particular the `yield`, `yield from` and `await` constructs.
+The key thing to understand here is that a generator function
+with two `yield` expressions in it will be split into three
+separate Tiny Python functions.
+For example, if the input is
+
+```py
+def f():
+    <part A>
+    yield x
+    <part B>
+    yield y
+    <part C>
+```
+
+Then the compiler must produce one function
+for `<part A>` and `yield x`,
+a second function for `<part B>` and `yield y`,
+and a third function for `<part C>`.
+(There are many complications, but they can all be dealt with.)
