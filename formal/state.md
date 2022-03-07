@@ -523,3 +523,63 @@ for `<part A>` and `yield x`,
 a second function for `<part B>` and `yield y`,
 and a third function for `<part C>`.
 (There are many complications, but they can all be dealt with.)
+
+### The difference between `yield` and `await`
+
+Let's assume you have a working knowledge of `yield`.
+(It suspends the current frame, which is resumed by any of
+ `.__next__()`, `.send()`, `.throw()` or `.close()`.)
+
+As you may know, `await` is mostly syntactic sugar for `yield from`
+(but not quite, since the latter uses `.__await__()`,
+not `.__iter__()`).
+
+And at first approximation, `yield from a` is equivalent to
+```py
+for x in a:
+    yield x
+```
+However, his doesn't capture what `.send()` and `.throw()` do,
+nor what happens when several generators are chained via the call stack
+and all are "pumping" values using `yield from`.
+
+Let's focus on `await`, since it more modern than `yield from`.
+When an async function (i.e., defined with `async def`) uses
+`await <expr>`, this is itself an expression (producing a value)
+with the following semantics:
+
+1. Evaluate `<expr>`, giving an _awaitable_ object `w`;
+2. Call the method `w.__await__()`, giving an iterator `it`;
+3. Call `it.__next__()`.
+
+If the waitable is *blocked*, the `it.__next__()` call returns `w`.
+In this case the calling frame is suspended as if by `yield w`.
+It will eventually be resumed at (3).
+
+If the awaitable is *done*, it raises `StopIteration(r)` where `r`
+becomes the result of `await <expr>`.
+
+Compare the above to the naive equivalent for `yield from` --
+it is exactly the same, but using `__await__` instead of `__iter__`.
+(But `__await__` still returns an iterator!)
+
+What's also the same is that things are more complicated
+if the awaitable (`w`) it itself a coroutine object
+(i.e., `<expr>` is the result of calling an async function).
+
+In particular, if some frames are chained via nested `await` calls,
+and the innermost frame is blocked,
+all of the chained frames are suspended.
+When resumption of the outermost chained frame sends a value,
+it is propagated through all chained frames to the innermost frame.
+The same is true when an exception is thrown into the outermost frame.
+
+It is these two behaviors that cannot be properly explained
+from the "naive" approximation of `yield from a` as
+```py
+for x in a:
+    yield x
+```
+(This is why PEP 3156 is complicated, and similar for PEP 492.)
+
+**I will try to specify these behaviors in precise code.**
