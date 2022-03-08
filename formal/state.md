@@ -582,4 +582,175 @@ for x in a:
 ```
 (This is why PEP 3156 is complicated, and similar for PEP 492.)
 
-**I will try to specify these behaviors in precise code.**
+### Generators as queue clients
+
+One (novel?) way of looking at generators and the like is to consider them as
+as autonomous "processes" that communicate via (unbuffered) message queues.
+
+A generator has an input queue through which it receives values and
+exceptions -- each queue value is a `(flag, value)` tuple where `flag`
+is either `SEND`, `THROW` or `CLOSE`, and `value` is either the value
+being sent or the exception being thrown.
+(Yeah, I know, ADTs would he handy here. :-)
+```py
+class IQ(enum):
+    SEND = 1
+    THROW = 2
+    CLOSE = 3
+```
+
+The generator also has an output queue with a similer structure;
+the `flag` field can be `YIELD`, `RAISE` or `STOP`, and `value`
+is the yielded value, the raised exception, or the return value.
+```py
+class OQ(enum):
+    YIELD = 4
+    RAISE = 5
+    STOP = 6
+```
+
+The input queue _grammar_ can be summarized as follows
+```
+SEND (SEND | THROW)* CLOSE
+```
+The initial `SEND` must have a value of `None`.
+
+The output queue grammar is
+```
+YIELD* (RAISE | STOP)
+```
+
+The statement
+```py
+x = yield y
+```
+can be loosely translated to
+```py
+oq.put((OQ.YIELD, y))
+match iq.get():
+    case IQ.SEND, value:
+        x = value
+    case IQ.THROW, err:
+        raise err
+    case IQ.CLOSE:
+        # Close the input queue
+        raise GeneratorExit
+    case _:
+        assert False
+```
+When an exception bubbles out of the generator's frame, it is transformed in
+```py
+oq.put((OQ.RAISE, err))
+```
+When the generator exits normally (either returning a value or falling
+off the end, which is equivalent to `return None`) this becomes
+```py
+oq.put((OQ.STOP, value))
+```
+
+When a generator function is entered, it executes the following initialization:
+```py
+match iq.get():
+    case IQ.SEND, _:
+        pass
+    case IQ.THROW, err:
+        raise err
+    case IQ.CLOSE, _:
+        return
+
+We can describe the `Generator` class using the following code (untested):
+```py
+class Generator:
+    def __init__(self):
+        self.iq = Channel()  # To the generator
+        self.oq = Channel()  # From the generator
+        self.initial = True
+        self.running = False
+        self.closed = False
+    def checks(self):
+        if self.closed:
+            raise StopIteration
+        if self.running:
+            raise ValueError
+    def __next__(self):
+        return self.send(None)
+    def send(self, value):
+        self.checks()
+        if self.initial:
+            if value is not None:
+                raise TypeError
+            self.initial = False
+        self.running = True
+        try:
+            self.iq.put((IQ.SEND, value))
+            return self.receive()
+        finally:
+            self.running = False
+    def throw(self, err):
+        self.checks()
+        self.running = True
+        try:
+            self.iq.put((IQ.THROW, err))
+            return self.receive()
+        finally:
+            self.running = False
+    def close(self):
+        if self.running:
+            raise ValueError
+        if not self.closed:
+            self.initial = False
+            self.closed = True
+            self.iq.put((IQ.CLOSE, None))
+    def receive(self):
+        match self.oq.get():
+            case OQ.YIELD, value:
+                return value
+            case OQ.RAISE, err:
+                self.closed = True
+                raise err
+            case OQ.STOP, value:
+                self.closed = True
+                raise StopIteration(value)
+            case _:
+                assert False
+```
+The understanding is that both queues are *unbuffered*,
+meaning that `q.put()` blocks until another "process" calls `q.get()`.
+Since this is not an option in the stdlib `queue.Queue` class,
+we implement a custom queue named `Channel`:
+```py
+import threading
+class Channel:
+    def __init__(self):
+        self.full = False
+        self.lock = threading.Lock()
+        self.cond = threading.Condition()
+        self.value = None
+    def put(self, value):
+        with self.cond:
+            while self.full:
+                self.cond.wait()
+           self.value = value
+           self.full = True
+           self.cond.notify()
+    def get(self):
+        with self.cond:
+            while not self.full:
+                self.cond.wait()
+            value = self.value
+            self.full = False
+            self.cond.notify()
+```
+This implementation (if it even works) is overkill -- no threads need be used,
+and the code in `Generator` above and the `yield` equivalent ensure that the
+input and output queues are operated in lock step, each side strictly following
+ the pattern
+```py
+q1.put(...)
+q2.get(...)
+```
+except that, as described above, when the generator starts it calls
+```py
+self.iq.get()
+```
+(and dispatches appropriately on the flag in the result).
