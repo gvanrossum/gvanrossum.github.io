@@ -499,7 +499,7 @@ while ok:
 if Tiny Python had a "loop-and-a-half" construct,
 but since Python doesn't have one, neither does Tiny Python.)
 
-### What to do for generators and async functions
+# What to do for generators and async functions
 
 In an earlier [document](informal.md) I've already rambled
 about generators and async functions,
@@ -524,7 +524,7 @@ a second function for `<part B>` and `yield y`,
 and a third function for `<part C>`.
 (There are many complications, but they can all be dealt with.)
 
-### The difference between `yield` and `await`
+## The difference between `yield` and `await`
 
 Let's assume you have a working knowledge of `yield`.
 (It suspends the current frame, which is resumed by any of
@@ -582,7 +582,7 @@ for x in a:
 ```
 (This is why PEP 3156 is complicated, and similar for PEP 492.)
 
-### Generators as queue clients
+## Generators as queue clients
 
 One (novel?) way of looking at generators and the like is to consider them as
 as autonomous "processes" that communicate via (unbuffered) message queues.
@@ -590,7 +590,7 @@ as autonomous "processes" that communicate via (unbuffered) message queues.
 A generator has an input queue through which it receives values and
 exceptions -- each queue value is a `(flag, value)` tuple where `flag`
 is either `SEND`, `THROW` or `CLOSE`, and `value` is either the value
-being sent or the exception being thrown.
+being sent or the exception being thrown (`GeneratorExit` for `CLOSE`).
 (Yeah, I know, ADTs would he handy here. :-)
 ```py
 class IQ(enum):
@@ -622,19 +622,19 @@ YIELD* (RAISE | STOP)
 
 The statement
 ```py
-x = yield y
+r = yield s
 ```
 can be loosely translated to
 ```py
-oq.put((OQ.YIELD, y))
+oq.put((OQ.YIELD, s))
 match iq.get():
     case IQ.SEND, value:
-        x = value
+        r = value
     case IQ.THROW, err:
         raise err
-    case IQ.CLOSE:
-        # Close the input queue
-        raise GeneratorExit
+    case IQ.CLOSE, err:  # A GeneratorExit instance
+        # Close the input queue, and then
+        raise err
     case _:
         assert False
 ```
@@ -647,6 +647,8 @@ off the end, which is equivalent to `return None`) this becomes
 ```py
 oq.put((OQ.STOP, value))
 ```
+(Which is equivalent to `oq.put((OQ.RAISE, StopIteration(value)))` --
+maybe we should just drop `OQ.STOP`?)
 
 When a generator function is entered, it executes the following initialization:
 ```py
@@ -700,7 +702,7 @@ class Generator:
         if not self.closed:
             self.initial = False
             self.closed = True
-            self.iq.put((IQ.CLOSE, None))
+            self.iq.put((IQ.CLOSE, GeneratorExit()))
     def receive(self):
         match self.oq.get():
             case OQ.YIELD, value:
@@ -714,6 +716,9 @@ class Generator:
             case _:
                 assert False
 ```
+
+## Queue implementation
+
 The understanding is that both queues are *unbuffered*,
 meaning that `q.put()` blocks until another "process" calls `q.get()`.
 Since this is not an option in the stdlib `queue.Queue` class,
@@ -754,3 +759,97 @@ except that, as described above, when the generator starts it calls
 self.iq.get()
 ```
 (and dispatches appropriately on the flag in the result).
+
+## Channel types
+
+One could conceivably have a very different API, e.g. a single object that
+represents both queues and has four methods (get/put on either end) or two
+objects representing the two endpoints (like sockets) each with get/put methods.
+However, the current model is nice for typing:
+```py
+class Generator:
+    iq: Channel[tuple[IQ, object]]
+    oq: Channel[tuple[OQ, object]]
+```
+This requires making `Channel` generic, which is straightforward.
+We might also want to arrange things so that the type of `value` corresponds
+to the value of `flag`, using some overloads (sadly rather verbose):
+```py
+class IQChannel(Channel):
+    @overload
+    def put(self, v: tuple[Literal[IQ.SEND], object]): ...
+    @overload
+    def put(self, v: tuple[Literal[IQ.THROW], BaseException]): ...
+    @overload
+    def put(self, v: tuple[Literal[IQ.CLOSE], GeneratorExit]]): ...
+    def put(self, v):
+        return super().put(v)
+
+    @overload
+    def get(self) -> tuple[Literal[OQ.YIELD], object]: ...
+    @overload
+    def get(self) -> tuple[Literal[OQ.RAISE], BaseException]: ...
+    @overload
+    def get(self) -> tuple[Literal[OQ.STOP], object]]: ...
+    def get(self):
+        return super().get()
+
+class OQChannel(Channel):
+    @overload
+    def put(self, v: tuple[Literal[OQ.YIELD], object]): ...
+    @overload
+    def put(self, v: tuple[Literal[OQ.RAISE], BaseException]): ...
+    @overload
+    def put(self, v: tuple[Literal[OQ.STOP], object]]): ...
+    def put(self, v):
+        return super().put(v)
+
+    @overload
+    def get(self) -> tuple[Literal[IQ.SEND], object]: ...
+    @overload
+    def get(self) -> tuple[Literal[IQ.THROW], BaseException]: ...
+    @overload
+    def get(self) -> tuple[Literal[IQ.CLOSE], GeneratorExit]]: ...
+    def get(self):
+        return super().get()
+```
+
+## Yield from
+
+The queue/channel model is helpful in explaining the semantics of `yield from`:
+An expression like `r = yield from s` where `s` is itself a generator
+translates to something like this:
+```py
+it = iter(s)
+it.iq.put((IQ.SEND, None))    #              send --> it
+while True:
+    match it.oq.get():        #           receive <-- it
+        case OQ.STOP, v:
+            r = v
+            break
+        case OQ.RAISE, e:
+            if isinstance(e, StopIteration):
+                r = e.value
+                break
+            else:
+                raise e
+        case ofv:
+            self.oq.put(ofv)  # caller <- send
+    match self.iq.get():      # caller -> receive
+        case IQ.CLOSE, e:
+            if hasattr(it, "close"):
+                it.close()    #     (implies send -> it)
+            raise e
+        case ifv:
+            it.iq.put(ifv)    #              send -> it
+```
+(Plus managing/checking state flags `self.initial`, `self.closed`,
+and `self.running`.)
+
+This description feels a little clearer than the official semantics for
+`yield from` in
+[PEP 380](https://www.python.org/dev/peps/pep-0380/#formal-semantics).
+
+## Await
+
+[TODO]
