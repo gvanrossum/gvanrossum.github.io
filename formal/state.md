@@ -600,13 +600,13 @@ class IQ(enum):
 ```
 
 The generator also has an output queue with a similer structure;
-the `flag` field can be `YIELD`, `RAISE` or `STOP`, and `value`
-is the yielded value, the raised exception, or the return value.
+the `flag` field can be `YIELD` or `RAISE`, and `value`
+is the yielded value or the raised exception.
+(Remember, returning from a generator is the same as raising `StopIteration`.)
 ```py
 class OQ(enum):
     YIELD = 4
     RAISE = 5
-    STOP = 6
 ```
 
 The input queue _grammar_ can be summarized as follows
@@ -617,7 +617,7 @@ The initial `SEND` must have a value of `None`.
 
 The output queue grammar is
 ```
-YIELD* (RAISE | STOP)
+YIELD* RAISE
 ```
 
 The statement
@@ -645,10 +645,8 @@ oq.put((OQ.RAISE, err))
 When the generator exits normally (either returning a value or falling
 off the end, which is equivalent to `return None`) this becomes
 ```py
-oq.put((OQ.STOP, value))
+oq.put((OQ.RAISE, StopIteration(value)))
 ```
-(Which is equivalent to `oq.put((OQ.RAISE, StopIteration(value)))` --
-maybe we should just drop `OQ.STOP`?)
 
 When a generator function is entered, it executes the following initialization:
 ```py
@@ -710,9 +708,6 @@ class Generator:
             case OQ.RAISE, err:
                 self.closed = True
                 raise err
-            case OQ.STOP, value:
-                self.closed = True
-                raise StopIteration(value)
             case _:
                 assert False
 ```
@@ -789,8 +784,6 @@ class IQChannel(Channel):
     def get(self) -> tuple[Literal[OQ.YIELD], object]: ...
     @overload
     def get(self) -> tuple[Literal[OQ.RAISE], BaseException]: ...
-    @overload
-    def get(self) -> tuple[Literal[OQ.STOP], object]]: ...
     def get(self):
         return super().get()
 
@@ -799,8 +792,6 @@ class OQChannel(Channel):
     def put(self, v: tuple[Literal[OQ.YIELD], object]): ...
     @overload
     def put(self, v: tuple[Literal[OQ.RAISE], BaseException]): ...
-    @overload
-    def put(self, v: tuple[Literal[OQ.STOP], object]]): ...
     def put(self, v):
         return super().put(v)
 
@@ -824,9 +815,6 @@ it = iter(s)
 it.iq.put((IQ.SEND, None))    #              send --> it
 while True:
     match it.oq.get():        #           receive <-- it
-        case OQ.STOP, v:
-            r = v
-            break
         case OQ.RAISE, e:
             if isinstance(e, StopIteration):
                 r = e.value
@@ -852,4 +840,8 @@ This description feels a little clearer than the official semantics for
 
 ## Await
 
-[TODO]
+The expansion for `await` (in an async function) is similar to `yield from`
+except the first line is
+```py
+it = s.__await__()
+```
