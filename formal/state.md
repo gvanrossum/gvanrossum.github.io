@@ -599,6 +599,7 @@ class IQ(enum):
     CLOSE = 3
 ```
 
+
 The generator also has an output queue with a similer structure;
 the `flag` field can be `YIELD` or `RAISE`, and `value`
 is the yielded value or the raised exception.
@@ -619,6 +620,7 @@ The output queue grammar is
 ```
 YIELD* RAISE
 ```
+(Note that returning from a generator raises `StopIteration`.)
 
 The statement
 ```py
