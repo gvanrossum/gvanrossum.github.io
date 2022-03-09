@@ -580,7 +580,7 @@ from the "naive" approximation of `yield from a` as
 for x in a:
     yield x
 ```
-(This is why PEP 3156 is complicated, and similar for PEP 492.)
+(This is why PEP 380 is complicated, and similar for PEP 492.)
 
 ## Generators as queue clients
 
@@ -659,7 +659,7 @@ match iq.get():
         raise err
     case IQ.CLOSE, _:
         return
-
+```
 We can describe the `Generator` class using the following code (untested):
 ```py
 class Generator:
@@ -669,6 +669,8 @@ class Generator:
         self.initial = True
         self.running = False
         self.closed = False
+    def __iter__(self):
+        return self
     def checks(self):
         if self.closed:
             raise StopIteration
@@ -757,7 +759,7 @@ self.iq.get()
 ```
 (and dispatches appropriately on the flag in the result).
 
-## Channel types
+## Typed channels
 
 One could conceivably have a very different API, e.g. a single object that
 represents both queues and has four methods (get/put on either end) or two
@@ -847,3 +849,34 @@ except the first line is
 ```py
 it = s.__await__()
 ```
+There is also a separate `Coroutine` class, similar to `Generator` above.
+It does not define `__next__` (async functions only have `send`, `throw`
+and `close`).
+It does have an `__await__` method that creates an iterable:
+```py
+    def __await__(self):
+        val, err = None, None
+        while True:
+            try:
+                if err is None:
+                    res = self.send(val)
+                else:
+                    res = self.throw(err)
+                    err = None
+            except StopIteration as e:
+                # Must catch because of PEP 479
+                return e.value
+            # Other exceptions just bubble up
+            try:
+                val = yield res
+            except GeneratorExit as e:
+                self.close()
+                raise
+            except BaseException as e:
+                err = e
+```
+(An alternative approach would be to have a custom "generator wrapper" class,
+and have `__await__` return an instance of this.
+It would be a little more code but perhaps easier to follow.
+Compare `_GeneratorWrapper` in `types.py`, and also the C code for
+`coroutine_wrapper` in `genobject.c`.)
