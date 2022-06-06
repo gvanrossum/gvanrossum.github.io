@@ -22,6 +22,17 @@ from typing_extensions import Self, TypeAlias
 from abc import *
 from enum import *
 
+__all__ = (
+	'Scope',
+	'RootScope',
+	'GlobalScope',
+	'ClassScope',
+	'FunctionScope',
+	'LambdaScope',
+	'ComprehensionScope',
+	'ScopeT',
+	'RefT',
+	)
 """
 Everything about scopes:
 
@@ -31,7 +42,7 @@ Every Scope corresponds to a module, a function, or a class.
 Scopes form a tree, starting with a GlobalScope object.  Scope.nested is a list of the subtree Scopes.
 
 A Scope has variables.  A variable (or 'var') is a name which is found in the scope.
-	In the global scope, it may also be a name which is declared global in a nested scope.
+	In the global scope, it may also be a var which is declared global in a nested scope.
 
 It provides static status of various Var names seen in the scope.
 
@@ -67,7 +78,7 @@ Building the Scope: This consists of:
 			arguments) which are known in the context of the nested scope.
 			Create a scope object for the def.  This will be treated as an assignment
 			of the def's name in the current scope.
-			Do include other names appearing in the def statement other than the name,
+			Do include other names appearing in the def statement other than the var,
 			such as function default values, base classes, etc.
 	2.	Do the entire build (recursively) on all the nested scopes.
 			A walrus in a nested comprehension can change a var from Used to Local.
@@ -149,12 +160,12 @@ BuildT = Callable[[ScopeT, RefT], None]
 def null_builder(s: ScopeT, r: RefT): pass
 
 class VarStatus(Enum):
-	Unknown = 0			# name does not appear at all
-	Used = auto()		# name appears in the scope but has no static scope
-	Local = auto()		# name is in current scope, which is not the global scope
-	Nonlocal = auto()	# name is in some scope other than current or global
-	Global = auto()		# name is in global scope, which is not the current scope
-	Top = auto()		# name is in the global scope which is also the current scope
+	Unknown = 0			# var does not appear at all
+	Used = auto()		# var appears in the scope but has no static scope
+	Local = auto()		# var is in current scope, which is not the global scope
+	Nonlocal = auto()	# var is in some scope other than current or global
+	Global = auto()		# var is in global scope, which is not the current scope
+	Top = auto()		# var is in the global scope which is also the current scope
 						# is_local and is_global are both true
 
 	def __bool__(self): return bool(self.value)
@@ -229,8 +240,8 @@ class Scope(Generic[RefT]):
 		yield from self.parent.scope_names
 		yield self.scope_name
 
-	def status(self, name: str) -> VarStatus:
-		try: scope = self.vars[name]
+	def status(self, var: str) -> VarStatus:
+		try: scope = self.vars[var]
 		except KeyError: return VarStatus.Unknown
 		if not scope: return VarStatus.Used
 		if self is self.global_scope: return VarStatus.Top
@@ -238,74 +249,74 @@ class Scope(Generic[RefT]):
 		if scope is self.global_scope: return VarStatus.Global
 		return VarStatus.Nonlocal
 
-	def load(self, name: str) -> Scope:
+	def load(self, var: str) -> Scope:
 		""" Change from Unknown to Used, otherwise no change.  Returns static scope. """
-		return self.vars.setdefault(name, None)
+		return self.vars.setdefault(var, None)
 
-	def store(self, name: str) -> Scope:
-		""" Marks the name as being stored in this, or some enclosing Scope.
-		In case of global scope, marks the name there too.
+	def store(self, var: str) -> Scope:
+		""" Marks the var as being stored in this, or some enclosing Scope.
+		In case of global scope, marks the var there too.
 		"""
 		# Change from Unknown to Used, and get static scope.
-		scope = self.load(name)
+		scope = self.load(var)
 		if not scope:
 			# Change from Used to Local (or Top)
-			self.vars[name] = self
+			self.vars[var] = self
 			return self
-		if self.status(name) is VarStatus.Global:
-			scope.store(name)
+		if self.status(var) is VarStatus.Global:
+			scope.store(var)
 		return scope
 
-	def store_walrus(self, name: str) -> Scope:
+	def store_walrus(self, var: str) -> Scope:
 		""" store_walrus() is same as store(), except:
 		1. In a ClassScope, it is implemented separately as a SyntaxError.
 		2. Anywhere in a comprehension "in" clause, it is a SyntaxError.
 		"""
 		if self.no_walrus:
 			raise SyntaxError('assignment expression cannot be used in a comprehension iterable expression')
-		return self.store(name)
+		return self.store(var)
 
-	def add_nonlocal(self, name: str) -> Scope:
+	def add_nonlocal(self, var: str) -> Scope:
 		""" Change from Unknown to Nonlocal.  Return new static scope.
-		SyntaxError if nonlocal scope not found, or if name is not already Nonlocal.
+		SyntaxError if nonlocal scope not found, or if var is not already Nonlocal.
 		GlobalScope overrides this method.
 		"""
-		status = self.status(name)
+		status = self.status(var)
 		if not status:
 			# Name Unknown.  Change to Nonlocal, or error if nonlocal scope not found.
-			scope = self.nonlocal_scope(name)
+			scope = self.nonlocal_scope(var)
 			if not scope:
-				raise SyntaxError(f"no binding for nonlocal '{name}' found")
-			self.vars[name] = scope
+				raise SyntaxError(f"no binding for nonlocal '{var}' found")
+			self.vars[var] = scope
 			return scope
 		# Only Nonlocal is valid.
 		if status.is_nonlocal:
-			return self.vars[name]
+			return self.vars[var]
 		if status.is_global:
 			# Global is an error.
-			raise SyntaxError(f"name '{name}' is nonlocal and global")
+			raise SyntaxError(f"var '{var}' is nonlocal and global")
 		else:
 			# Used is an error.
-			raise SyntaxError("name '{name}' is used prior to nonlocal declaration")
+			raise SyntaxError("var '{var}' is used prior to nonlocal declaration")
 
-	def add_global(self, name: str) -> Scope:
+	def add_global(self, var: str) -> Scope:
 		""" Change from Unknown to Global or Top.  Return new static scope.
 		Error if static scope is not global.
 		"""
-		status = self.status(name)
+		status = self.status(var)
 		if not status:
 			# Name Unknown.  Change to Global
-			scope = self.vars[name] = self.global_scope
+			scope = self.vars[var] = self.global_scope
 			return scope
 		# Only Global is valid.
 		if status.is_global:
 			return self.global_scope
 		if status.is_nonlocal:
 			# Nonlocal is an error.
-			raise SyntaxError(f"name '{name}' is nonlocal and global")
+			raise SyntaxError(f"var '{var}' is nonlocal and global")
 		else:
 			# Used is an error.
-			raise SyntaxError("name '{name}' used prior to global declaration")
+			raise SyntaxError("var '{var}' used prior to global declaration")
 
 	def nest(self, cls: Type[Scope], name: str = None, *,
 				 ref: RefT = None, build: BuildT | None = None) -> Self:
@@ -318,19 +329,19 @@ class Scope(Generic[RefT]):
 		self.nested.append(res)
 		return res
 
-	def nonlocal_scope(self, name) -> ClosedScope | None:
-		""" Try to find a nonlocal scope for a name in some enclosed scope.
-		"""
-		# Implemented differently in OpenScope, GlobalScope and ClosedScope
-		raise NotImplementedError
+	# Methods after build is complete...
 
-	# Methods after static build is complete...
-
-	def binding_scope(self, name: str) -> Scope | None:
+	def binding_scope(self, var: str) -> Scope | None:
 		""" Tries to find the static scope, setting it if not already known.
 		Only valid after all the above static methods have been called.
 		"""
 		# Implemented differently in NestedScope, GlobalScope.
+		raise NotImplementedError
+
+	def nonlocal_scope(self, var) -> ClosedScope | None:
+		""" Try to find a nonlocal scope for a var in some enclosed scope.
+		"""
+		# Implemented differently in OpenScope, GlobalScope and ClosedScope
 		raise NotImplementedError
 
 	def build(self):
@@ -342,45 +353,50 @@ class Scope(Generic[RefT]):
 		# Phase 2, build all the nested scopes.
 		for nested in self.nested:
 			nested.build()
-		# Phase 3, resolve all Used names.
-		for name, scope in self.vars.items():
+		# Phase 3, resolve all remaining Used names.
+		for var, scope in self.vars.items():
 			if scope: continue
-			self.binding_scope(name)
+			self.binding_scope(var)
 
-class MasterScope(Scope):
+class RootScope(Scope):
 	""" Container for all the modules in a program.
 	Will be created for a GlobalScope's parent if one is not provided to it.
 	"""
 	is_master: ClassVar[bool] = True
 
+	modules: Mapping[str, GlobalScope]
+
 	def __init__(self, **kwds):
 		super().__init__('', None, **kwds)
+		self.modules = {}
 
-	def add_module(self, name: str, **kwds) -> Self:
-		self.nest(GlobalScope, name, **kwds)
+	def add_module(self, var: str = '', **kwds) -> GlobalScope:
+		self.nest(GlobalScope, var, **kwds)
 
 class GlobalScope(Scope):
-	parent: MasterScope | None
+	parent: RootScope | None
 
 	is_global: ClassVar[bool] = True
 
-	def __init__(self, name: str = '', *, parent: MasterScope = None, **kwds):
-		super().__init__(name, parent or MasterScope(), **kwds)
+	def __init__(self, var: str = '', *, parent: RootScope = None, **kwds):
+		super().__init__(var, parent or RootScope(), **kwds)
 		self.global_scope = self
+		if var:
+			self.parent.modules[var] = self
 
-	def add_nonlocal(self, name: str) -> None:
+	def add_nonlocal(self, var: str) -> None:
 		raise SyntaxError("nonlocal declaration not allowed at module level")
 
-	def add_global(self, name: str) -> None:
-		return self.store(name)
+	def add_global(self, var: str) -> None:
+		return self.store(var)
 
-	def binding_scope(self, name: str) -> Scope | None:
-		""" Get the static scope for this name.
-		It is always self, and the name is made Local.
+	def binding_scope(self, var: str) -> Scope | None:
+		""" Get the static scope for this var.
+		It is always self, and the var is made Local.
 		"""
-		return self.store(name)
+		return self.store(var)
 
-	def nonlocal_scope(self, name) -> None:
+	def nonlocal_scope(self, var) -> None:
 		return None
 
 	@property
@@ -395,24 +411,24 @@ class NestedScope(Scope):
 		super().__init__(*args, **kwds)
 		self.parent.store(self.scope_name)
 
-	def binding_scope(self, name: str) -> Scope | None:
+	def binding_scope(self, var: str) -> Scope | None:
 		""" Find the static scope, setting it not already known.
 		Only valid after all other static methods have been called.
 		"""
 		# Change Unknown -> Used.  Get static scope or None if Used.
-		scope = self.load(name)
+		scope = self.load(var)
 		if scope:
 			return scope
 		# Used.  Will be in a nonlocal scope, else in globals.
-		scope = self.parent.nonlocal_scope(name)
+		scope = self.parent.nonlocal_scope(var)
 		if not scope: scope = self.global_scope
-		self.vars[name] = scope
+		self.vars[var] = scope
 		return scope
 
 class OpenScope(NestedScope):
 
-	def nonlocal_scope(self, name) -> ClosedScope | None:
-		return self.parent.nonlocal_scope(name)
+	def nonlocal_scope(self, var) -> ClosedScope | None:
+		return self.parent.nonlocal_scope(var)
 
 # For modules, exec and eval.  Provides a module name, otherwise unnecessary (??)
 class ToplevelScope(Scope):
@@ -426,16 +442,8 @@ class ClassScope(OpenScope):
 	parent: Scope  # Cannot be None
 	is_class: ClassVar[bool] = True
 
-	def _get_unbound(self, binding: Binding) -> VAL:
-		""" Get value, or raise exception, for binding with no value.
-		If it is a local name, then look in globals.
-		"""
-		if binding.scope is self:
-			return self.global_scope.get(binding.name)
-		binding.raise_error(self)
-
-	def store_walrus(self, name: str) -> Scope:
-		""" Reports the name as being used as lvalue in := operator in a directly nested comprehension.
+	def store_walrus(self, var: str) -> Scope:
+		""" Reports the var as being used as lvalue in := operator in a directly nested comprehension.
 		This is a syntax error.
 		"""
 		raise SyntaxError('assignment expression within a comprehension cannot be used in a class body')
@@ -443,16 +451,16 @@ class ClassScope(OpenScope):
 class ClosedScope(NestedScope):
 	parent: Scope  # Cannot be None
 
-	def nonlocal_scope(self, name) -> ClosedScope | None:
+	def nonlocal_scope(self, var) -> ClosedScope | None:
 		""" Change Unknown to Used.
 		Return static scope if Local or Nonlocal, None if Global, go to parent if Used.
 		"""
-		scope = self.load(name)
+		scope = self.load(var)
 		if scope is self.global_scope:
 			return None
 		if scope:
 			return scope
-		return self.parent.nonlocal_scope(name)
+		return self.parent.nonlocal_scope(var)
 
 class FunctionScope(ClosedScope):
 	is_function: ClassVar[bool] = True
