@@ -1,0 +1,63 @@
+
+<HTML>
+
+<HEAD>
+
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+ <TITLE>(G)DBM files</TITLE> 
+</HEAD>
+
+<BODY     >
+
+ <H1>(G)DBM files</H1> 
+ <P><UL>
+<H2># better performance if there are many records
+</H2>
+</UL><UL>
+<H2>
+</H2>
+</UL><UL>
+<H2>import gdbm
+</H2>
+</UL><UL>
+<H2>key = ...username, or session key, or whatever...
+</H2>
+</UL><UL>
+<H2>db = gdbm.open("DATABASE", "w")	# open for reading+writing
+</H2>
+</UL><UL>
+<H2>if db.has_key(key):
+</H2>
+</UL><UL>
+<H2>    data = db[key]		# read previous data
+</H2>
+</UL><UL>
+<H2>else:
+</H2>
+</UL><UL>
+<H2>    data = ""			# provide initial data
+</H2>
+</UL><UL>
+<H2>data = update(data, form)
+</H2>
+</UL><UL>
+<H2>db[key] = data			# write new data
+</H2>
+</UL><UL>
+<H2>db.close()</H2>
+</UL></P>
+<P></P> 
+<P>
+<TABLE>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld050.htm">Previous slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld052.htm">Next slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="tsld001.htm">Back to first slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="sld051.htm">View graphic version</A> </TD>
+</TABLE>
+<BR>
+</P>
+
+
+
+</Body>
+</HTML>

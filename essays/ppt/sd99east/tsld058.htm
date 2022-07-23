@@ -1,0 +1,69 @@
+
+<HTML>
+
+<HEAD>
+
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+ <TITLE>File upload example</TITLE> 
+</HEAD>
+
+<BODY     >
+
+ <H1>File upload example</H1> 
+ <P><UL>
+<H2>import cgi 
+</H2>
+</UL><UL>
+<H2>form = cgi.FieldStorage() 
+</H2>
+</UL><UL>
+<H2>if not form: 
+</H2>
+</UL><UL>
+<H2>    print """ 
+</H2>
+</UL><UL>
+<H2>    &#060form action="/cgi-bin/test.py" method="POST" enctype="multipart/form-data"&#062 
+</H2>
+</UL><UL>
+<H2>    &#060input type="file" name="filename"&#062 
+</H2>
+</UL><UL>
+<H2>    &#060input type="submit"&#062 
+</H2>
+</UL><UL>
+<H2>    &#060/form&#062 
+</H2>
+</UL><UL>
+<H2>    """ 
+</H2>
+</UL><UL>
+<H2>elif form.has_key("filename"): 
+</H2>
+</UL><UL>
+<H2>    item = form["filename"] 
+</H2>
+</UL><UL>
+<H2>    if item.file: 
+</H2>
+</UL><UL>
+<H2>        data = item.file.read()		# read contents of file
+</H2>
+</UL><UL>
+<H2>        print cgi.escape(data)		# rather dumb action</H2>
+</UL></P>
+<P></P> 
+<P>
+<TABLE>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld057.htm">Previous slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld059.htm">Next slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="tsld001.htm">Back to first slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="sld058.htm">View graphic version</A> </TD>
+</TABLE>
+<BR>
+</P>
+
+
+
+</Body>
+</HTML>

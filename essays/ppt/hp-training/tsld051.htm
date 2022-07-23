@@ -1,0 +1,46 @@
+
+<HTML>
+
+<HEAD>
+
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+ <TITLE>Shared work queue</TITLE> 
+</HEAD>
+
+<BODY     >
+
+ <H1>Shared work queue</H1> 
+ <P><UL>
+<LI><H2>Producers:
+</H2>
+<UL>
+while 1:
+<BR><BR>    job = make_job()
+<BR>    Q.put(job)</UL></UL></P>
+<P><UL>
+<LI><H2>Consumers:
+</H2>
+<UL>
+while 1:
+<BR><BR>    job = Q.get()
+<BR>    finish_job(job)</UL></UL></P>
+<P><UL>
+<LI> Shared:
+<UL>
+import Queue
+<BR><BR>Q = Queue.Queue(0) # or maxQsize</UL></UL></P>
+<P></P> 
+<P>
+<TABLE>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld050.htm">Previous slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld052.htm">Next slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="tsld001.htm">Back to first slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="sld051.htm">View graphic version</A> </TD>
+</TABLE>
+<BR>
+</P>
+
+
+
+</Body>
+</HTML>

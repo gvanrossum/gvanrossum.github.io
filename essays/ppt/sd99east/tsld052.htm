@@ -1,0 +1,66 @@
+
+<HTML>
+
+<HEAD>
+
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+ <TITLE>Shelves</TITLE> 
+</HEAD>
+
+<BODY     >
+
+ <H1>Shelves</H1> 
+ <P><UL>
+<H2># a shelf is a (g)dbm files that stores pickled Python objects
+</H2>
+</UL><UL>
+<H2>
+</H2>
+</UL><UL>
+<H2>import shelve
+</H2>
+</UL><UL>
+<H2>class UserData: ...
+</H2>
+</UL><UL>
+<H2>key = ...username, or session key, or whatever...
+</H2>
+</UL><UL>
+<H2>db = shelve.open("DATABASE", "w")	# open for reading+writing
+</H2>
+</UL><UL>
+<H2>if db.has_key(key):
+</H2>
+</UL><UL>
+<H2>    data = db[key]	# an object!
+</H2>
+</UL><UL>
+<H2>else:
+</H2>
+</UL><UL>
+<H2>    data = UserData(key)	# create a new instance
+</H2>
+</UL><UL>
+<H2>data.update(form)
+</H2>
+</UL><UL>
+<H2>db[key] = data
+</H2>
+</UL><UL>
+<H2>db.close()</H2>
+</UL></P>
+<P></P> 
+<P>
+<TABLE>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld051.htm">Previous slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld053.htm">Next slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="tsld001.htm">Back to first slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="sld052.htm">View graphic version</A> </TD>
+</TABLE>
+<BR>
+</P>
+
+
+
+</Body>
+</HTML>

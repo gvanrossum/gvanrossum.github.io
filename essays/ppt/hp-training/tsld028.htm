@@ -1,0 +1,43 @@
+
+<HTML>
+
+<HEAD>
+
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+ <TITLE>When to catch exceptions</TITLE> 
+</HEAD>
+
+<BODY     >
+
+ <H1>When to catch exceptions</H1> 
+ <P><UL>
+<LI><H2>When there's an alternative option
+</H2>
+<UL>
+try:
+<BR><BR>    f = open(".startup")
+<BR>except IOError:
+<BR>    f = None  # No startup file; use defaults
+</UL></UL><UL>
+<LI><H2>To exit with nice error message
+</H2>
+<UL>
+try:
+<BR><BR>    f = open("data")
+<BR>except IOError, msg:
+<BR>    print "I/O Error:", msg; sys.exit(1)</UL></UL></P>
+<P></P> 
+<P>
+<TABLE>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld027.htm">Previous slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld029.htm">Next slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="tsld001.htm">Back to first slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="sld028.htm">View graphic version</A> </TD>
+</TABLE>
+<BR>
+</P>
+
+
+
+</Body>
+</HTML>

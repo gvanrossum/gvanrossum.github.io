@@ -1,0 +1,46 @@
+
+<HTML>
+
+<HEAD>
+
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+ <TITLE>Security notes </TITLE> 
+</HEAD>
+
+<BODY     >
+
+ <H1>Security notes </H1> 
+ <P><UL>
+<LI><H2>Watch out when passing fields to the shell
+</H2>
+<UL>
+<LI>e.g. os.popen("finger %s" % form["user"].value)
+<LI>what if the value is "; cat /etc/passwd" ...
+</UL></UL><UL>
+<LI><H2>Solutions:
+</H2>
+<UL>
+<LI>Quote:
+<UL>
+<LI>user = pipes.quote(form["user"].value)
+</UL><LI>Refuse:
+<UL>
+<LI>if not re.match(r"^\w+$", user): ...error...
+</UL><LI>Sanitize: 
+<UL>
+<LI>user = re.sub(r"\W", "", form["user"].value)</UL></UL></UL></P>
+<P></P> 
+<P>
+<TABLE>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld047.htm">Previous slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld049.htm">Next slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="tsld001.htm">Back to first slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="sld048.htm">View graphic version</A> </TD>
+</TABLE>
+<BR>
+</P>
+
+
+
+</Body>
+</HTML>

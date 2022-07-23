@@ -1,0 +1,47 @@
+
+<HTML>
+
+<HEAD>
+
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+ <TITLE>Avoiding fork()</TITLE> 
+</HEAD>
+
+<BODY     >
+
+ <H1>Avoiding fork()</H1> 
+ <P><UL>
+<LI><H2>Python in Apache (mod_pyapache)
+</H2>
+<UL>
+<LI>problems: stability; internal design
+<LI>advantage: CGI compatible
+<LI>may work if CGI scripts are simple and trusted
+<LI>doesn't avoid database connection delay
+</UL></UL><UL>
+<LI><H2>Use Python as webserver
+</H2>
+<UL>
+<LI>slow for static content (use different port)
+<LI>advantage: total control; session state is easy
+</UL></UL><UL>
+<LI><H2>FastCGI, HTTPDAPI etc.
+</H2>
+</UL><UL>
+<LI><H2>ZOPE</H2>
+</UL></P>
+<P></P> 
+<P>
+<TABLE>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld060.htm">Previous slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld062.htm">Next slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="tsld001.htm">Back to first slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="sld061.htm">View graphic version</A> </TD>
+</TABLE>
+<BR>
+</P>
+
+
+
+</Body>
+</HTML>

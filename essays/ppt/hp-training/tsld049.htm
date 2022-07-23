@@ -1,0 +1,63 @@
+
+<HTML>
+
+<HEAD>
+
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+ <TITLE>"Synchronized" methods</TITLE> 
+</HEAD>
+
+<BODY     >
+
+ <H1>"Synchronized" methods</H1> 
+ <P><UL>
+<H2>class MyObject:
+</H2>
+</UL><UL>
+<H2>
+</H2>
+</UL><UL>
+<H2>    def __init__(self):
+</H2>
+</UL><UL>
+<H2>        self._lock = threading.RLock()
+</H2>
+</UL><UL>
+<H2>                  # or  threading.Lock(), if no reentrancy needed
+</H2>
+</UL><UL>
+<H2>
+</H2>
+</UL><UL>
+<H2>    def some_method(self):
+</H2>
+</UL><UL>
+<H2>        self._lock.acquire()
+</H2>
+</UL><UL>
+<H2>        try:
+</H2>
+</UL><UL>
+<H2>            "go about your business"
+</H2>
+</UL><UL>
+<H2>        finally:
+</H2>
+</UL><UL>
+<H2>            self._lock.release()</H2>
+</UL></P>
+<P></P> 
+<P>
+<TABLE>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld048.htm">Previous slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld050.htm">Next slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="tsld001.htm">Back to first slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="sld049.htm">View graphic version</A> </TD>
+</TABLE>
+<BR>
+</P>
+
+
+
+</Body>
+</HTML>

@@ -1,0 +1,54 @@
+
+<HTML>
+
+<HEAD>
+
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+ <TITLE>Class & instance variables</TITLE> 
+</HEAD>
+
+<BODY     >
+
+ <H1>Class & instance variables</H1> 
+ <P><UL>
+<H2>class Connection:
+</H2>
+</UL><UL>
+<H2>    verbose = 0				# class variable
+</H2>
+</UL><UL>
+<H2>    def __init__(self, host):
+</H2>
+</UL><UL>
+<H2>        self.host = host			# instance variable
+</H2>
+</UL><UL>
+<H2>    def debug(self, v):
+</H2>
+</UL><UL>
+<H2>        self.verbose = v			# make instance variable!
+</H2>
+</UL><UL>
+<H2>    def connect(self):
+</H2>
+</UL><UL>
+<H2>        if self.verbose:			# class or instance variable?
+</H2>
+</UL><UL>
+<H2>            print "connecting to", self.host</H2>
+</UL></P>
+<P></P> 
+<P>
+<TABLE>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld050.htm">Previous slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld052.htm">Next slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="tsld001.htm">Back to first slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="sld051.htm">View graphic version</A> </TD>
+</TABLE>
+<BR>
+</P>
+
+
+
+</Body>
+</HTML>

@@ -1,0 +1,53 @@
+
+<HTML>
+
+<HEAD>
+
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+ <TITLE>Exception handling style</TITLE> 
+</HEAD>
+
+<BODY     >
+
+ <H1>Exception handling style</H1> 
+ <P><UL>
+<LI><H2>Bad:
+</H2>
+<UL>
+try:
+<BR><BR>    parse_args()
+<BR>    f = open(file)
+<BR>    read_input()
+<BR>    make_report()
+<BR>except IOError:
+<BR>    print file, "not found"
+<BR>
+<BR># (what if read_input()
+<BR># raises IOError?)</UL></UL></P>
+<P><UL>
+<LI><H2>Good:
+</H2>
+<UL>
+parse_args()
+<BR><BR>try:
+<BR>    f = open(file)
+<BR>except IOError, msg:
+<BR>    print file, msg
+<BR>    sys.exit(1)
+<BR>read_input()
+<BR>make_report()</UL></UL></P>
+<P></P> 
+<P>
+<TABLE>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld029.htm">Previous slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld031.htm">Next slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="tsld001.htm">Back to first slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="sld030.htm">View graphic version</A> </TD>
+</TABLE>
+<BR>
+</P>
+
+
+
+</Body>
+</HTML>

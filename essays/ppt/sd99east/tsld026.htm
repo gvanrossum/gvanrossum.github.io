@@ -1,0 +1,51 @@
+
+<HTML>
+
+<HEAD>
+
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+ <TITLE>Subclassing</TITLE> 
+</HEAD>
+
+<BODY     >
+
+ <H1>Subclassing</H1> 
+ <P><UL>
+<H2>class FancyStack(Stack):
+</H2>
+</UL><UL>
+<H2>    "stack with added ability to inspect inferior stack items"
+</H2>
+</UL><UL>
+<H2>
+</H2>
+</UL><UL>
+<H2>    def peek(self, n):
+</H2>
+</UL><UL>
+<H2>        "peek(0) returns top; peek(-1) returns item below that; etc."
+</H2>
+</UL><UL>
+<H2>        size = len(self.items)
+</H2>
+</UL><UL>
+<H2>        assert 0 &#060= n &#060 size			# test precondition
+</H2>
+</UL><UL>
+<H2>        return self.items[size-1-n]</H2>
+</UL></P>
+<P></P> 
+<P>
+<TABLE>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld025.htm">Previous slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld027.htm">Next slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="tsld001.htm">Back to first slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="sld026.htm">View graphic version</A> </TD>
+</TABLE>
+<BR>
+</P>
+
+
+
+</Body>
+</HTML>

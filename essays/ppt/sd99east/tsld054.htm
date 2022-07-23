@@ -1,0 +1,126 @@
+
+<HTML>
+
+<HEAD>
+
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+ <TITLE>A simple lock solution</TITLE> 
+</HEAD>
+
+<BODY     >
+
+ <H1>A simple lock solution</H1> 
+ <P><UL>
+<H2>import os, time
+</H2>
+</UL><UL>
+<H2>
+</H2>
+</UL><UL>
+<H2>class Lock:
+</H2>
+</UL><UL>
+<H2>
+</H2>
+</UL><UL>
+<H2>    def __init__(self, filename):
+</H2>
+</UL><UL>
+<H2>        self.filename = filename
+</H2>
+</UL><UL>
+<H2>        self.locked = 0
+</H2>
+</UL><UL>
+<H2>
+</H2>
+</UL><UL>
+<H2>    def lock(self):
+</H2>
+</UL><UL>
+<H2>        assert not self.locked
+</H2>
+</UL><UL>
+<H2>        while 1:
+</H2>
+</UL><UL>
+<H2>        try:
+</H2>
+</UL><UL>
+<H2>	        os.mkdir(self.filename)
+</H2>
+</UL><UL>
+<H2>	        self.locked = 1
+</H2>
+</UL><UL>
+<H2>	        return	# or break
+</H2>
+</UL><UL>
+<H2>        except os.error, err:
+</H2>
+</UL><UL>
+<H2>	        time.sleep(1)</H2>
+</UL></P>
+<P><UL>
+<H2>    def unlock(self):
+</H2>
+</UL><UL>
+<H2>        assert self.locked
+</H2>
+</UL><UL>
+<H2>        self.locked = 0
+</H2>
+</UL><UL>
+<H2>        os.rmdir(self.filename)
+</H2>
+</UL><UL>
+<H2>
+</H2>
+</UL><UL>
+<H2>   # auto-unlock when lock object is deleted
+</H2>
+</UL><UL>
+<H2>    def __del__(self):
+</H2>
+</UL><UL>
+<H2>        if self.locked:
+</H2>
+</UL><UL>
+<H2>            self.unlock()
+</H2>
+</UL><UL>
+<H2>
+</H2>
+</UL><UL>
+<H2>
+</H2>
+</UL><UL>
+<H2># for a big production with timeouts,
+</H2>
+</UL><UL>
+<H2># see the Mailman source code (LockFile.py);
+</H2>
+</UL><UL>
+<H2># it works on all Unixes and supports NFS;
+</H2>
+</UL><UL>
+<H2># but not on Windows,
+</H2>
+</UL><UL>
+<H2># and the code is very complex...</H2>
+</UL></P>
+<P></P> 
+<P>
+<TABLE>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld053.htm">Previous slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld055.htm">Next slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="tsld001.htm">Back to first slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="sld054.htm">View graphic version</A> </TD>
+</TABLE>
+<BR>
+</P>
+
+
+
+</Body>
+</HTML>

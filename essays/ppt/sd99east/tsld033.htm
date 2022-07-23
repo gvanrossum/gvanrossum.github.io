@@ -1,0 +1,37 @@
+
+<HTML>
+
+<HEAD>
+
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+ <TITLE>Try-finally: cleanup</TITLE> 
+</HEAD>
+
+<BODY     >
+
+ <H1>Try-finally: cleanup</H1> 
+ <P><UL>
+f = open(file)
+<BR>try:
+<BR>    process_file(f)
+<BR>finally:
+<BR>    f.close()	# always executed
+<BR>print "OK"	# executed on success only
+</UL><UL>
+<H2>	</H2>
+</UL></P>
+<P></P> 
+<P>
+<TABLE>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld032.htm">Previous slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld034.htm">Next slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="tsld001.htm">Back to first slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="sld033.htm">View graphic version</A> </TD>
+</TABLE>
+<BR>
+</P>
+
+
+
+</Body>
+</HTML>

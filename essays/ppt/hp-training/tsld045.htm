@@ -1,0 +1,43 @@
+
+<HTML>
+
+<HEAD>
+
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+ <TITLE>Which API?</TITLE> 
+</HEAD>
+
+<BODY     >
+
+ <H1>Which API?</H1> 
+ <P><UL>
+<LI><H2>thread - traditional Python API
+</H2>
+<UL>
+import thread
+<BR><BR>thread.start_new(doit, (5,))
+<BR># (can't easily wait for its completion)
+<BR>
+</UL></UL><UL>
+<LI><H2>threading - resembles Java API
+</H2>
+<UL>
+from threading import Thread # and much more...
+<BR><BR>t = Thread(target=doit, args=(5,))
+<BR>t.start()
+<BR>t.join()</UL></UL></P>
+<P></P> 
+<P>
+<TABLE>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld044.htm">Previous slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld046.htm">Next slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="tsld001.htm">Back to first slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="sld045.htm">View graphic version</A> </TD>
+</TABLE>
+<BR>
+</P>
+
+
+
+</Body>
+</HTML>

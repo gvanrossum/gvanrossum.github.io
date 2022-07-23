@@ -1,0 +1,57 @@
+
+<HTML>
+
+<HEAD>
+
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+ <TITLE>Example: do_roulette()</TITLE> 
+</HEAD>
+
+<BODY     >
+
+ <H1>Example: do_roulette()</H1> 
+ <P><UL>
+<H2> def do_roulette(self):
+</H2>
+</UL><UL>
+<H2>        import random
+</H2>
+</UL><UL>
+<H2>        files = self.dir.list()
+</H2>
+</UL><UL>
+<H2>        if not files: 
+</H2>
+</UL><UL>
+<H2>            self.error("No entries.")
+</H2>
+</UL><UL>
+<H2>            return
+</H2>
+</UL><UL>
+<H2>        file = random.choice(files)
+</H2>
+</UL><UL>
+<H2>        self.prologue(T_ROULETTE)
+</H2>
+</UL><UL>
+<H2>        emit(ROULETTE)
+</H2>
+</UL><UL>
+<H2>        self.dir.show(file)</H2>
+</UL></P>
+<P></P> 
+<P>
+<TABLE>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld066.htm">Previous slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld068.htm">Next slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="tsld001.htm">Back to first slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="sld067.htm">View graphic version</A> </TD>
+</TABLE>
+<BR>
+</P>
+
+
+
+</Body>
+</HTML>

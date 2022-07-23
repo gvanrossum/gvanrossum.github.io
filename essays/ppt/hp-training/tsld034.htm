@@ -1,0 +1,45 @@
+
+<HTML>
+
+<HEAD>
+
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+ <TITLE>Sharing mutable objects</TITLE> 
+</HEAD>
+
+<BODY     >
+
+ <H1>Sharing mutable objects</H1> 
+ <P><UL>
+<LI><H2>through variables
+</H2>
+<UL>
+a = [1,2]; b = a; a.append(3); print b
+<BR></UL></UL><UL>
+<LI><H2>as default arguments
+</H2>
+<UL>
+def add(a, list=[]):
+<BR><BR>    list.append(a); return list
+</UL></UL><UL>
+<LI><H2>as class attributes
+</H2>
+<UL>
+class TreeNode:
+<BR><BR>    children = []
+<BR>    ...</UL></UL></P>
+<P></P> 
+<P>
+<TABLE>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld033.htm">Previous slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld035.htm">Next slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="tsld001.htm">Back to first slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="sld034.htm">View graphic version</A> </TD>
+</TABLE>
+<BR>
+</P>
+
+
+
+</Body>
+</HTML>

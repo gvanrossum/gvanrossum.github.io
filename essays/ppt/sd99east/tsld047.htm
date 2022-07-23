@@ -1,0 +1,60 @@
+
+<HTML>
+
+<HEAD>
+
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+ <TITLE>Debugging framework</TITLE> 
+</HEAD>
+
+<BODY     >
+
+ <H1>Debugging framework</H1> 
+ <P><UL>
+<H2>import cgi
+</H2>
+</UL><UL>
+<H2>
+</H2>
+</UL><UL>
+<H2>def main():
+</H2>
+</UL><UL>
+<H2>    print "Content-type: text/html\n" # Do this first
+</H2>
+</UL><UL>
+<H2>    try:
+</H2>
+</UL><UL>
+<H2>        import worker	# module that does the real work
+</H2>
+</UL><UL>
+<H2>    except:
+</H2>
+</UL><UL>
+<H2>        print "&#060!-- --&#062&#060hr&#062&#060h1&#062Oops.  An error occurred.&#060/h1&#062"
+</H2>
+</UL><UL>
+<H2>        cgi.print_exception() # Prints traceback, safely
+</H2>
+</UL><UL>
+<H2>
+</H2>
+</UL><UL>
+<H2>main()</H2>
+</UL></P>
+<P></P> 
+<P>
+<TABLE>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld046.htm">Previous slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld048.htm">Next slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="tsld001.htm">Back to first slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="sld047.htm">View graphic version</A> </TD>
+</TABLE>
+<BR>
+</P>
+
+
+
+</Body>
+</HTML>

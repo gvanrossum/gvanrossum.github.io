@@ -1,0 +1,52 @@
+
+<HTML>
+
+<HEAD>
+
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+ <TITLE>Other CGI niceties</TITLE> 
+</HEAD>
+
+<BODY     >
+
+ <H1>Other CGI niceties</H1> 
+ <P><UL>
+<LI><H2>cgi.escape(s)
+</H2>
+<UL>
+<LI>translate "&#060", "&", "&#062" to "&lt;", "&amp;", "&gt"
+</UL></UL><UL>
+<LI><H2>cgi.parse_qs(string, keep_blank_values=0)
+</H2>
+<UL>
+<LI>parse query string to dictionary {"foo": ["bar"], ...}
+</UL></UL><UL>
+<LI><H2>cgi.parse([file], ...)
+</H2>
+<UL>
+<LI>ditto, takes query string from default locations
+</UL></UL><UL>
+<LI><H2>urllib.quote(s), urllib.unquote(s)
+</H2>
+<UL>
+<LI>convert between "~" and "%7e" (etc.)
+</UL></UL><UL>
+<LI><H2>urllib.urlencode(dict)
+</H2>
+<UL>
+<LI>convert dictionary {"foo": "bar", ...} to query string "foo=bar&..." # note asymmetry with parse_qs() above</UL></UL></P>
+<P></P> 
+<P>
+<TABLE>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld044.htm">Previous slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld046.htm">Next slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="tsld001.htm">Back to first slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="sld045.htm">View graphic version</A> </TD>
+</TABLE>
+<BR>
+</P>
+
+
+
+</Body>
+</HTML>

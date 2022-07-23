@@ -1,0 +1,72 @@
+
+<HTML>
+
+<HEAD>
+
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+ <TITLE>How to hand-optimize code</TITLE> 
+</HEAD>
+
+<BODY     >
+
+ <H1>How to hand-optimize code</H1> 
+ <P><UL>
+<H2>import string, types
+</H2>
+</UL><UL>
+<H2>
+</H2>
+</UL><UL>
+<H2>def dictser(dict, ListType=types.ListType, isinstance=isinstance):
+</H2>
+</UL><UL>
+<H2>    L = []
+</H2>
+</UL><UL>
+<H2>    group = dict.get("main")
+</H2>
+</UL><UL>
+<H2>    if group:
+</H2>
+</UL><UL>
+<H2>        for key in group.keys():
+</H2>
+</UL><UL>
+<H2>            value = group[key]
+</H2>
+</UL><UL>
+<H2>            if isinstance(value, ListType):
+</H2>
+</UL><UL>
+<H2>                for item in value:
+</H2>
+</UL><UL>
+<H2>                    L.extend(["  ", key, " = ", item, "\n"])
+</H2>
+</UL><UL>
+<H2>            else:
+</H2>
+</UL><UL>
+<H2>                L.extend(["  ", key, " = ", value, "\n"])
+</H2>
+</UL><UL>
+<H2>    ...
+</H2>
+</UL><UL>
+<H2>    return string.join(L, "")</H2>
+</UL></P>
+<P></P> 
+<P>
+<TABLE>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld041.htm">Previous slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld043.htm">Next slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="tsld001.htm">Back to first slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="sld042.htm">View graphic version</A> </TD>
+</TABLE>
+<BR>
+</P>
+
+
+
+</Body>
+</HTML>

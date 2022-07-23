@@ -1,0 +1,117 @@
+
+<HTML>
+
+<HEAD>
+
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+ <TITLE>Cookie example</TITLE> 
+</HEAD>
+
+<BODY     >
+
+ <H1>Cookie example</H1> 
+ <P><UL>
+<H2>import os, cgi, Cookie 
+</H2>
+</UL><UL>
+<H2> 
+</H2>
+</UL><UL>
+<H2>c = Cookie.Cookie() 
+</H2>
+</UL><UL>
+<H2>try: 
+</H2>
+</UL><UL>
+<H2>    c.load(os.environ["HTTP_COOKIE"]) 
+</H2>
+</UL><UL>
+<H2>except KeyError: 
+</H2>
+</UL><UL>
+<H2>    pass 
+</H2>
+</UL><UL>
+<H2> 
+</H2>
+</UL><UL>
+<H2>form = cgi.FieldStorage() 
+</H2>
+</UL><UL>
+<H2>try: 
+</H2>
+</UL><UL>
+<H2>    user = form["user"].value 
+</H2>
+</UL><UL>
+<H2>except KeyError: 
+</H2>
+</UL><UL>
+<H2>    try: 
+</H2>
+</UL><UL>
+<H2>        user = c["user"].value 
+</H2>
+</UL><UL>
+<H2>    except KeyError: 
+</H2>
+</UL><UL>
+<H2>        user = "nobody" </H2>
+</UL></P>
+<P><UL>
+<H2>c["user"] = user 
+</H2>
+</UL><UL>
+<H2> 
+</H2>
+</UL><UL>
+<H2>print c 
+</H2>
+</UL><UL>
+<H2> 
+</H2>
+</UL><UL>
+<H2>print """ 
+</H2>
+</UL><UL>
+<H2>&#060form action="/cgi-bin/test.py" method="get"&#062 
+</H2>
+</UL><UL>
+<H2>&#060input type="text" name="user" value="%s"&#062 
+</H2>
+</UL><UL>
+<H2>&#060/form&#062 
+</H2>
+</UL><UL>
+<H2>""" % cgi.escape(user)
+</H2>
+</UL><UL>
+<H2>
+</H2>
+</UL><UL>
+<H2># debug: show the cookie header we wrote
+</H2>
+</UL><UL>
+<H2>print "&#060pre&#062" 
+</H2>
+</UL><UL>
+<H2>print cgi.escape(str(c)) 
+</H2>
+</UL><UL>
+<H2>print "&#060/pre&#062"  </H2>
+</UL></P>
+<P></P> 
+<P>
+<TABLE>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld056.htm">Previous slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld058.htm">Next slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="tsld001.htm">Back to first slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="sld057.htm">View graphic version</A> </TD>
+</TABLE>
+<BR>
+</P>
+
+
+
+</Body>
+</HTML>

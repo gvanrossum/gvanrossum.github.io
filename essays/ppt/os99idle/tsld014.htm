@@ -1,0 +1,48 @@
+
+<HTML>
+
+<HEAD>
+
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+ <TITLE>CallTips.py</TITLE> 
+</HEAD>
+
+<BODY     >
+
+ <H1>CallTips.py</H1> 
+ <P><UL>
+<LI><H2>Bind (, ), ESC, KeyRelease events</H2>
+</UL></P>
+<P><UL>
+    def paren_open_event(self, event):
+</UL><UL>
+        # Thanks to Mark Hammond
+</UL><UL>
+        self._remove_calltip_window()
+</UL><UL>
+        arg_text = get_arg_text(self.get_object_at_cursor())
+</UL><UL>
+        if arg_text:
+</UL><UL>
+            self.calltip_start = self.text.index("insert")
+</UL><UL>
+            self.calltip = self._make_calltip_window()
+</UL><UL>
+            self.calltip.showtip(arg_text)
+</UL><UL>
+        return "" #so the event is handled normally.</UL></P>
+<P></P> 
+<P>
+<TABLE>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld013.htm">Previous slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld015.htm">Next slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="tsld001.htm">Back to first slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="sld014.htm">View graphic version</A> </TD>
+</TABLE>
+<BR>
+</P>
+
+
+
+</Body>
+</HTML>

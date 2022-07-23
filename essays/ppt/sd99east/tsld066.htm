@@ -1,0 +1,135 @@
+
+<HTML>
+
+<HEAD>
+
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+ <TITLE>faqwiz.py - main code</TITLE> 
+</HEAD>
+
+<BODY     >
+
+ <H1>faqwiz.py - main code</H1> 
+ <P><UL>
+<H2>class FaqWizard:
+</H2>
+</UL><UL>
+<H2>
+</H2>
+</UL><UL>
+<H2>    def __init__(self):
+</H2>
+</UL><UL>
+<H2>        self.ui = UserInput()
+</H2>
+</UL><UL>
+<H2>        self.dir = FaqDir()
+</H2>
+</UL><UL>
+<H2>
+</H2>
+</UL><UL>
+<H2>    def do_home(self):
+</H2>
+</UL><UL>
+<H2>        self.prologue(T_HOME)
+</H2>
+</UL><UL>
+<H2>        emit(HOME)
+</H2>
+</UL><UL>
+<H2>
+</H2>
+</UL><UL>
+<H2>    def do_search(self): ...
+</H2>
+</UL><UL>
+<H2>    def do_index(self): ...
+</H2>
+</UL><UL>
+<H2>    def do_roulette(self): ...
+</H2>
+</UL><UL>
+<H2>    def do_show(self): ...
+</H2>
+</UL><UL>
+<H2>    def do_edit(self): ...
+</H2>
+</UL><UL>
+<H2>    def do_review(self): ...
+</H2>
+</UL><UL>
+<H2>    def do_help(self): ...
+</H2>
+</UL><UL>
+<H2>    ...etc...</H2>
+</UL></P>
+<P><UL>
+<H2> def go(self):
+</H2>
+</UL><UL>
+<H2>        print 'Content-type: text/html'
+</H2>
+</UL><UL>
+<H2>        req = self.ui.req or 'home'
+</H2>
+</UL><UL>
+<H2>        mname = 'do_%s' % req
+</H2>
+</UL><UL>
+<H2>        try:
+</H2>
+</UL><UL>
+<H2>            meth = getattr(self, mname)
+</H2>
+</UL><UL>
+<H2>        except AttributeError:
+</H2>
+</UL><UL>
+<H2>            self.error("Bad request type %s." % `req`)
+</H2>
+</UL><UL>
+<H2>        else:
+</H2>
+</UL><UL>
+<H2>            try:
+</H2>
+</UL><UL>
+<H2>                meth()
+</H2>
+</UL><UL>
+<H2>            except InvalidFile, exc:
+</H2>
+</UL><UL>
+<H2>                self.error("Invalid entry file name %s" % exc.file)
+</H2>
+</UL><UL>
+<H2>            except NoSuchFile, exc:
+</H2>
+</UL><UL>
+<H2>                self.error("No entry with file name %s" % exc.file)
+</H2>
+</UL><UL>
+<H2>            except NoSuchSection, exc:
+</H2>
+</UL><UL>
+<H2>                self.error("No section number %s" % exc.section)
+</H2>
+</UL><UL>
+<H2>        self.epilogue()</H2>
+</UL></P>
+<P></P> 
+<P>
+<TABLE>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld065.htm">Previous slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld067.htm">Next slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="tsld001.htm">Back to first slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="sld066.htm">View graphic version</A> </TD>
+</TABLE>
+<BR>
+</P>
+
+
+
+</Body>
+</HTML>

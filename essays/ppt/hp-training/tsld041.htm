@@ -1,0 +1,61 @@
+
+<HTML>
+
+<HEAD>
+
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+ <TITLE>Measuring raw speed</TITLE> 
+</HEAD>
+
+<BODY     >
+
+ <H1>Measuring raw speed</H1> 
+ <P><UL>
+<H2># Here's one way
+</H2>
+</UL><UL>
+<H2>import time
+</H2>
+</UL><UL>
+<H2>def timing(func, arg, ncalls=100):
+</H2>
+</UL><UL>
+<H2>    r = range(ncalls)
+</H2>
+</UL><UL>
+<H2>    t0 = time.clock()
+</H2>
+</UL><UL>
+<H2>    for i in r:
+</H2>
+</UL><UL>
+<H2>        func(arg)
+</H2>
+</UL><UL>
+<H2>    t1 = time.clock()
+</H2>
+</UL><UL>
+<H2>    dt = t1-t0
+</H2>
+</UL><UL>
+<H2>    print "%s: %.3f ms/call (%.3f seconds / %d calls)" % (
+</H2>
+</UL><UL>
+<H2>            func.__name__, 1000*dt/ncalls, dt, ncalls)
+</H2>
+</UL></P>
+<P></P> 
+<P>
+<TABLE>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld040.htm">Previous slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld042.htm">Next slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="tsld001.htm">Back to first slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="sld041.htm">View graphic version</A> </TD>
+</TABLE>
+<BR>
+</P>
+
+
+
+</Body>
+</HTML>

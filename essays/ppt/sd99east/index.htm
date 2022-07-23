@@ -1,0 +1,113 @@
+
+<html>
+
+<head>
+
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+<title>Using Python for CGI programming</title>
+</head>
+
+<BODY     >
+<CENTER>
+<h1>Using Python for CGI programming</h1>
+<h4>11/12/99</h4>
+<br><h2> <A HREF="sld001.htm">Click here to start</A>
+ </h2><br>  
+</center>
+<center>
+ <table width=90%>
+  <tr>
+   <td valign=top align=left width=50%>
+      <h3><u>Table of Contents</u></h3>
+            <P ALIGN=LEFT><A HREF="sld001.htm">Using Python for CGI programming</A></P>
+        <P ALIGN=LEFT><A HREF="sld002.htm">Overview</A></P>
+        <P ALIGN=LEFT><A HREF="sld003.htm">Why Python?</A></P>
+        <P ALIGN=LEFT><A HREF="sld004.htm">Basic Python tutorial</A></P>
+        <P ALIGN=LEFT><A HREF="sld005.htm">Tutorial outline</A></P>
+        <P ALIGN=LEFT><A HREF="sld006.htm">Interactive “shell”</A></P>
+        <P ALIGN=LEFT><A HREF="sld007.htm">Numbers</A></P>
+        <P ALIGN=LEFT><A HREF="sld008.htm">Strings</A></P>
+        <P ALIGN=LEFT><A HREF="sld009.htm">Lists</A></P>
+        <P ALIGN=LEFT><A HREF="sld010.htm">More list operations</A></P>
+        <P ALIGN=LEFT><A HREF="sld011.htm">Dictionaries</A></P>
+        <P ALIGN=LEFT><A HREF="sld012.htm">More dictionary ops</A></P>
+        <P ALIGN=LEFT><A HREF="sld013.htm">Dictionary details</A></P>
+        <P ALIGN=LEFT><A HREF="sld014.htm">Tuples</A></P>
+        <P ALIGN=LEFT><A HREF="sld015.htm">Variables</A></P>
+        <P ALIGN=LEFT><A HREF="sld016.htm">Reference semantics</A></P>
+        <P ALIGN=LEFT><A HREF="sld017.htm">Changing a shared list</A></P>
+        <P ALIGN=LEFT><A HREF="sld018.htm">Changing an integer</A></P>
+        <P ALIGN=LEFT><A HREF="sld019.htm">Control structures</A></P>
+        <P ALIGN=LEFT><A HREF="sld020.htm">Grouping indentation</A></P>
+        <P ALIGN=LEFT><A HREF="sld021.htm">Functions, procedures</A></P>
+        <P ALIGN=LEFT><A HREF="sld022.htm">Example function</A></P>
+        <P ALIGN=LEFT><A HREF="sld023.htm">Classes</A></P>
+        <P ALIGN=LEFT><A HREF="sld024.htm">Example class</A></P>
+        <P ALIGN=LEFT><A HREF="sld025.htm">Using classes</A></P>
+        <P ALIGN=LEFT><A HREF="sld026.htm">Subclassing</A></P>
+        <P ALIGN=LEFT><A HREF="sld027.htm">Subclassing (2)</A></P>
+        <P ALIGN=LEFT><A HREF="sld028.htm">Class & instance variables</A></P>
+        <P ALIGN=LEFT><A HREF="sld029.htm">Instance variable rules</A></P>
+        <P ALIGN=LEFT><A HREF="sld030.htm">Modules</A></P>
+        <P ALIGN=LEFT><A HREF="sld031.htm">Packages</A></P>
+        <P ALIGN=LEFT><A HREF="sld032.htm">Catching exceptions</A></P>
+        <P ALIGN=LEFT><A HREF="sld033.htm">Try-finally: cleanup</A></P>
+        <P ALIGN=LEFT><A HREF="sld034.htm">Raising exceptions</A></P>
+        <P ALIGN=LEFT><A HREF="sld035.htm">More on exceptions</A></P>
+        <P ALIGN=LEFT><A HREF="sld036.htm">File objects</A></P>
+        <P ALIGN=LEFT><A HREF="sld037.htm">Standard library</A></P>
+        <P ALIGN=LEFT><A HREF="sld038.htm">Python CGI programming</A></P>
+        <P ALIGN=LEFT><A HREF="sld039.htm">Outline</A></P>
+        <P ALIGN=LEFT><A HREF="sld040.htm">A typical HTML form</A></P>
+        <P ALIGN=LEFT><A HREF="sld041.htm">A typical CGI script</A></P>
+        <P ALIGN=LEFT><A HREF="sld042.htm">CGI script structure</A></P>
+        <P ALIGN=LEFT><A HREF="sld043.htm">Structure refinement</A></P>
+        <P ALIGN=LEFT><A HREF="sld044.htm">FieldStorage details</A></P>
+        <P ALIGN=LEFT><A HREF="sld045.htm">Other CGI niceties</A></P>
+        <P ALIGN=LEFT><A HREF="sld046.htm">Dealing with bugs</A></P>
+        <P ALIGN=LEFT><A HREF="sld047.htm">Debugging framework</A></P>
+        <P ALIGN=LEFT><A HREF="sld048.htm">Security notes </A></P>
+        <P ALIGN=LEFT><A HREF="sld049.htm">Using persistent data</A></P>
+        <P ALIGN=LEFT><A HREF="sld050.htm">Plain files</A></P>
+        <P ALIGN=LEFT><A HREF="sld051.htm">(G)DBM files</A></P>
+        <P ALIGN=LEFT><A HREF="sld052.htm">Shelves</A></P>
+        <P ALIGN=LEFT><A HREF="sld053.htm">Locking</A></P>
+        <P ALIGN=LEFT><A HREF="sld054.htm">A simple lock solution</A></P>
+        <P ALIGN=LEFT><A HREF="sld055.htm">Sessions</A></P>
+        <P ALIGN=LEFT><A HREF="sld056.htm">Cookies</A></P>
+        <P ALIGN=LEFT><A HREF="sld057.htm">Cookie example</A></P>
+        <P ALIGN=LEFT><A HREF="sld058.htm">File upload example</A></P>
+        <P ALIGN=LEFT><A HREF="sld059.htm">Generating HTML</A></P>
+        <P ALIGN=LEFT><A HREF="sld060.htm">CGI performance</A></P>
+        <P ALIGN=LEFT><A HREF="sld061.htm">Avoiding fork()</A></P>
+        <P ALIGN=LEFT><A HREF="sld062.htm">ZOPE</A></P>
+        <P ALIGN=LEFT><A HREF="sld063.htm">Case study</A></P>
+        <P ALIGN=LEFT><A HREF="sld064.htm">FAQ wizard</A></P>
+        <P ALIGN=LEFT><A HREF="sld065.htm">faqw.py - bootstrap</A></P>
+        <P ALIGN=LEFT><A HREF="sld066.htm">faqwiz.py - main code</A></P>
+        <P ALIGN=LEFT><A HREF="sld067.htm">Example: do_roulette()</A></P>
+        <P ALIGN=LEFT><A HREF="sld068.htm">Persistency</A></P>
+        <P ALIGN=LEFT><A HREF="sld069.htm">faqconf.py, faqcust.py</A></P>
+        <P ALIGN=LEFT><A HREF="sld070.htm">Webchecker</A></P>
+        <P ALIGN=LEFT><A HREF="sld071.htm">Reference URLs</A></P>
+        <P ALIGN=LEFT><A HREF="sld072.htm">Reference books</A></P>
+        <P ALIGN=LEFT><A HREF="sld073.htm">Any questions?</A></P>
+        <P ALIGN=LEFT><A HREF="sld074.htm">Nobody expects theSpanish Inquisition!</A></P>
+
+   </td>
+   <td valign=top width=50%>
+	 <strong>Author: </strong>Guido van Rossum 
+     <P> <strong>Email: </strong> <A HREF="MAILTO:guido@python.org">guido@python.org</A> </P> 
+	 <P> <strong>Home Page: </strong> <A HREF="http://www.python.org/~guido/">http://www.python.org/~guido/</A> </P> 
+	
+	
+	
+	 <P><A HREF="sd99east.PPT"> Download presentation source </A> 
+   </td>
+  </tr>
+ </table>
+</center>
+
+</body>
+
+</html>
