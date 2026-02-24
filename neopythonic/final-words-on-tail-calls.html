@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Final Words on Tail Calls - Neopythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="so-you-want-to-learn-python.html">&larr; Newer</a> &middot; <a href="people-who-annoy-me.html">Older &rarr;</a></p>
+
+<h1>Final Words on Tail Calls</h1>
+<p><i>April 27, 2009 &mdash; originally posted on
+<a href="https://neopythonic.blogspot.com/2009/04/final-words-on-tail-calls.html">Neopythonic</a></i></p>
+
+<hr>
+
+A lot of people remarked that in my post on <a href="http://neopythonic.blogspot.com/2009/04/tail-recursion-elimination.html">Tail Recursion Elimination</a> I confused tail self-recursion with other tail calls, which proper Tail Call Optimization (TCO) also eliminates. I now feel more educated: tail calls are not just about loops. I started my blog post when someone pointed out several recent posts by Pythonistas playing around with implementing tail self-recursion through decorators or bytecode hacks. In the eyes of the TCO proponents those were all amateurs, and perhaps that's so.<br /><br />The one issue on which TCO advocates seem to agree with me is that TCO is a feature, not an optimization. (Even though in some compiled languages it really is provided by a compiler optimization.) We can argue over whether it is a desirable feature. Personally, I think it is a fine feature for some languages, but I don't think it fits Python: The elimination of stack traces for some calls but not others would certainly confuse many users, who have not been raised with tail call religion but might have learned about call semantics by tracing through a few calls in a debugger.<br /><br />The main issue here is that I expect that in many cases tail calls are not of a recursive nature (neither direct nor indirect), so the elimination of stack frames doesn't do anything for the algorithmic complexity of the code, but it <span style="font-style: italic;">does</span> make debugging harder. For example, if your have a function ending in something like this:<br /><blockquote><pre>if x > y:<br /> return some_call(z)<br />else:<br /> return 42<br /></pre></blockquote>and you end up in the debugger inside some_call() whereas you expected to have taken the other branch, with TCO as a feature your debugger can't tell you the value of x and y, because the stack frame has been eliminated.<br /><br />(I'm sure at this point someone will bring up that the debugger should be smarter. Sure. I'm expecting your patch for CPython any minute now.)<br /><br />The most interesting use case brought up for TCO is the implementation of algorithms involving state machines. The proponents of TCO claim that the only alternative to TCO is a loop with lots of state, which they consider ugly. Now, apart from the observation that since TCO essentially is a GOTO, you write spaghetti code using TCO just as easily, Ian Bicking gave a solution that is as simple as it is elegant. (I saw it in a comment to someone's blog that I can't find back right now; I'll add a link if someone adds it in a comment here.) Instead of this tail call:<br /><blockquote><pre>return foo(args)</pre></blockquote>you write this:<br /><blockquote><pre>return foo, (args,)</pre></blockquote>which doesn't call foo() but just returns it and an argument tuple, and embed everything in a "driver" loop like this:<br /><blockquote><pre>func, args = ...initial func/args pair...<br />while True:<br />  func, args = func(*args)</pre></blockquote>If you need an exit condition you can use an exception, or you could invent some other protocol to signal the end of the loop (like returning None).<br /><br />And here it ends. One other thing I learned is that some in the academic world scornfully refer to Python as "the Basic of the future". Personally, I rather see that as a badge of honor, and it gives me an opportunity to plug a <a href="http://oreilly.com/catalog/9780596515171/">book of interviews with language designers</a> to which I contributed,  side by side with the creators of Basic, C++, Perl, Java, and other academically scorned languages -- as well as those of ML and Haskell, I hasten to add. (Apparently the creators of Scheme were too busy arguing whether to say "tail call optimization" or "proper tail recursion." :-)
+
+<h3>Comments (25)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>April 27, 2009</i></p>
+I'd like to point out that you can (almost) have your cake and eat it too on debugging, by blowing everything on the stack except for the function name and line.<br /><br />Recursive calls can be done even better, by keeping a name, line, and counter of the number of times visited. This is actually much nicer to debug than 1000 lines of 'File "Foo.py", line 42, in foo'.<br /><br />I personally think you should open it up to whomever can make a patch that does it and still debugs.<br /><br />2¢
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Unknown</b> &mdash; <i>April 27, 2009</i></p>
+I remember trying to solve the precise problem you mentioned with state machines, an failing. Thank you for the very beautiful solution! It seems to work whenever one would need tail recursion.<br /><br />I hope that this will be added to the python documentation sometime -- it is not obvious at all (at least to me), concise, and solves a problem quite a few people are having.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Eli Barzilay</b> &mdash; <i>April 27, 2009</i></p>
+Re Bicking's solution -- this is a very known method called tampoline; see <A HREF="http://home.pipeline.com/~hbaker1/CheneyMTA.html" REL="nofollow">here</A> for example (second paragraph in the introduction).<br /><br />(And no, this doesn't get you real TCO, unless you're willing to run <I>all</I> function calls through your trampoline, including library functions and built-ins.)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>April 28, 2009</i></p>
+Been reading said book over the past few days. Definitely some reoccurring themes, like providing simple constructs to build on, and of course lots of parallelization talk. An unfortunate amount of other-language bashing too.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>April 28, 2009</i></p>
+&gt; (I&#39;m sure at this point someone will bring up that the debugger should be smarter. Sure. I&#39;m expecting your patch for CPython any minute now.)<br /><br />So, if the debugger is smarter, you&#39;ll add support for TCO?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Jon Harrop</b> &mdash; <i>April 28, 2009</i></p>
+You could have both stack traces and TCO by pushing debug frames during tail calls, unwinding to the last non-tail debug frame at returns and compressing the stack it if it gets too big. That will not work in pathological cases (e.g. two functions repeatedly tail calling either themselves or the other at random, because the stack will not compress) but it could get you some mileage without breaking backwards compatibility.<br /><br />Trampolines are not a solution because they prevent extensibility (they are essentially a local change to the calling convention). Hence they are only seen in other languages that lack tail calls, such as Scala and Clojure.<br /><br />I agree that tail calls do not belong in Python though. With inadequate support for most other language features and paradigms, I do not imagine they would be of any use. Anyone who wants to reap the benefits of modern techniques can just use any one of the modern language implementations that provide them (and a lot more).
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>grant rettke</b> &mdash; <i>April 28, 2009</i></p>
+Can't you compromise in regards to TCO by blowing away the entire stack but for the arguments, and only keeping track the last 1000 calls?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>grant rettke</b> &mdash; <i>April 28, 2009</i></p>
+RE: "Can't you compromise in regards to TCO by blowing away the entire stack but for the arguments, and only keeping track the last 1000 calls?"<br /><br />That is, if you want TCO, and you also want a stacktrace in a given language?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>DygraphicProgrammer</b> &mdash; <i>April 28, 2009</i></p>
+There seem to be 2 sets here:<br /><br />Programmers who program like Software Developers, and Programmers who program like  computer scientists. <br /><br />As a CS student, recursion was a critically important technique, and things like TCO where necessary language features. <br /><br />As a Software Developer, I have used or seen recursion precisely 0 times in shipping code. And powerful debuggers and accurate stack traces are necessary language features.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Unknown</b> &mdash; <i>April 28, 2009</i></p>
+All of Guido's complaints about TCO seem to involve debugging the code. Why can't TCO just be enabled in an optimized compile? Doesn't Python have that mythical -O and -OO that basically do nothing, currently?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>shevy</b> &mdash; <i>April 28, 2009</i></p>
+I am not a python dev nor a good python coder, however what I think proponents _for_ this could do is use it - or create a sublanguage which is very pythonic.<br /><br />If this confuses people, they will tend to avoid it in their code anyway. And if it has a solid advantage, people will use it.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Tim Finin</b> &mdash; <i>April 28, 2009</i></p>
+I love 'Basic of the future' as a slur/compliment for a programming language.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>April 28, 2009</i></p>
+Re Bicking's solution -- <A HREF="http://jtauber.com/blog/2008/03/30/thunks,_trampolines_and_continuation_passing/" REL="nofollow">James Tauber: Thunks, Trampolines and Continuation Passing</A>
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>April 28, 2009</i></p>
+"Why can't TCO just be enabled in an optimized compile?"<br /><br />The problem is that TCO affects how you go about solving problems.  In Erlang or Scheme, it makes sense to use tail calls very heavily and for just about everything.  So, programs that work great with TCO would not work at all without it.<br /><br />If Python enabled TCO sometimes, then that would mean that your debug build wouldn't run your program (or would show astronomical memory usage), but your production program would run fine.<br /><br />That's not to say that it's impossible in theory to have some amount of stack traceability, and still have TCO.  But, you won't have a stack trace that goes back to the very beginning—the best you could do is to keep track of the last N frames, which would have a reasonably constant amount of overhead.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Unknown</b> &mdash; <i>April 28, 2009</i></p>
+Daniel Friedman wrote a good explanation of trampolines and how to use them to code in continuation passing style in a language without TCO.<br /><br />http://www.cs.indiana.edu/~dfried/dfried/mex.pdf
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>April 28, 2009</i></p>
+TO: people suggesting some form of TCO+debuginfo.<br /><br />A small depth of tail calls works with or without TCO. A large depth of tail calls required TCO, or the code to be rewritten as a loop.<br /><br />The point of TCO is to allow a deep level of tail calls.<br /><br />Now consider the TCO+debuginfo situation. The cost of the debuginfo might be less than the stack frame, but it is still of the same order as for tail calls without TCO; one piece of debug info per tail call. In other words, doing tail calls with TCO+debuginfo would still "leak" memory for each tail call.<br /><br />A possible solution, to allow both deep tail calls and debug stack traces would be to only keep tail call info (or full stack frames) up to a max depth, and after that discard the debug info. Given that deep deep stack traces (think thousands or millions of calls) aren't that useful anyway, discarding after a threshold would be safe right? ;-)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Lucas Wiman</b> &mdash; <i>April 28, 2009</i></p>
+I can't begin to imagine the "basic of the future" as a serious slur.  I remember when I was 12, playing around with QBasic.  Not particularly fast, maybe doesn't teach the best programming habits, but a twelve-year-old could read it and write simple programs with only a few hours of instruction.  If the "slur" is true, you'll introduce millions of teenagers to programming for the first time.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Jason</b> &mdash; <i>April 30, 2009</i></p>
+Quite a few of us started with basic as kids, and Ill be starting my children with python so I guess that isn't all bad.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>proteusguy</b> &mdash; <i>May 02, 2009</i></p>
+I am very wary of the "you must incorporate my favorite language feature" calls that inevitably occur in language design efforts. Just sit in on the ISO C++ meetings some day if you want to see a formalized version of this.<br /><br />Good languages have a design philosophy that provide its architectural drivers. Most follow up language design is best spent fixing past mistakes rather than adding new features. Any new feature proposal should come with an impression example implementation which really sends the point home if it is to be taken seriously.<br /><br />For the rest who insist their language have all their fav features I would refer you to C#. It has them all - along with the logical consequences thereof.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Aaron</b> &mdash; <i>May 07, 2009</i></p>
+"[TCE] would certainly confuse many users, who have not been raised with tail call religion"<br /><br />Guido - thanks for the clarification.  While I agree with <A HREF="http://funcall.blogspot.com/2009/05/you-knew-id-say-something-part-iv.html" REL="nofollow">detractors</A> that your first post had some inaccurate 'facts', you've definitely corrected yourself here and clarified things.  There's the Python way/religion, and it's different than the functional way/religion.<br /><br />I'm a fan of both scheme and python, and code differently in each.  They're different tools for solving similar problems in different ways (hammer/nail, screw-driver/screw), and it would be incorrect to confuse the one for the other.<br /><br />... that said, I wouldn't be offended if you ever changed your mind on the TCE issue. ^_^
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Martin P. Hellwig</b> &mdash; <i>May 16, 2009</i></p>
+I fail to see why this is such an important feature that at least a significant amount of people have an opinion about it. What kind of problem would you rather solve with tail calls, something like implementing a xml parser?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>FutureNerd</b> &mdash; <i>June 02, 2009</i></p>
+Not an optimization, not a feature, it&#39;s a fix to a memory leak bug.<br /><br />For mainstream Python, it can&#39;t be an &quot;optimization&quot; or option for the whole program, but why not an explicit variation on &quot;return&quot;?<br /><br />Anyone who wants to find out about the amazing things you can do once you fix that leak, could probably get a good start with MIT AI papers called &quot;lambda the ultimate&quot; this or that.<br /><br />A chunk of that amazement is writing new control structures, like coroutines, schedulers, tree searchers, generators, exception handlers, and debuggers, as regular functions.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>ArneBab</b> &mdash; <i>February 06, 2012</i></p>
+From a short readup on TCO in scheme, that while loop is just how quite a few schemes implement TCO internally.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>November 06, 2015</i></p>
+I spent years thinking to things from this post; I often encountered references to it on Stackoverflow, etc. After many attempts, I finally wrote a module concerning tail calls in Python that I would be happy to discuss with you; I give a presentation of it at: http://baruchel.github.io/python/2015/11/07/explaining-functional-aspects-in-python/ If you have a little time for reading it, please do it.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>November 07, 2015</i></p>
+If you want to discuss this, please post on python-ideas. Be prepared to be shot down though.
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="so-you-want-to-learn-python.html">&larr; Newer</a> &middot; <a href="people-who-annoy-me.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

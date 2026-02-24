@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How Exceptions Came to be Classes - The History of Python</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="the-problem-with-integer-division.html">&larr; Newer</a> &middot; <a href="how-everything-became-an-executable-statement.html">Older &rarr;</a></p>
+
+<h1>How Exceptions Came to be Classes</h1>
+<p><i>March 06, 2009 &mdash; originally posted on
+<a href="https://python-history.blogspot.com/2009/03/how-exceptions-came-to-be-classes.html">The History of Python</a></i></p>
+
+<hr>
+
+Early on, I knew I wanted Python to use exceptions for error handling.   However, a critical part of making exceptions work is to come up with some kind of scheme for identifying different kinds of exceptions.   In modern languages (including modern Python :-), exceptions are defined in terms of user-defined classes.   In early Python however, I chose to identify exceptions by strings. This was unfortunate, but I had two reasons for taking this approach. First, I learned about exceptions from Modula-3, where exceptions are unique tokens. Second, I introduced exceptions before I introduced user-defined classes.<br /><br />In theory, I suppose I could have created a new type of built-in object to be used for exceptions, but as every built-in object type required a considerable coding effort in C, I decided to reuse an existing built-in type. And, since exceptions are associated with error messages, it seemed natural to use strings to represent exceptions.<br /><br />Unfortunately I chose semantics where different string objects would represent different exceptions, even if they had the same value (i.e. contained the same sequence of characters). I chose these semantics because I wanted exceptions defined in different modules to be independent, even if they happened to have the same value. The idea was that exceptions would always be referenced by their name, which would imply object identity, never by their value, which would require string equality.<br /><br />This approach was influenced by Modula-3’s exceptions, where each exception declaration creates a unique “exception token” that can’t be confused with any other exception token. I think I also wanted to optimize testing for exceptions by using pointer comparisons instead of string value comparisons in a misguided attempt to prematurely optimize execution time (a rare one – I usually optimized for my own coding time!). The main reason however is that I worried about name clashes between unrelated exceptions defined in different modules. I intended the usage pattern to strictly adhere to the convention of defining an exception as a global constant in some module, and then using it by name in all code raising or catching it. (This was also long before certain string literals would be automatically be “interned”.)<br /><br />Alas, in practice things never quite work out as you expect.   Early Python users discovered that within the same module, the byte code compiler would unify string literals (i.e., create a single shared object for all occurrences of string literals with the same value).   Thus, by accident, users found that exceptions could either be caught be specifying the exception name or the string literal containing the error message.   Well, at least this seemed to work most of the time.  In reality, it only worked for code defined in the same module---if one tried to catch exceptions using the exception error message in a different module, it broke mysteriously.  Needless to say, this is the sort of thing that causes widespread confusion.<br /><br />In 1997, with Python 1.5, I introduced class exceptions into the language. Although class exceptions have been the recommended approach ever since, string exceptions were still supported for use by certain legacy applications through Python 2.5. They were finally removed in Python 2.6.
+
+<h3>Comments (6)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>itsadok</b> &mdash; <i>March 07, 2009</i></p>
+at the end of the 4th paragraph, I think it  should be "would automatically be “interned”"
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>March 07, 2009</i></p>
+I used to think that exception objects were extravagant, but if you're writing a configurable parser, then it can be very useful to write a try...except where the actual parsing goes in the try block and the except block catches syntax errors, attaches the current line number to the exception, and re-raises it.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Juanjo Conti</b> &mdash; <i>June 24, 2009</i></p>
+Spanish translation at juanjoconti.com.ar
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Juanjo Conti</b> &mdash; <i>June 24, 2009</i></p>
+Spanish translation <a href="http://www.juanjoconti.com.ar/2009/06/25/la-historia-de-python-como-las-excepciones-llegaron-a-ser-clases/" rel="nofollow"> here</a>.<br />I wasn&#39;t allowed to paste the url in my prev comment. Don&#39;t know why...
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Magnus Lyckå</b> &mdash; <i>September 06, 2010</i></p>
+I thought class exceptions were already in the Python version I first used (1.4), i.e. 1996.<br /><br />The Python 1.4 tutorial shows this example:<br /><br />raise NameError, &#39;HiThere&#39;<br /><br />See http://docs.python.org/release/1.4/tut/node50.html#SECTION00940000000000000000
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>September 06, 2010</i></p>
+@Magnus: No, the syntax &quot;raise exc, expr&quot; specifically existed because exceptions were *not* classes.  NameError was a string object at the time.
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="the-problem-with-integer-division.html">&larr; Newer</a> &middot; <a href="how-everything-became-an-executable-statement.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

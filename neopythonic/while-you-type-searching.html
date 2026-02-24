@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>While-you-type Searching - Neopythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="a-new-app-engine-datastore-api.html">&larr; Newer</a> &middot; <a href="python-in-the-scientific-world.html">Older &rarr;</a></p>
+
+<h1>While-you-type Searching</h1>
+<p><i>December 11, 2009 &mdash; originally posted on
+<a href="https://neopythonic.blogspot.com/2009/12/while-you-type-searching.html">Neopythonic</a></i></p>
+
+<hr>
+
+Here's an idea that is just begging to be implemented as a Firefox extension.<div><br /></div><div>You know how there's a while-you-type spell checker that's always on when you are editing text in a multi-line text box? There should be a feature that takes the last few words you're typing (or the entire current paragraph, or whatever works best), does a Google search, and presents snippets for the top few results in an unobtrusive pop-up window.<div><br /></div><div>Sure, maybe you're thinking "It looks like you're writing a letter. Do you want me to write it for you?" (the Microsoft paperclip). But using web search instead of a fixed set of patterns could actually make this useful. Imagine the number of messages to customer support forums that will never have to be sent because this feature pops up the answer the user was looking for. And so on.</div><div><br /></div><div>You might also think, "this already exists, it's called Google auto-suggest." But I specifically want it to work when I'm not (yet) actively searching, but just writing. (If it already existed, it might have stopped me from writing this blog post. :-) Twitter might also become a different place if users realized how many others have already entered the same item.</div><div><br /></div><div>Of course there's a little privacy issue. But still, if this existed, I'd opt in! (In fact, I did half a dozen searches while I was typing this. How much easier it would be if I didn't have to select text, switch to a different tab, paste, and hit enter, losing my writing context each tim.)</div></div>
+
+<h3>Comments (25)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Adi</b> &mdash; <i>December 11, 2009</i></p>
+I wonder how many people (including me) just started working on this, right?<br />I&#39;ll do it for Chrome, though :)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Unknown</b> &mdash; <i>December 11, 2009</i></p>
+This comment has been removed by the author.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Tyler</b> &mdash; <i>December 11, 2009</i></p>
+Go check out Ubiquity (https://mozillalabs.com/ubiquity/) It doesn&#39;t quite do the search results like you want, but it&#39;s a great jumping off point if someone wanted to add that.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Victor Noagbodji</b> &mdash; <i>December 11, 2009</i></p>
+makes me think about stackoverflow. when you are posting something, you get suggestions of what has already been asked before.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Brian</b> &mdash; <i>December 11, 2009</i></p>
+Don&#39;t you mean a Chrome extension?  I thought you worked for Google!
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Sake</b> &mdash; <i>December 11, 2009</i></p>
+Very soon after your &quot;IronPython in Action and the Decline of Windows&quot; post, Google announce Google Chrome OS. <br /><br />Interesting to see what Google will announce next.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Ryan</b> &mdash; <i>December 11, 2009</i></p>
+implicit contextual search! agreed, i&#39;ve wanted this for ages. i used to follow nat friedman&#39;s <a href="http://beagle-project.org/" rel="nofollow">beagle</a>, back when it was called dashboard, and now there are lots of other similar projects.<br /><br />for the record, on the service provider side, ideas like this always scare me a little. they have the potential to increase load so much, and compared to the old &quot;explicit&quot; load, only a very small fraction of that new implicit load will actually be looked at and provide any value. <br /><br />having said that, if the incremental cost still goes to zero, or the newly lower cpms/cpcs still cover the costs, maybe it doesn&#39;t matter.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Han Xiaogang</b> &mdash; <i>December 11, 2009</i></p>
+In the academic world, this can be categorized to &#39;just-in-time information retrieval&#39;, first reported from MIT. A remembrance agent was first implemented in Emacs (http://www.media.mit.edu/~rhodes/RA/). When the user writes a paper, a list of related papers will be displayed in non-intrusive manner. There are also some prototype implementation in the browser, which provide extra related pages when u&#39;r reading the current page.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Brandon Rhodes</b> &mdash; <i>December 11, 2009</i></p>
+Han Xiaogang hit the nail on the head! The Remembrance Agent in Emacs was also very popular for searching personal information. Not only did that mean that related emails would appear as you typed phrases into new emails, but the wearable computing folks loaded it into the Emacs instances they ran in their headsets as a form of real-time associative digital memory. As you sat talking to someone like Thad Starner, he would twiddle phrases into his one-handed keyboard, and all possibly-related documents and emails to the current conversation would be popping up in front of his eye for potential mention. Check out:<br /><br />http://wearcam.org/computing.html/
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Mingus</b> &mdash; <i>December 11, 2009</i></p>
+I have seen a couple of the semantic search companies do this. The best example is probably zemanta.com that will suggest similar content for you while blogging. It exists as a firedox plugin (although I haven&#39;t used it)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>December 12, 2009</i></p>
+Zemanta also exists as a Chrome extension and is supposed to for for both email and blogging. I say it&#39;s &quot;supposed&quot; to work, because I have it installed for a while now, and it has not worked so far...(I am using Chrome beta for Linux)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>December 12, 2009</i></p>
+I must correct my previous statement. Zemanta does not work for Gmail(at least for me), but is brilliant when blogging. (I tested only on blogger)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Zemantic dreams</b> &mdash; <i>December 12, 2009</i></p>
+Thank you for mentioning Zemanta!<br /><br />We are aware that gmail does not work right now under Zemanta + Chrome combination, but we&#39;re working on it and it&#39;s going to be fixed next week.<br /><br />The issue is that we had to produce Chrome extension in a single day ... :) Long story short: we did it, but had to cut corners.<br /><br />Anyway Zemanta&#39;s main paradigm is exactly what Guido is describing -- try to figure out what the user might want to see based on analysis of larger piece of content he has written. And you should probably tell if we are doing a good job or not?<br /><br />Andraz Tori, CTO at Zemanta
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>December 12, 2009</i></p>
+btw, there&#39;s even proof of concept zemanta for ubiquity command avaliable to do this on any selection in a browser, not just within blog editor...<br /><br />http://code.zemanta.com/bostjan/ubiquity/<br /><br />best, b
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>zawuni</b> &mdash; <i>December 12, 2009</i></p>
+not an FF extension but a FF webpage with similar intentions allows easy retrieval of a programming languages wiki page titles<br />http://taipu.de/ida.htm<br /><br />Roland Frank
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>theller</b> &mdash; <i>December 12, 2009</i></p>
+<i>&quot;Of course there&#39;s a little privacy issue.&quot;</i><br /><br />You are joking, right?<br /><br />I&#39;m not a google basher, but I would be VERY concerned if google knew everything I typed into multiline edit boxes...
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Zemantic dreams</b> &mdash; <i>December 12, 2009</i></p>
+@theller:<br /><br />indeed there are things to be careful about. <br /><br />However when you use such technologies to create content for open public consumption (blog posts, web content, twitter) privacy is not an issue anymore.<br /><br />Andraz Tori
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>rsynnott</b> &mdash; <i>December 13, 2009</i></p>
+Surely there is some limit to the load that even Google can manage? :)<br /><br />That sounds like a <i>lot</i> of queries.<br /><br />Safe-search would also become more of an issue if Google and/or Firefox didn&#39;t want complaints from people who were just writing blog entries about roosters, or whatever.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Graham Realyze</b> &mdash; <i>December 16, 2009</i></p>
+Yup, stackoverflow&#39;s suggestions are really nice; practical way of preventing question repetition.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>whit537</b> &mdash; <i>December 17, 2009</i></p>
+&quot;Imagine the number of messages to customer support forums that will never have to be sent because this feature pops up the answer the user was looking for.&quot;<br /><br />Whatever WebFaction is using for its ticketing also has this feature, and you&#39;re right that it&#39;s a good feature. When you are composing a ticket, it suggests documentation. I&#39;ve been surprised at how relevant the results are.<br /><br /><br />&quot;Twitter might also become a different place if users realized how many others have already entered the same item.&quot;<br /><br />Perhaps, but I&#39;m not sure it&#39;d be a change for the better. Twitter is realtime zeitgeist, isn&#39;t it? For that to work, you *want* all 100,000 people thinking about X to tweet about it, so you can compare that to the 1,000,000 people thinking about Y.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Unknown</b> &mdash; <i>December 18, 2009</i></p>
+Ah, history is remembering the many times of repetition.<br /><br />The first instance of this project was from Dr. Bradley Rhodes at the MIT Media Lab (&#39;Remembrance Agent&#39;).  Using emacs integrations, a window would pull up interesting snippets from old emails and other sources.<br /><br />Microsoft Research &#39;discovered&#39; this feature, as it does all MIT Media Lab thesis features, a few years later.<br /><br />There were also some research projects aimed specifically at commands for constructing complicated graphs.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Rob&#x27;s World of Tech</b> &mdash; <i>January 10, 2010</i></p>
+Have you tried Ubiquity?  Set your hotkey, and go.  I set mine for S-Space.  Hit the hotkey, a popup comes up and then type your query. Don&#39;t hit enter, just wait a second or two and the results will appear in the popup.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>and.mitrovic</b> &mdash; <i>January 17, 2010</i></p>
+Hey Guido, I like your idea.<br /><br />I was thinking about it for a while, and I got an idea as well.<br /><br />Wouldn&#39;t it be nice if the server could automatically fill in the missing pieces when the user is typing out the URL?<br /><br />E.g. You type in something like:<br /><br />http://website.com/content/<br /><br />And automagically you get a drop-down list of possible endings to that URL (retrieved by the server)<br /><br />E.g. You could get a small list of popular destinations that start with website.com/content:<br /><br />http://website.com/content/sub1/<br />http://website.com/content/sub2/<br />http://website.com/content/sub4/<br /><br />The server could also notify the user if the URL he just typed in (or pasted) gives a 404, and perhaps provide alternative links.<br /><br />Or perhaps this is more suited for a future HTML6. :)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Advey</b> &mdash; <i>February 04, 2010</i></p>
+It&#39;s good concept to approach. I&#39;ve been doing typing a lot and search for information through the internet, I never thought about this. If it got implemented, I hope it will become common feature for other browsers too. I&#39;m using Opera in my PC.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Unknown</b> &mdash; <i>February 13, 2010</i></p>
+Like Victor, this also reminded me of Stackoverflow.com, when you compose your question.
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="a-new-app-engine-datastore-api.html">&larr; Newer</a> &middot; <a href="python-in-the-scientific-world.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

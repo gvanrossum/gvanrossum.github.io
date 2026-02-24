@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compare-And-Set in Memcache - Neopythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="letter-to-a-young-programmer.html">&larr; Newer</a> &middot; <a href="before-python.html">Older &rarr;</a></p>
+
+<h1>Compare-And-Set in Memcache</h1>
+<p><i>August 25, 2011 &mdash; originally posted on
+<a href="https://neopythonic.blogspot.com/2011/08/compare-and-set-in-memcache.html">Neopythonic</a></i></p>
+
+<hr>
+
+With the most recent release (1.5.3, last week) App Engine's Python API for Memcache has added a new feature, <a href="http://code.google.com/appengine/docs/python/memcache/clientclass.html#Client_cas">Compare-And-Set</a>. This feature (with a <a href="http://code.google.com/appengine/docs/java/javadoc/com/google/appengine/api/memcache/MemcacheService.html#putIfUntouched%28java.lang.Object,%20com.google.appengine.api.memcache.MemcacheService.IdentifiableValue,%20java.lang.Object%29">different API</a>) was already available in Java; it has also been available in the non-App-Engine <a href="http://www.tummy.com/Community/software/python-memcached/">pure-Python memcache client</a>. In fact, I designed the App Engine Python API for this feature to be compatible with the latter, since most of the rest of the App Engine Python API also strives to be at least a superset of that package.
+<br />
+<br />But what is it? There seems to be little information on how to use Compare-And-Set with memcache. It is also sometimes (incorrectly) referred to as Compare-And-Swap -- incorrect, because the cas() operation does not actually "swap" anything. The first response when we closed <a href="http://code.google.com/p/googleappengine/issues/detail?id=2139">the bug requesting this feature</a> was <span style="font-style: italic;">"Some examples of usage are appreciated."</span> So here goes.
+<br />
+<br />The basic use case for Compare-And-Set is when multiple requests that are being handled concurrently need to update the same memcache key in an atomic fashion. Let's assume you are managing a counter in memcache. (Actually, you could use the <a href="http://code.google.com/appengine/docs/python/memcache/clientclass.html#Client_incr">incr() and decr(</a>) operations to update 64-bit  integer counters atomically, but just for argument's sake assume you cannot use those -- there are other data types for which the memcache service does not have built-in support.)
+<br />
+<br />The naive code to update a counter would be something like this:
+<br />
+<br />def init_counter(key):
+<br />. memcache.set(key, 0)
+<br />
+<br />def bump_counter(key):
+<br />. counter = memcache.get(key)
+<br />. assert counter is not None, 'Uninitialized counter'
+<br />. memcache.set(key, counter+1)
+<br />
+<br />(Aside: I don't want to have to think about how to get blogger to properly format Python code. I really don't. So just bear with the dots I use for indentation. Okay? Comments pointing me to solutions will be DELETED.)
+<br />
+<br />(Aside 2: The assert is kind of naive; in practice you'll have to somehow deal with counter initialization. You also should implement a backup for your counter using the App Engine datastore, so that it can survive eviction by the memcache service. However interesting these details are on their own, I leave them for another time.)
+<br />
+<br />Hopefully you can spot the problem in this version of bump_counter(): if two requests execute concurrently (on different <a href="http://code.google.com/appengine/docs/adminconsole/instances.html">instances</a> of the same app), the sequence of operations might be as follows, labeling the two requests as A and B:
+<br />
+<br />A: counter = memcache.get(key)  # Reads 42
+<br />B: counter = memcache.get(key)  # Reads 42
+<br />A: memcache.set(key, counter+1)  # Writes 43
+<br />B: memcache.set(key, counter+1)  # Writes 43
+<br />
+<br />So even though two requests were executed, the counter only gets incremented by one. This is called a <span style="font-style: italic;">race condition</span>. Various interlacings of these lines can have the same effect; a race condition occurs whenever B reads the counter before A has written it (or vice versa).
+<br />
+<br />You could try to guard against this by reading the counter value back and checking that it was incremented by one; however this solution still has a race condition (see if you can figure it out for yourself). There are other solutions possible involving a separate "lock" variable, managed using the <a href="http://code.google.com/appengine/docs/python/memcache/clientclass.html#Client_add">add()</a> and <a href="http://code.google.com/appengine/docs/python/memcache/clientclass.html#Client_delete">delete()</a> operations. However these in general require more server roundtrips, and it is pretty hard to manufacture a decent lock out of the basic memcache operations (try for yourself -- think about what would happen if your request was somehow aborted after acquiring the lock, without having a chance of releasing it).
+<br />
+<br />Using the Compare-And-Set operation, writing a reliable bump_counter() function is a cinch:
+<br />
+<br />def bump_counter(key):
+<br />. <span style="font-weight: bold;">client = memcache.Client()</span>
+<br />. <span style="font-weight: bold;">while True:  # Retry loop</span>
+<br />. . counter = <span style="font-weight: bold;">client.gets</span>(key)
+<br />. . assert counter is not None, 'Uninitialized counter'
+<br />. . <span style="font-weight: bold;">if</span> <span style="font-weight: bold;">client.cas</span>(key, counter+1):
+<br />. . . <span style="font-weight: bold;">break</span>
+<br />
+<br />I've highlighted the changes from the previous version. There are several essential differences:
+<br /><ul><li>The use of a memcache <a href="http://code.google.com/appengine/docs/python/memcache/clientclass.html">Client object</a> instead of memcache <a href="http://code.google.com/appengine/docs/python/memcache/functions.html">functions</a></li><li>The use of a retry loop</li><li>The use of  <a href="http://code.google.com/appengine/docs/python/memcache/clientclass.html#Client_gets">gets()</a> and <a href="http://code.google.com/appengine/docs/python/memcache/clientclass.html#Client_cas">cas()</a> instead of get() and set()<span style="font-style: italic;"></span></li></ul>The Client object is required because the gets() operation actually squirrels away some hidden information that is used by the subsequent cas() operation. Because the memcache functions are <span style="font-style: italic;">stateless</span> (meaning they don't alter any global values), these operations are only available as methods on the Client object, not as functions in the memcache module. (Apart from these two, the methods on the Client object are exactly the same as the  functions in the module, as you can tell by comparing the documentation.)
+<br />
+<br />The retry loop is necessary because this code doesn't actually avoid race conditions -- it just detects them! The memcache service guarantees that when used in the pattern shown here (i.e. using gets() instead of get() and cas() instead of set()), if two (or more) different client instances happen to be involved a race condition like I showed earlier, only the first one to execute the cas() operation will succeed (return True), while the second one (and later ones) will fail (return False). Let's spell out the events that happen when a race condition occurs:
+<br />
+<br />A: counter = memcache.gets(key)  # Reads 42
+<br />B: counter = memcache.gets(key)  # Reads 42
+<br />A: memcache.cas(key, counter+1)  # Writes 43, returns True
+<br />B: memcache.cas(key, counter+1)  # Returns False
+<br />B: counter = memcache.gets(key)  # Reads 43
+<br />B: memcache.cas(key, counter+1)  # Writes 44, returns True
+<br />
+<br />Another refinement I've left out here for brevity is to set a limit on the number of retries, to avoid an infinite loop in worst-case scenarios where there is a lot of contention for the same counter (meaning more requests are trying to update the counter than the memcache service can process in real time). You can figure out how to code this for yourself. (<span style="font-weight: bold;">UPDATE:</span> see comments #1 and #2 for a note about busy-waiting.)
+<br />
+<br />Now let me explain roughly how this actually works. For some people that helps understanding how to use it: this is often the case for me when I am trying to understand some new concept.
+<br />
+<br />The gets() operation internally receives <span style="font-style: italic;">two</span> values from the memcache service: the value stored for the key (in our example the counter value), and a <span style="font-style: italic;">timestamp</span> (also known as the <span style="font-style: italic;">cas_id</span>). The timestamp is an opaque number; only the memcache service knows what it means. The important thing is that each time the value associated with a memcache key is updated, the associated timestamp is changed. The gets() operation stores this timestamp in a Python dict on the Client object, using the key passed to gets() as the dict key.
+<br />
+<br />The cas() operation internally adds the timestamp to the request it sends to the memcache service. The service then compares the timestamp received with a cas() operation to the timestamp currently associated with the key. If they match, it updates the value and the timestamp, and returns success. If they don't match, it leaves the value and timestamp alone, and returns failure. (By the way, it does not send the new timestamp back with a successful response. The only way to retrieve the timestamp is to call gets().)
+<br />
+<br />Of course, there's one more important ingredient: the App Engine memcache service itself behaves atomically. That is, when two concurrent requests (for the same app id) use memcache, they will go to the same memcache service instance (for historic reasons called a <span style="font-style: italic;">shard</span>), and the memcache service has enough internal locking so that concurrent requests for the same key are properly serialized. In particular this means that two cas() requests for the same key do not actually run in parallel -- the service handles the first request that came in until completion (i.e., updating the value and timestamp) before it starts handling the second request.
+<br />
+<br />And that's Compare-And-Set in a nutshell. If you have questions please don't hesitate to ask!
+<br />
+<br />(<span style="font-weight: bold;">UPDATE:</span> The memcache API defines batch versions of most of its APIs. For example, to get multiple keys in a single call, there is get_multi(); to set multiple keys, there is set_multi(). Corresponding to cas(), there is <a href="http://code.google.com/appengine/docs/python/memcache/clientclass.html#Client_cas_multi">cas_multi()</a>. But there is no gets_multi(): instead, you can use <a href="http://code.google.com/appengine/docs/python/memcache/clientclass.html#Client_get_multi">get_multi(keys, for_cas=True)</a>. Finally, there's <a href="http://code.google.com/appengine/docs/python/memcache/clientclass.html#Client_cas_reset">cas_reset()</a>, which clears the dict used to store timestamps. But I haven't figured out what to do with it yet. :-)
+<br />
+
+<h3>Comments (17)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Filip Gruszczyński</b> &mdash; <i>August 25, 2011</i></p>
+Isn&#39;t code snippet for increasing counter using active waiting? Isn&#39;t it bad?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>August 25, 2011</i></p>
+@Filip: You&#39;re right it is active waiting, although it is moderated by the time required for memcache server roundtrips (typically 1-5 msec).  That&#39;s why there should be a retry limit (e.g. max 3 tries).<br /><br />You could also use exponential back-off, but very quickly you&#39;d hit the point where it is probably more important to get on with handling the user&#39;s request than trying to bump the counter; while you&#39;re waiting to bump the counter you&#39;re not doing anything else.<br /><br />In the end this is still just a simplified example to illustrate what cas() does rather than a recommendation on how to implement counters; cas() really is a low-level tool for building more reliable caches.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Dustin</b> &mdash; <i>August 25, 2011</i></p>
+Thanks for the update.  I&#39;ve done some fun things with memcached CAS, but it seems to be difficult to explain to people how to use it correctly.  :)<br /><br />In most languages where I&#39;ve implemented memcached CAS, I&#39;ve found it useful to provide a functional abstraction over it similar to this (which I&#39;m kind of sketching in this comment thing, so it quite possibly has a bug):<br /><br />def do_cas(k, f, initial=None):<br />.    client = memcache.Client()<br />.    while True:<br />.    .    ob = client.gets(k)<br />.    .    if ob:<br />.    .        if client.cas(k, f(ob)):<br />.    .    .        break<br />.    .    elif initial:<br />.    .    .    if client.add(k, initial):<br />.    .    .    .    break<br />.    .    else:<br />.    .    .    raise Something(&quot;Uninitialized...&quot;)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Filip Gruszczyński</b> &mdash; <i>August 25, 2011</i></p>
+@Guido: Yeah, I bet in real life it&#39;s not that bad. I just wanted to know from theoretical point of view :-) Anyway, this reminds me of an university course about synchronized programming and using cas operations to synchronize some tasks. Ah, I&#39;m getting sentimental :-)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>mmocny</b> &mdash; <i>August 25, 2011</i></p>
+Does the library handle the ABA problem, or is that left to the user?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>August 25, 2011</i></p>
+Yes, it solves the ABA problem (that&#39;s why I explained that it works by using timestamps).<br /><br />(For readers like me who had never heard of that problem before: http://en.wikipedia.org/wiki/ABA_problem )
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Chris</b> &mdash; <i>August 25, 2011</i></p>
+This is (strong) load-linked/store-conditional. CAS is weaker. Too late to rename your API?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Araminos</b> &mdash; <i>August 25, 2011</i></p>
+Waiting for java verison!
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>August 25, 2011</i></p>
+Yes, years too late.<br /><br />It does exist in Java, I even gave a link to the docs: http://code.google.com/appengine/docs/java/javadoc/com/google/appengine/api/memcache/MemcacheService.html#putIfUntouched%28java.lang.Object,%20com.google.appengine.api.memcache.MemcacheService.IdentifiableValue,%20java.lang.Object%29 .  You also need to use http://code.google.com/appengine/docs/java/javadoc/com/google/appengine/api/memcache/MemcacheService.html#getIdentifiable%28java.lang.Object%29 .
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>August 28, 2011</i></p>
+I was obsessing over this a few weeks back when I was wondering about implementing transactional writes to memcache. Another simpler solution presented itself.<br /><br />Also a small typo - there&#39;s a &quot;gest()&quot; that should be a &quot;gets()&quot;.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>amazing</b> &mdash; <i>January 17, 2012</i></p>
+Hi Guido,<br /><br />Remembers me (kind of sentimental) of the MC68000 Test-And-Set instruction back in the 80-ies:<br /><a rel="nofollow">MC 68000 Advanced instructions</a> which should be used for the same purpose.<br /><br />cheers,<br />Fred
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Staff</b> &mdash; <i>April 11, 2012</i></p>
+Isn&#39;t a major problem with using the memcache for this that the memcache can be cleared at any point in time? If we test and then set a value, what&#39;s to stop the memcache from being cleared?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Staff</b> &mdash; <i>April 12, 2012</i></p>
+Another problem I see with this. How do we set counter to 0 the first time? cas only works if we&#39;ve set the memcache value once before. What happens if we want to increment the counter, but we&#39;re not sure if there is anything in the memcache. We want to do something like this:<br /><br />A: if counter is in the memcache, then reset=True<br />A: if reset, set counter to 0<br />A: cas(counter+1)<br /><br />But if we have two requests running, something  like this could occur<br /><br /><br />A: if counter is in the memcache, then reset=True<br />B: if counter is in the memcache, then reset=True<br />A: if reset, set counter to 0<br />A: cas(counter+1)<br />B: if reset, set counter to 0<br />B: cas(counter+1)<br /><br />Now counter will be 1 instead of 2
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Staff</b> &mdash; <i>April 20, 2012</i></p>
+There was a typo in my previous comment. I meant &quot;if counter is *not* in the memcache, then reset=True&quot;
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>November 07, 2012</i></p>
+Late to the comment party, but wanted to say thanks for a very excellent explanation of a very important topic. Not sure if this has made it into the GAE docs, but it really should. Could this somehow be leveraged in a way that would support the holy grail of a monotonically increasing app counter? Everything seems to be here except for the issue of memcache ephemerality. Again, thanks. -stevep
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>August 17, 2015</i></p>
+Hey Guido,<br /><br />Great post. I&#39;m stuck on the situation that Michael described above, where a key does not yet exist in the cache. For a key that may not be in the cache yet, how can we atomically check that key&#39;s value and set it?<br /><br />Thanks,<br />Boris
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Coda Highland</b> &mdash; <i>January 27, 2016</i></p>
+Boris, the memcache.add() function will fail if the key exists already, so you could add with the base value and if that fails you know the key exists and you should increment it atomically.
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="letter-to-a-young-programmer.html">&larr; Newer</a> &middot; <a href="before-python.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

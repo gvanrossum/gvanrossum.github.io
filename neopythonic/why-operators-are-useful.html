@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why operators are useful - Neopythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="meeting-mike-burrows.html">&larr; Newer</a> &middot; <a href="what-to-do-with-your-computer-science-career.html">Older &rarr;</a></p>
+
+<h1>Why operators are useful</h1>
+<p><i>March 15, 2019 &mdash; originally posted on
+<a href="https://neopythonic.blogspot.com/2019/03/why-operators-are-useful.html">Neopythonic</a></i></p>
+
+<hr>
+
+This is something I posted on python-ideas, but I think it's interesting to a wider audience.<br />
+<br />
+There's been a lot of discussion recently about an operator to merge two dicts.<br />
+<br />
+It prompted me to think about the reason (some) people like operators, and a discussion I had with my mentor Lambert Meertens over 30 years ago came to mind.<br />
+<br />
+For mathematicians, operators are essential to how they think. Take a simple operation like adding two numbers, and try exploring some of its behavior.<br />
+<br />
+&nbsp;&nbsp;&nbsp; add(x, y) == add(y, x)&nbsp;&nbsp;&nbsp; (1)<br />
+<br />
+Equation (1) expresses the law that addition is commutative. It's usually written using an operator, which makes it more concise:<br />
+<br />
+&nbsp;&nbsp;&nbsp; x + y == y + x&nbsp;&nbsp;&nbsp; (1a)<br />
+<br />
+That feels like a minor gain.<br />
+<br />
+Now consider the associative law:<br />
+<br />
+&nbsp;&nbsp;&nbsp; add(x, add(y, z)) == add(add(x, y), z)&nbsp;&nbsp;&nbsp; (2)<br />
+<br />
+Equation (2) can be rewritten using operators:<br />
+<br />
+&nbsp;&nbsp;&nbsp; x + (y + z) == (x + y) + z&nbsp;&nbsp;&nbsp; (2a)<br />
+<br />
+This is much less confusing than (2), and leads to the observation that the parentheses are redundant, so now we can write<br />
+<br />
+&nbsp;&nbsp;&nbsp; x + y + z&nbsp;&nbsp;&nbsp; (3)<br />
+<br />
+without ambiguity (it doesn't matter whether the + operator binds tighter to the left or to the right).<br />
+<br />
+Many other laws are also written more easily using operators.&nbsp; Here's one more example, about the identity element of addition:<br />
+<br />
+&nbsp;&nbsp;&nbsp; add(x, 0) == add(0, x) == x&nbsp;&nbsp;&nbsp; (4)<br />
+<br />
+compare to<br />
+<br />
+&nbsp;&nbsp;&nbsp; x + 0 == 0 + x == x&nbsp;&nbsp;&nbsp; (4a)<br />
+<br />
+The general idea here is that once you've learned this simple notation, equations written using them are easier to *manipulate* than equations written using functional notation -- it is as if our brains grasp the operators using different brain machinery, and this is more efficient.<br />
+<br />
+I think that the fact that formulas written using operators are more easily processed *visually* has something to do with it: they engage the brain's visual processing machinery, which operates largely subconsciously, and tells the conscious part what it sees (e.g. "chair" rather than "pieces of wood joined together"). The functional notation must take a different path through our brain, which is less subconscious (it's related to reading and understanding what you read, which is learned/trained at a much later age than visual processing).<br />
+<br />
+The power of visual processing really becomes apparent when you combine multiple operators. For example, consider the distributive law:<br />
+<br />
+&nbsp;&nbsp;&nbsp; mul(n, add(x, y)) == add(mul(n, x), mul(n, y))&nbsp; (5)<br />
+<br />
+That was painful to write, and I believe that at first you won't see the pattern (or at least you wouldn't have immediately seen it if I hadn't mentioned this was the distributive law).<br />
+<br />
+Compare to:<br />
+<br />
+&nbsp;&nbsp;&nbsp; n * (x + y) == n * x + n * y&nbsp;&nbsp;&nbsp; (5a)<br />
+<br />
+Notice how this also uses relative operator priorities. Often mathematicians write this even more compact:<br />
+<br />
+&nbsp;&nbsp;&nbsp; n(x+y) == nx + ny&nbsp;&nbsp;&nbsp; (5b)<br />
+<br />
+but alas, that currently goes beyond the capacities of Python's parser.<br />
+<br />
+Another very powerful aspect of operator notation is that it is convenient to apply them to objects of different types. For example, laws (1) through (5) also work when x, y and z are same-size vectors and n is a scalar (substituting a vector of zeros for the literal "0"), and also if they are matrices (again, n has to be a scalar).<br />
+<br />
+And you can do this with objects in many different domains. For example, the above laws (1) through (5) apply to functions too (n being a scalar again).<br />
+<br />
+By choosing the operators wisely, mathematicians can employ their visual brain to help them do math better: they'll discover new interesting laws sooner because sometimes the symbols on the blackboard just jump at you and suggest a path to an elusive proof.<br />
+<br />
+Now, programming isn't exactly the same activity as math, but we all know that Readability Counts, and this is where operator overloading in Python comes in. Once you've internalized the simple properties which operators tend to have, using + for string or list concatenation becomes more readable than a pure OO notation, and (2) and (3) above explain (in part) why that is.<br />
+<br />
+Of course, it's definitely possible to overdo this -- then you get Perl. But I think that the folks who point out "there is already a way to do this" are missing the point that it really is easier to grasp the meaning of this:<br />
+<br />
+&nbsp;&nbsp;&nbsp; d = d1 + d2<br />
+<br />
+compared to this:<br />
+<br />
+&nbsp;&nbsp;&nbsp; d = d1.copy()<br />
+&nbsp;&nbsp;&nbsp; d.update(d2)&nbsp;&nbsp;&nbsp; # CORRECTED: This line was previously wrong<br />
+<br />
+and it is not just a matter of fewer lines of code: the first form allows us to use our visual processing to help us see the meaning quicker -- and without distracting other parts of our brain (which might already be occupied by keeping track of the meaning of d1 and d2, for example).<br />
+<br />
+Of course, everything comes at a price. You have to learn the operators, and you have to learn their properties when applied to different object types. (This is true in math too -- for numbers, x*y == y*x, but this property does not apply to functions or matrices; OTOH x+y == y+x applies to all, as does the associative law.)<br />
+<br />
+"But what about performance?" I hear you ask. Good question. IMO, readability comes first, performance second. And in the basic example (d = d1 + d2) there is no performance loss compared to the two-line version using update, and a clear win in readability. I can think of many situations where performance difference is irrelevant but readability is of utmost importance, and for me this is the default assumption (even at Dropbox -- our most performance critical code has already been rewritten in ugly Python or in Go). For the few cases where performance concerns are paramount, it's easy to transform the operator version to something else -- *once you've confirmed it's needed* (probably by profiling).
+
+
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="meeting-mike-burrows.html">&larr; Newer</a> &middot; <a href="what-to-do-with-your-computer-science-career.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>New-style Classes - The History of Python</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="the-inside-story-on-new-style-classes.html">&larr; Newer</a> &middot; <a href="metaclasses-and-extension-classes-aka-the-killer-joke.html">Older &rarr;</a></p>
+
+<h1>New-style Classes</h1>
+<p><i>June 21, 2010 &mdash; originally posted on
+<a href="https://python-history.blogspot.com/2010/06/new-style-classes.html">The History of Python</a></i></p>
+
+<hr>
+
+[After a long hiatus, this blog series is back! I will continue where I left off last year. I'll try to keep the frequency up.]<br /><br />Earlier, I described how the addition of classes to Python was essentially an afterthought. The implementation chosen was definitely an example of Python's "cut corners" philosophy. However, as Python evolved, various problems with the class implementation became a popular topic of griping from expert Python users.<br /><br />One problem with the class implementation was that there was no way to subclass built-in types. For example, lists, dictionaries, strings, and other objects were somehow "special" and could not be specialized via subclassing. This limitation seemed rather odd for a language that claimed to be "object oriented."<br /><br />Another problem was that whole type system just seemed to be "wrong" with user defined classes. For example, if you created two objects a and b, statements such as type(a) == type(b) would evaluate as True even if a and b were instances of completely unrelated classes. Needless to say, developers who were familiar with languages such as C++ and Java found this be rather odd since in those languages, classes were tightly integrated with the underlying type system.<br /><br />In Python 2.2, I finally took the time to reimplement classes and "do it right." This change was, by far, the most ambitious rewrite of a major Python subsystem to date and one could certainly accuse me of a certain amount of "second-system syndrome" in this effort. Not only did I address the immediate problem of allowing built-in types to be subclassed, I also added support for true metaclasses, attempted to fix the naïve method resolution order for multiple inheritance, and added a variety of other features. A major influence on this work was the book "Putting Metaclasses to Work" by Ira Forman and Scott Danforth, which provided me with a specific notion of what a metaclass is, different from a similar concept in Smalltalk.<br /><br />An interesting aspect of the class rewrite was that new-style classes were introduced as a new language feature, not as a strict replacement for old-style classes. In fact, for backwards compatibility, the old class implementation remains the default class creation protocol in Python 2. To create a new-style class, you simply have to subclass an existing new-style class such as object (which is the root for the new-style class hierarchy). For example:<br /><blockquote><pre>class A(object):<br /> statements<br /> ...</pre></blockquote>The change to new-style classes has been a major success. The new metaclasses have become popular amongst framework writers and explaining classes has actually become easier since there were fewer exceptions. The fact that backwards compatibility was maintained meant that old code has continued to work as new-style classes have evolved. Finally, although the old-style classes will eventually be removed from the languages, users are getting used to writing "class MyClass(object)" to declare a class, which isn't so bad.
+
+<h3>Comments (3)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Juanjo Conti</b> &mdash; <i>June 21, 2010</i></p>
+Good for you! Just when we were about to finish translating this blog ;) http://www.juanjoconti.com.ar/categoria/aprendiendo-python/historia/
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>June 21, 2010</i></p>
+What a coincidence. Today, after long time, I found out why super(subclass, self).__init__ fails without superclass being new-style class. and then I get to read the article, right after I completed reading the details of new style classes.<br /><br />Deja Vu...
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>PythonItStaff</b> &mdash; <i>June 22, 2010</i></p>
+Italian translation available: http://www.python-it.org/contenuti/10/06/22/un-nuovo-stile-per-le-classi
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="the-inside-story-on-new-style-classes.html">&larr; Newer</a> &middot; <a href="metaclasses-and-extension-classes-aka-the-killer-joke.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

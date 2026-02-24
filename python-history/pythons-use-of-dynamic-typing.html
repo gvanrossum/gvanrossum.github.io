@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python&#x27;s Use of Dynamic Typing - The History of Python</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="adding-support-for-user-defined-classes.html">&larr; Newer</a> &middot; <a href="early-language-design-and-development.html">Older &rarr;</a></p>
+
+<h1>Python&#x27;s Use of Dynamic Typing</h1>
+<p><i>February 10, 2009 &mdash; originally posted on
+<a href="https://python-history.blogspot.com/2009/02/pythons-use-of-dynamic-typing.html">The History of Python</a></i></p>
+
+<hr>
+
+An important difference between <a href="http://homepages.cwi.nl/%7Esteven/abc/">ABC</a> and Python is the general flavor of the type system. ABC is statically typed which meant that the ABC compiler analyzes the use of types in a program and decides whether they are used consistently. If not, the program is rejected and its execution cannot be started. Unlike most statically typed languages of its days, ABC used type inference (not unlike <a href="http://www.haskell.org/">Haskell</a>) instead of explicit type declarations as you find in languages such as in C. In contrast, Python is dynamically typed.  The Python compiler is blissfully unaware of the types used in a program, and all type checking is done at run time.<br /><br />Although this might seem like a large departure from ABC, it is not as different as you might imagine. Unlike other statically typed languages, ABC doesn't (didn't? it's pretty much purely historic now :-) exclusively rely on static type checking to keep the program from crashing, but has a run-time library that checks the argument types for all operations again each time they are executed. This was done in part as a sanity check for the compiler’s type-checking algorithms, which were not fully implemented in the initial prototype implementation of the language.  The runtime library was also useful as a debugging aid since explicit run time type checking could produce nice error messages (aimed at the implementation team), instead of the core dumps that would ensue if the interpreter were to blindly go ahead with an operation without checking if the arguments make sense.<br /><br />However, the most important reason why ABC has run time type checking in addition to static type checking is that it is interactive. In an interactive session, the user types ABC statements and definitions which are executed as soon as they are completed.  In an interactive session, it is possible to create a variable as a number, delete it, and then to recreate it (in other words, create another variable with the same name) as a string. Inside a single procedure, it would be a static typing error to use the same variable name first as a number and then as a string, but it would not be reasonable to enforce such type checking across different statements entered in an interactive session, as the accidental creation of a variable named x as a number would forever forbid the creation of a variable x with a different type! So as a compromise, ABC uses dynamic type checking for global variables, but static type checking for local variables. To simplify the implementation, local variables are dynamically type checked as well.<br /><br />Thus, it is only a small step from ABC’s implementation approach to type checking to Python’s approach--Python simply drops the compile-time type checking completely. This is entirely in line with Python’s “corner-cutting” philosophy as it’s a simplification of the implementation that does not affect the eventual safety, since all type errors are caught at run time before they can cause the Python interpreter to malfunction.<br /><br />However, once you decide on dynamic typing, there is no way to go back. ABC’s built-in operations were carefully designed so that the type of the arguments could be deduced from the form of the operation. For example, from the expression “<span style="font-family: courier new;">x^y</span>” the compiler would deduce that variables x and y were strings, as well as the expression result. In Python, such deductions cannot generally be made.  For example, the expression “<span style="font-family: courier new;">x+y</span>” could be a string concatenation, a numeric addition, or an overloaded operation on user-defined types.
+
+<h3>Comments (6)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Moe</b> &mdash; <i>February 10, 2009</i></p>
+That bracket that ends with the smiley in the second paragraph looks mismatched (http://xkcd.com/541/) - no wonder Randall Munroe has been banned from pycon
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Ricky Clarkson</b> &mdash; <i>February 10, 2009</i></p>
+For what it's worth, there are a number of statically typed languages that have an interpreter - they tend to compile each line at a time, and allow symbols to be redefined.  Scala and Haskell both work this way, and I imagine Ocaml and F# do too.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>February 24, 2009</i></p>
+Interesting to learn that Python intentionally abandoned type inference, especially when newer "Python-like" languages like Boo go back to using it.<BR/><BR/>I certainly appreciate consistent punctuation (unlike functional languages) and not cluttering things up with type definitions (like classic statically typed imperative languages), plus there are benefits like duck typing.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Juanjo Conti</b> &mdash; <i>April 04, 2009</i></p>
+Spanish translation <A HREF="http://www.juanjoconti.com.ar/2009/04/04/la-historia-de-python/" REL="nofollow">here</A>.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Daniel Sokolowski</b> &mdash; <i>March 16, 2013</i></p>
+It does effect &quot;eventual safety&quot;, type errors not found at compile time are just shifted to run time. The dynamic nature that made me fall in love with Python for it allowed rapid prototyping is what keeps me worried now in production code base. But this of course can be mitigated by strong unittest coverage and/or assert runtime checks.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Tolomea</b> &mdash; <i>November 30, 2013</i></p>
+I like it. Many static language programmers take &quot;it compiles&quot; as adequate testing, this is pretty much never true. Going all in on dynamic typing removes that option.
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="adding-support-for-user-defined-classes.html">&larr; Newer</a> &middot; <a href="early-language-design-and-development.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Method Resolution Order - The History of Python</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="from-list-comprehensions-to-generator-expressions.html">&larr; Newer</a> &middot; <a href="import-antigravity.html">Older &rarr;</a></p>
+
+<h1>Method Resolution Order</h1>
+<p><i>June 23, 2010 &mdash; originally posted on
+<a href="https://python-history.blogspot.com/2010/06/method-resolution-order.html">The History of Python</a></i></p>
+
+<hr>
+
+In languages that use multiple inheritance, the order in which base classes are searched when looking for a method is often called the Method Resolution Order, or MRO. (In Python this also applies to other attributes.) For languages that support single inheritance only, the MRO is uninteresting; but when multiple inheritance comes into play, the choice of an MRO algorithm can be remarkably subtle. Python has known at least three different MRO algorithms: classic, Python 2.2 new-style, and Python 2.3 new-style (a.k.a. C3). Only the latter survives in Python 3.<br /><br />Classic classes used a simple MRO scheme:  when looking up a method, base classes were searched using a simple depth-first left-to-right scheme.   The first matching object found during this search would be returned.  For example, consider these classes:<br /><blockquote><pre>class A:<br />  def save(self): pass<br /><br />class B(A): pass<br /><br />class C:<br />  def save(self): pass<br /><br />class D(B, C): pass</pre></blockquote>If we created an instance x of class D, the classic method resolution order would order the classes as D, B, A, C.   Thus, a search for the method x.save() would produce A.save() (and not C.save()).   This scheme works fine for simple cases, but has problems that become apparent when one considers more complicated uses of multiple inheritance.  One problem concerns method lookup under "diamond inheritance."    For example:<br /><blockquote><pre>class A:<br />  def save(self): pass<br /><br />class B(A): pass<br /><br />class C(A):<br />  def save(self): pass<br /><br />class D(B, C): pass</pre></blockquote>Here, class D inherits from B and C, both of which inherit from class A.   Using the classic MRO, methods would be found by searching the classes in the order D, B, A, C, A.   Thus, a reference to x.save() will call A.save() as before.  However, this is unlikely what you want in this case!   Since both B and C inherit from A, one can argue that the redefined method C.save() is actually the method that you want to call, since it can be viewed as being "more specialized" than the method in A (in fact, it probably calls A.save() anyways).   For instance, if the save() method is being used to save the state of an object, not calling C.save() would break the program since the state of C would be ignored.<br /><br /> Although this kind of multiple inheritance was rare in existing code, new-style classes would make it commonplace.   This is because all new-style classes were defined by inheriting from a base class object.   Thus, any use of multiple inheritance in new-style classes would always create the diamond relationship described above.  For example:<br /><blockquote><pre>class B(object): pass<br /><br />class C(object):<br />  def __setattr__(self, name, value): pass<br /><br />class D(B, C): pass</pre></blockquote>Moreover, since object defined a number of methods that are sometimes extended by subtypes (e.g., __setattr__()), the resolution order becomes critical.     For example, in the above code, the method C.__setattr__ should apply to instances of class D.<br /><br />To fix the method resolution order for new-style classes in Python 2.2, I adopted a scheme where the MRO would be pre-computed when a class was defined and stored as an attribute of each class object.  The computation of the MRO was officially documented as using a depth-first left-to-right traversal of the classes as before.  If any class was duplicated in this search, all but the last occurrence would be deleted from the MRO list.    So, for our earlier example, the search order would be D, B, C, A (as opposed to D, B, A, C, A with classic classes). <br /><br />In reality, the computation of the MRO was more complex than this. I discovered a few cases where this new MRO algorithm didn't seem to work.   Thus, there was a special case to deal with a situation when two bases classes occurred in a different order in the inheritance list of two different derived classes, and both of those classes are inherited by yet another class.  For example:<br /><blockquote><pre>class A(object): pass<br />class B(object): pass<br />class X(A, B): pass<br />class Y(B, A): pass<br />class Z(X, Y): pass</pre></blockquote>Using the tentative new MRO algorithm, the MRO for these classes would be Z, X, Y, B, A, object. (Here 'object' is the universal base class.)  However, I didn't like the fact that B and A were in reversed order.  Thus, the real MRO would interchange their order to produce  Z, X, Y, A, B, object.  Intuitively, this algorithm tried to preserve the order of classes for bases that appeared first in the search process. For instance, on class Z, the base class X would be checked first because it was first in the inheritance list.  Since X inherited from A and B, the MRO algorithm would try to preserve that ordering. This is what I implemented for Python 2.2, but I documented the earlier algorithm (naïvely thinking it didn't matter much).<br /><br />However, shortly after the introduction of new-style classes in Python 2.2, Samuele Pedroni discovered an inconsistency between the documented MRO algorithm and the results that were actually observed in real-code.   Moreover, inconsistencies were occurring even in code that did not fall under the special case observed above.    After much discussion, it was decided that the MRO adopted for Python 2.2 was broken and that Python should adopt the C3 Linearization algorithm described in the paper "A Monotonic Superclass Linearization for Dylan" (K. Barrett, et al, presented at OOPSLA'96).<br /><br />Essentially, the main problem in the Python 2.2 MRO algorithm concerned the issue of monotonicity.  In a complex inheritance hierarchy, each inheritance relationship defines a simple  set of rules concerning the order in which classes should be checked.   Specifically, if a class A inherits from class B, then the MRO should obviously check A before B.   Likewise, if a class B uses multiple inheritance to inherit from C and D, then B should be checked before C and C should be checked before D.<br /><br />Within a complex inheritance hierarchy, you want to be able to satisfy all of these possible rules in a way that is monotonic. That is, if you have already determined that class A should be checked before class B, then you should never encounter a situation that requires class B to be checked before class A (otherwise, the result is undefined and the inheritance hierarchy should be rejected).   This is where the original MRO got it wrong and where the C3 algorithm comes into play.   Basically, the idea behind C3 is that if you write down all of the ordering rules imposed by inheritance relationships in a complex class hierarchy, the algorithm will determine a monotonic ordering of the classes that satisfies all of them.   If such an ordering can not be determined, the algorithm will fail.<br /><br />Thus, in Python 2.3, we abandoned my home-grown 2.2 MRO algorithm in favor of the academically vetted C3 algorithm. One outcome of this is that Python will now reject any inheritance hierarchy that has an inconsistent ordering of base classes.  For instance, in the previous example, there is an ordering conflict between class X and Y.   For class X, there is a rule that says class A should be checked before class B.  However, for class Y, the rule says that class B should be checked before A.   In isolation, this discrepancy is fine, but if X and Y are ever combined together in the same inheritance hierarchy for another class (such as in the definition of class Z), that class will be rejected by the C3 algorithm. This, of course, matches the Zen of Python's "errors should never pass silently" rule.
+
+<h3>Comments (10)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Timur Izhbulatov</b> &mdash; <i>June 26, 2010</i></p>
+I was reading the article late at night before going to bed and had to stop before the three last paragraphs to finish reading in the morning. Otherwise I think I wouldn&#39;t digest it properly.<br /><br />Brief yet exhaustive. Thanks!
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Senthil Kumaran</b> &mdash; <i>June 26, 2010</i></p>
+Did not know that C3 had academic roots. Interesting and the last part where error should be raised for conflicting inheritance is convincing argument.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>python3</b> &mdash; <i>July 05, 2010</i></p>
+Maybe there is a typo, &quot;However, this unlikely want you want in this case!&quot; should be &quot;However, this unlikely what you want in this case!&quot;, the first want -&gt; what.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>python3</b> &mdash; <i>July 05, 2010</i></p>
+and, Inituitively -&gt; Intuitively
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>July 05, 2010</i></p>
+Typos fixed - thanks!
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Swapnil Talekar</b> &mdash; <i>February 07, 2011</i></p>
+According to this post, - <br />&quot;in Python 2.3, we abandoned my home-grown 2.2 MRO algorithm in favor of the academically vetted C3 algorithm. One outcome of this is that Python will now reject any inheritance hierarchy that has an inconsistent ordering of base classes&quot;<br /><br />I am unable to get any error if I try such an inconsistent inheritance hierarchy on Python 2.5.4 and Python 2.6.5.<br />It is only on Python 3.1.2 that I get a TypeError and Python rejects the hierarchy. Why is that if C3 was incorporated in Python 2.3?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>February 07, 2011</i></p>
+Swapnil: can you contact me offline (guido@python.org) with the example you are trying?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>February 21, 2011</i></p>
+Off-line, Swapnil determined that his problem was caused by not using new-style classes (i.e. not inheriting from object) at the root of his class tree.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>May 15, 2011</i></p>
+Anyone in here using python for google appengine ?<br />I have problem with CPU usage .<br />My python - Django project eat more than 30 CPU hour per day when less than 2000 request :(,
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>May 16, 2011</i></p>
+@jewel, I recommend that you write with some more details to this support group: http://groups.google.com/group/google-appengine-python?pli=1
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="from-list-comprehensions-to-generator-expressions.html">&larr; Newer</a> &middot; <a href="import-antigravity.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

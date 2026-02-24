@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A new App Engine datastore API - Neopythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="asynchronous-rpc-in-app-engine-today.html">&larr; Newer</a> &middot; <a href="while-you-type-searching.html">Older &rarr;</a></p>
+
+<h1>A new App Engine datastore API</h1>
+<p><i>January 07, 2011 &mdash; originally posted on
+<a href="https://neopythonic.blogspot.com/2011/01/new-app-engine-datastore-api.html">Neopythonic</a></i></p>
+
+<hr>
+
+This post is primarily intended for App Engine users (and of those, only Python users :-).<br /><br />Over the past months I've been working on a new design for the Python datastore API, under the code name Datastore Plus. The new design is very ambitious, and changes a lot of things:<br /><ul><li>New, cleaner implementations of Key, Model, Property and Query classes</li><li>High-level asynchronous API using Python generators as coroutines (PEP 342)</li></ul>The design is meant to eventually replace the existing db package in the App Engine runtime library, but for now, it is just an open source project which you have to download and copy into your application.<br /><br />I am not at all finished with this design, but I believe in listening to users, so I am making a preliminary version of the new API available for review. Please send me your thoughts, either in this blog, or via private mail to guido (at) google.com. Note that the implementation works, but I cannot guarantee that it won't change.<br /><br />Documentation is here: <a href="http://goo.gl/D6Onw">http://goo.gl/D6Onw</a><br /><br />The project to check out is here: <a href="http://goo.gl/GapXI">http://goo.gl/GapXI</a><br /><br />You  must use Mercurial to check out the project, but it's fine to check it out anonymously -- I don't require anybody to log in to look or comment. (If using Mercurial is too much of a burden, there's also a zipfile on the site, but I don't plan to update it frequently.)<br /><br />I'm interested in receiving any kind of feedback at all. It would help me if you could clarify whether your feedback is about an issue with the documentation, an issue with the implementation, or an issue with the API design -- though I realize you can't always tell the difference. :-)<br /><br />(You can also comment on the thread in the google-appengine-python group here: <a href="https://groups.google.com/group/google-appengine-python/browse_thread/thread/454cb81d49e759f2">https://groups.google.com/group/google-appengine-python/browse_thread/thread/454cb81d49e759f2</a>.)
+
+<h3>Comments (9)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anthony Mills</b> &mdash; <i>January 07, 2011</i></p>
+When&#39;s Google App Engine getting updated to a later version of Python?<br /><br />Sorry, couldn&#39;t resist. :)<br /><br />Sounds like a neat project, kind of like C# 5.0&#39;s async stuff.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Chris Tan</b> &mdash; <i>January 07, 2011</i></p>
+Very exciting work!  I&#39;ve read about &quot;trampoline&quot; before but haven&#39;t yet had a chance to use it.<br /><br />Will you be experimenting with it in Rietveld?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>January 08, 2011</i></p>
+A zip file would be great. Thanks.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>January 08, 2011</i></p>
+I&#39;m not here to comment on other aspects of App Engine. Stay tuned...<br /><br />Rietveld is probably not the first thing I&#39;ll try this on, it&#39;s a rather large program by now...<br /><br />Zip file uploaded:<br />http://code.google.com/p/appengine-ndb-experiment/downloads/detail?name=appengine-ndb-experiment.zip
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>PJE</b> &mdash; <i>January 10, 2011</i></p>
+Interesting...  it looks like there&#39;s some overlap here with the async WSGI+futures discussion on the Web-SIG these last couple days.<br /><br />I just did a sketch of a WSGI 2 async API using a PEP 380-style coroutine implementation... perhaps an async WSGI API could have some legs after all, at least in contexts like app engine.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>January 10, 2011</i></p>
+@PJE I noticed the same overlap. However App Engine is not friendly to what most people seem to think is the most important use of async in WSGI: producing the response incrementally. App Engine always collects the entire response in a buffer and only starts shipping it to the client when the code is finished. (OTOH for serving and uploading large files, App Engine has different solutions which do not go through the app code at all. So any worries people might have about this are unnecessary. It&#39;s just a different philosophy.)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>January 12, 2011</i></p>
+I don&#39;t mean to be unnecessarily negative, but this looks like a multi-car pile up involving a pretty computer science project, mode bit-in-waiting[X], and all the existing terminology used for datastore. And because It&#39;s Guido, guaranteed some subset of people will start using it over the existing API, and so the Python support forums will forever more require one further step in determining if the Query class referred to is &quot;the old one or the other one&quot;.<br /><br />In the meantime, while it&#39;s pretty, it fails to address one of the principle problems with the current API: it&#39;s completely Google-specific. For moving to and from App Engine, this is a much more interesting and immediate, and woefully difficult problem than some effortless asynchrony and banishing the evilly clumsy bastion-of-Java design of the current API.<br /><br />Please consider evolving the current API in some backwards-compatible manner in favour of starting afresh.<br /><br />[X] http://www.bookjive.com/wiki/Book:The_Soul_of_a_New_Machine
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Fh</b> &mdash; <i>January 30, 2011</i></p>
+Hi Guido, <br /><br />Cool stuff, I was eager to test it since I read (and re-read) the docs.<br /><br />I have one big problem though: No DatetimeProperty!<br /><br />I&#39;m used to having an updated_at and created_at fields on all my models for convenience reasons. I just discovered that Datetime properties haven&#39;t been implemented yet.<br /><br />Why is that? How long should I wait for them? Is using the old db in the meantime the best solution to this problem?<br /><br />Thanks!
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>January 30, 2011</i></p>
+Hi Fh, the only reason DatetimeProperty (and a bunch of others) hasn&#39;t been implemented yet is that I didn&#39;t think they&#39;d be particularly interesting. You could probably code them up yourself -- I&#39;d happily take a patch (against the latest Hg archive please) uploaded to Rietveld (codereview.appspot.com).<br /><br />As a workaround, I think you could use a GenericProperty for now, which does have Datetime support. Just set the value to a datetime instance.
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="asynchronous-rpc-in-app-engine-today.html">&larr; Newer</a> &middot; <a href="while-you-type-searching.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

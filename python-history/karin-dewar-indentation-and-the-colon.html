@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Karin Dewar, Indentation and the Colon - The History of Python</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="why-python-uses-0-based-indexing.html">&larr; Newer</a> &middot; <a href="why-pythons-integer-division-floors.html">Older &rarr;</a></p>
+
+<h1>Karin Dewar, Indentation and the Colon</h1>
+<p><i>July 08, 2011 &mdash; originally posted on
+<a href="https://python-history.blogspot.com/2011/07/karin-dewar-indentation-and-colon.html">The History of Python</a></i></p>
+
+<hr>
+
+In a <a href="http://neopythonic.blogspot.com/2011/06/depth-and-breadth-of-python.html">recent post on my other blog</a> I mentioned a second-hand story about how Python's indentation was invented by the wife of Robert Dewar. I added that I wasn't very sure of the details, and I'm glad I did, because the truth was quite different. I received a long email from Lambert Meertens with the real story. I am going to quote it almost completely here, except for some part which he requested not to be quoted. In summary: Karin Dewar provided the inspiration for the use  of the colon in ABC (and hence in Python) leading up to the indentation, not for indentation itself. Here is Lambert's email:<br /><br /><blockquote>     The Dewar story is not about indentation, but about the invention of     the colon.<br /><br />First about indentation in <i>B</i>. Already <i>B</i><small>0</small>,     the first iteration in the <i>B</i><small>0, </small><i>B</i><small>1,     </small><i>B</i><small>2,</small> ... sequence of designs leading to     ABC, had non-optional indentation for grouping, supplemented by     enclosing the group between <tt>BEGIN</tt> and <tt>END</tt>     delimiters. This can be seen in [GM76], section 4.1 (<i>Layout</i>).     The indentation was supposed to be added, like pretty printing, by a     dedicated <i>B</i> editor, and the user had no control over this;     they were not supposed to be able to turn this off or otherwise     modify the indentation regime.<br /><br />Given the mandatory indentation, separate <tt>BEGIN</tt> and <tt>END</tt>     delimiters are of course superfluous; in <small> </small><i>B</i><small>1</small>     we had no <tt>BEGIN</tt>, but only <tt>END IF</tt>, <tt>END FOR</tt>,     and so on, and then the latter delimiters were also dropped in <small>     </small><i>B</i><small>2</small><small>,</small> leaving pure     indentation as the sole indicator of grouping. See [ME81], Section 4     (STATEMENT SYNTAX).<br /><br />The origin of indentation in ABC is thus simply the desire to have     the program text look neat and be suggestive of the meaning,     codifying what was already common practice but not enforced. The     decision to remove the noise of <tt>BEGIN</tt> ... <tt>END</tt>     may have been influenced by [PL75], which actually advocated using     pure indentation for grouping. Since occam came later (1983), the     feature can't have been copied from that language. Same for Miranda     (1985). As far as I am aware, <i>B</i> was the first actually     published (and implemented) language to use indentation for     grouping.<br /><br />Now the Dewar story, which is how I got the idea of the colon, as I     wrote it down in a memoir of the ABC design rationale: </blockquote><br />And here I will paraphrase, at Lambert's request.<br /><br />In 1978, in a design session in a mansion in Jabłonna (Poland), Robert Dewar, Peter King, Jack Schwartz and Lambert were comparing various alternative proposed syntaxes for B, by comparing (buggy) bubble sort implementations written down in each alternative. Since they couldn't agree, Robert Dewar's wife was called from her room and asked for her opinion, like a modern-day Paris asked to compare the beauty of Hera, Athena, and Aphrodite. But after the  first version  was explained to her, she remarked: "You mean, in the line where it says: 'FOR i ... ', that it has to be done for the lines that follow; not just for that line?!" And here the scientists realized that the misunderstanding would have been avoided if there had been a colon at the end of that line.<br /><br />Lambert also included the following useful references:<br /><br /><blockquote>     [PL75] P. J. Plauger. <a href="http://portal.acm.org/citation.cfm?id=800181.810322" target="_blank">Signal       and noise in programming language</a>. In J. D. White, editor, <i>Proc.       ACM Annual Conference 1975</i>, page 216. ACM, 1975.<br /><br />[GM76] Leo Geurts and Lambert Meertens. <a href="http://www.kestrel.edu/home/people/meertens/publications/papers/Designing_a_beginners_programming_language.pdf" target="_blank">Designing       a beginners' programming language</a>. In S.A. Schuman, editor, <em>New       Directions in Algorithmic Languages 1975</em>, pages 1–18. IRIA,     Rocquencourt, 1976.<br /><br />[ME81] Lambert Meertens. <a href="http://www.kestrel.edu/home/people/meertens/publications/papers/Issues_in_the_design_of_a_beginners_programming_language.pdf" target="_blank">Issues       in the design of a beginners' programming language</a>. In     J.W. de Bakker and J.C. van Vliet, editors, <em>Algorithmic       Languages</em>, pages 167–184. North-Holland Publishing Company,     Amsterdam, 1981.</blockquote>
+
+<h3>Comments (7)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>python3</b> &mdash; <i>July 08, 2011</i></p>
+long time no see, maybe there is a typo?<br />But after the first version was explained to here<br />-&gt;<br />But after the first version was explained to HER
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>July 08, 2011</i></p>
+Thanks, typo fixed!
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>July 09, 2011</i></p>
+How many memories ... my first program 2 +2 = 4 written with python on the Commodore Amiga...
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Vasudev Ram</b> &mdash; <i>July 09, 2011</i></p>
+Interesting story, and also, by coincidence (and off-topic), referring to - <br /><br />&gt;like a modern-day Paris asked to compare the beauty of Hera, Athena, and Aphrodite<br /><br />- I was just yesterday browsing a chain of (mostly Wikipedia) links relating to Paris, Troy, Greece, Hera, Athena, Illyrians, and many other related et ceteras ...
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Jeff</b> &mdash; <i>May 03, 2012</i></p>
+This is great; I&#39;m planning to teach Python to programming novices (psychologists, specifically), and historical insights like this will be very nice additions to the material. Thanks for putting this down somewhere!
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Danny Yoo</b> &mdash; <i>May 03, 2012</i></p>
+Thank you for providing references to those papers!
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>May 11, 2016</i></p>
+One time, Karin Dewar (my sister-in-law) showed me a geometry proof she had done in High School proving congruency of the sides (or base angles) of an isosceles triangle. It involved proving the triangle must be congruent to its mirror image (i.e. drawing the triangle on a piece of paper and flipping the paper over), and hence the base angles (or sides) must be congruent. I had never seen this idea mentioned anywhere (although subsequently a computer program apparently stumbled on it). She was one very smart lady ;)<br />CESDewar
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="why-python-uses-0-based-indexing.html">&larr; Newer</a> &middot; <a href="why-pythons-integer-division-floors.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

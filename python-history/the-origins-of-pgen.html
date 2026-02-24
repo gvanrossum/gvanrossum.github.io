@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The origins of pgen - The History of Python</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="the-history-of-bool-true-and-false.html">Older &rarr;</a></p>
+
+<h1>The origins of pgen</h1>
+<p><i>May 12, 2018 &mdash; originally posted on
+<a href="https://python-history.blogspot.com/2018/05/the-origins-of-pgen.html">The History of Python</a></i></p>
+
+<hr>
+
+David Beazley's talk at US PyCon 2018, about parser generators, reminded me I should write a bit about its history. Here's a brief brain dump (maybe I'll expand later).<br />
+<br />
+There are actually two pgens. The original, in C, and a rewrite in Python, under lib2to3/pgen2.<br />
+<br />
+I wrote both. The original was actually the first code I wrote for Python. Although technically I had to write the lexer first (pgen and Python share their lexer, pgen just doesn't have any uses for most tokens).
+<br />
+<br />
+The reason for writing my own parser generator was that at the time the landscape of parser generators (that I was familiar with) was pretty sparse -- basically there was Yacc (the GNU rewrite named Bison existed, but I don't know if I knew); or you could write a parser by hand (which is what most people did). I had used Yacc in college and was familiar with how it worked from the Dragon book, but for some reason I didn't like it much; IIRC I found it hard to reason about what the limitations on an LALR(1) grammar would be. I was also familiar with LL(1) parsers and had written some serious recursive-descent LL(1) parsers by hand -- I liked that fine but I was also familiar (again from the Dragon book) with LL(1) parser generation techniques, and I had one improvement over that that I wanted to try out: using regular expressions (sort of) instead of the standard BNF format. The Dragon book had also taught me how to turn regular expressions into DFAs, so I combined all that and pgen was born. [<b>Update:</b> see below for a slightly different version for the reason.]<br />
+<br />
+I was not familiar with more advanced techniques, or I deemed them too inefficient. (I think most people working in parsers did, at the time.)
+<br />
+<br />
+For the lexer I decided I would not use a generator -- I had a much lower opinion of Lex than of Yacc, since the version of Lex that I was familiar with would just segfault when trying to scan a token longer than 255 bytes (really!). Also I figured that indentation would be hard to teach to a lexer generator.
+<br />
+<br />
+The story of pgen2 is quite different: I was employed by a startup in San Mateo (Elemental Security, it died in 2007, after I had left and joined Google) where I was given the task to design a custom language (for security assertions about system configuration), and was given pretty much free reign. I decided to design something vaguely like Python, implemented in Python, and decided that I wanted to reuse pgen, but with a backend in Python, using tokenize.py as the lexer. So I just rewrote the exact algorithm from pgen in Python and then moved on to build the rest of that language. Open-sourcing the tooling made sense to management so they quickly approved that, and some time later (I had probably moved on to Google by then?) it made sense to use those tools for 2to3. (It was easy to generate a Python parser with it because the input format was identical to the original pgen -- I just had to feed the Grammar file into the tool. :-)<br />
+<br />
+<b>Update: more color behind my reason for creating pgen</b><br />
+<br />
+<div>
+I don't quite recall why I did things this way but I just peeked at <a href="https://en.wikipedia.org/wiki/LL_parser#Conflicts" target="_blank">https://en.wikipedia.org/wiki/<wbr></wbr>LL_parser#Conflicts</a>
+ and I may have seen this as a new (to me) way of addressing the various
+ conflicts that may occur without adding helper rules. E.g. what that 
+page calls left-factoring (replace A -&gt; X | X Y Z with A -&gt; X B; B
+ -&gt; Y Z | &lt;empty&gt;) I would rewrite instead as A -&gt; X [Y Z]. 
+IIRC the parsing engine (function syntacticAnalysis from earlier on that
+ page) still works with parsing tables derived from such rules through 
+the regex -&gt; NFA -&gt; DFA transformation; I think the requirement 
+not to have any empty productions was required here.</div>
+<div>
+<br /></div>
+<div>
+The
+ other thing I came up with was that the parse tree nodes produced by 
+the parsing engine would have a variable number of children, e.g. for 
+the rule A -&gt; X [Y Z] above the node for A would have either 1 child 
+(X) or 3 (X Y Z). A simple check in the code generator would then be 
+needed to determine which alternative the parser had encountered. (This 
+has turned out to be a double-edged sword, and later we added a parse 
+tree -&gt; AST step driven by a separate generator to simplify the byte 
+code generator.)</div>
+<div>
+<br /></div>
+<div>
+So the reason I used regular expressions
+was probably to make the grammar easier to read: after resolving the 
+conflicts using the needed rewrites I found the grammar not all that 
+easy to read (insert Zen of Python reference here :-) hence the regular 
+expressions -- no helper rules with awkward names, and [optional] parts 
+or repeated* parts are closer to how I think about a typical language's 
+syntax. It certainly did not change the power beyond LL(1), nor did it 
+reduce the power. And yes by "regular expressions" I meant the EBNF 
+conventions -- I'm not sure that at the time "EBNF" was a well-defined 
+notation, it might just have meant any extension to BNF.</div>
+<div>
+<br /></div>
+<div>
+Converting
+ EBNF to BNF and taking it from there would cause awkward extra parse 
+tree node types, so I don't think that would have been an improvement.</div>
+<div>
+<br /></div>
+If
+ I had to do it all over again I might opt for a more powerful parsing 
+engine, perhaps a version of LALR(1) (i.e. Yacc/Bison). There are 
+several areas of the grammar where something more powerful
+ than LL(1) would be helpful, e.g. keyword args: the rule 'arg: [NAME =]
+expr' is not a valid rule, since NAME occurs in the FIRST-set of expr 
+and the algorithm doesn't handle that. IIRC LALR(1) can handle it. But 
+keyword args were several years in the future when I wrote the first 
+version of pgen, and I didn't want to redo the parser at that point.<br />
+<br />
+<b>UPDATE March 2019:</b> Python 3.8 will drop the C version of pgen, in favor of a tweaked version of pgen2. See <a href="https://github.com/python/cpython/pull/11814">https://github.com/python/cpython/pull/11814</a>.
+
+
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="the-history-of-bool-true-and-false.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The history of bool, True and False - The History of Python</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="the-origins-of-pgen.html">&larr; Newer</a> &middot; <a href="the-story-of-none-true-and-false-and-an-explanation-of-literals-keywords-and-bui.html">Older &rarr;</a></p>
+
+<h1>The history of bool, True and False</h1>
+<p><i>November 11, 2013 &mdash; originally posted on
+<a href="https://python-history.blogspot.com/2013/11/the-history-of-bool-true-and-false.html">The History of Python</a></i></p>
+
+<hr>
+
+Writing up the reasons why True and False, when introduced, weren't reserved words, I realized there's another interesting lesson in the history of Python's bool type.
+
+It was formally introduced in Python 2.3, as a new type with two constants, and the type was introduced in <a href="http://www.python.org/dev/peps/pep-0285/" target="_blank">PEP 285</a> ("Adding a bool type").<br />
+<br />
+But bool, True and False were also introduced in Python 2.2.1 (a bugfix release!).  The Misc/NEWS file said:<br />
+<blockquote class="tr_bq">
+<div style="background-color: white; color: #222222; font-size: 13px; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px;">
+<div>
+<span style="font-family: &quot;Courier New&quot;,Courier,monospace;">What's New in Python 2.2.1 final?</span></div>
+<div>
+<span style="font-family: &quot;Courier New&quot;,Courier,monospace;">Release date: 10-Apr-2002</span></div>
+<div>
+<span style="font-family: &quot;Courier New&quot;,Courier,monospace;">==============================</span><wbr></wbr><span style="font-family: &quot;Courier New&quot;,Courier,monospace;">===</span></div>
+<div>
+<span style="font-family: &quot;Courier New&quot;,Courier,monospace;"><br /></span></div>
+<div>
+<span style="font-family: &quot;Courier New&quot;,Courier,monospace;">Core and builtins</span></div>
+<div>
+<span style="font-family: &quot;Courier New&quot;,Courier,monospace;"><br /></span></div>
+<div>
+<span style="font-family: &quot;Courier New&quot;,Courier,monospace;">- Added new builtin function bool() and new builtin constants True and</span></div>
+<div>
+<span style="font-family: &quot;Courier New&quot;,Courier,monospace;">&nbsp; False to ease backporting of code developed for Python 2.3. &nbsp;In 2.2,</span></div>
+<div>
+<span style="font-family: &quot;Courier New&quot;,Courier,monospace;">&nbsp; bool() returns 1 or 0, True == 1, and False == 0.</span></div>
+</div>
+</blockquote>
+<span style="font-size: small;"><span style="font-family: inherit;"><br class="Apple-interchange-newline" /></span></span>
+<span style="font-size: small;"><span style="font-family: inherit;"><span style="background-color: white; color: #222222; display: inline ! important; float: none; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px;">This was the last (and the most criti<span style="font-family: inherit;">cized) time we added a new feature in a bugfix release -- we'd never do that these days. </span></span></span><span style="font-family: inherit;"><span style="background-color: white; color: #222222; display: inline ! important; float: none; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px;">Also note that bool/True/False in 2.2.1 were different from 2.3: in 2.3, bool is a new type; in 2.2.1, bool() is a built-in function and the constants are just ints.</span></span></span><br />
+<br />
+<span style="font-size: small;"><span style="font-family: inherit;"><span style="background-color: white; color: #222222; display: inline ! important; float: none; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px;">The chronology is also interesting: the proper new bool type was introduced in 2.3a1, released on Dec 31 2002, well after the above-mentioned 2.2.1 release. And the final 2.3 release didn't come out until July 29 2003. And yet, the above comment talks about backporting from 2.3 to 2.2.1. PEP 285 was created on March 8, 2002, accepted on April 3, and declared final on April 11 (i.e. after Python 2.2.1 was released). I'm assuming that by then the proper bool implementation had landed in the 2.3 branch. That's a breakneck pace compared to how we do things a decade later!</span></span></span>
+
+
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="the-origins-of-pgen.html">&larr; Newer</a> &middot; <a href="the-story-of-none-true-and-false-and-an-explanation-of-literals-keywords-and-bui.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

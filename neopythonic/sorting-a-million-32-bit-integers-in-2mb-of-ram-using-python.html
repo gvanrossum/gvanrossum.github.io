@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sorting a million 32-bit integers in 2MB of RAM using Python - Neopythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="why-explicit-self-has-to-stay.html">&larr; Newer</a> &middot; <a href="about-this-blog.html">Older &rarr;</a></p>
+
+<h1>Sorting a million 32-bit integers in 2MB of RAM using Python</h1>
+<p><i>October 22, 2008 &mdash; originally posted on
+<a href="https://neopythonic.blogspot.com/2008/10/sorting-million-32-bit-integers-in-2mb.html">Neopythonic</a></i></p>
+
+<hr>
+
+<p>Someone jokingly <a href="http://moderator.appspot.com/#e%253Dagltb2RlcmF0b3JyDQsSBlNlcmllcxjJAQw%252Bt%253Dagltb2RlcmF0b3JyDAsSBVRvcGljGP8BDA">asked me</a> how I would sort a million 32-bit integers in 2 megabytes of RAM, using Python. Taking up the challenge, I leared something about buffered I/O.</p><p>Obviously this is a joke question -- the data alone would take up 4 megabytes, assuming binary encoding!  But there's a possible interpretation: given a <i>file</i> containing a million 32-bit integers, how would you sort them with minimal memory usage?  This would have to be some kind of merge sort, where small chunks of the data are sorted in memory and written to a temporary file, and then the temporary files are merged into the eventual output area.<br /></p><p>Here is my solution.  I'll annotate it in a minute.<br /></p><p><b>NOTE:</b> All my examples use Python 3.0.  The main difference in this case is the use of <i>file</i><code>.buffer</code> to access the binary stream underlying the text stream <i>file</i>.<br /></p><pre class="prettyprint">#!/usr/bin/env python3.0<br />import sys, array, tempfile, heapq<br />assert array.array('i').itemsize == 4<br /><br />def intsfromfile(f):<br />  while True:<br />     a = array.array('i')<br />     a.fromstring(f.read(4000))<br />     if not a:<br />         break<br />     for x in a:<br />         yield x<br /><br />iters = []<br />while True:<br />  a = array.array('i')<br />  a.fromstring(sys.stdin.buffer.read(40000))<br />  if not a:<br />      break<br />  f = tempfile.TemporaryFile()<br />  array.array('i', sorted(a)).tofile(f)<br />  f.seek(0)<br />  iters.append(intsfromfile(f))<br /><br />a = array.array('i')<br />for x in heapq.merge(*iters):<br />  a.append(x)<br />  if len(a) &gt;= 1000:<br />      a.tofile(sys.stdout.buffer)<br />      del a[:]<br />if a:<br />  a.tofile(sys.stdout.buffer)<br /></pre>On my Google desktop (a 3 year old PC running a Googlified Linux, rating about 34000 Python 3.0 pystones) this took about 5.4 seconds to run, with an input file containing exactly 1,000,000 32-bit random integers.  That's not so bad, given that a straightforward in-memory sort of the same input took about 2 seconds:<br /><pre class="prettyprint">#!/usr/bin/env python3.0<br />import sys, array<br />a = array.array('i', sys.stdin.buffer.read())<br />a = list(a)<br />a.sort()<br />a = array.array('i', a)<br />a.tofile(sys.stdout.buffer)<br /></pre>Back to the merge-sort solution.  The first three lines are obvious:<br /><pre class="prettyprint">#!/usr/bin/env python3.0<br />import sys, array, tempfile, heapq<br />assert array.array('i').itemsize == 4<br /></pre>The first line says we're using Python 3.0. The second line imports the modules we're going to need. The third line here makes it break on those 64-bit systems where the 'i' typecode doesn't represent a 32-bit int; I am making no attempts to write this code portably.<br /><br />Then we define a little helper that is a generator which reads integers from a file and yields them one at a time:<br /><pre class="prettyprint">def intsfromfile(f):<br />  while True:<br />      a = array.array('i')<br />      a.fromstring(f.read(4000))<br />      if not a:<br />          break<br />      for x in a:<br />          yield x<br /></pre>This is where the performance tuning of the algorithm takes place: it reads up to 1000 integers at a time, and yields them one by one.  I had originally written this without buffering -- it would just read 4 bytes from the file, convert them to an integer, and yield the result.  But that ran about 4 times as slow!  Note that we can't use <code>a.fromfile(f, 1000)</code> because the <code>fromfile()</code> method complains bitterly when there aren't enough values in the file, and I want the code to adapt automatically to however many integers are on the file.  (It turns out we write about 10,000 integers to a typical temp file.)<br /><p>Next we have the input loop. This repeatedly reads a chunk of 10,000 integers from the input file, sorts them in memory, and writes them to a temporary file.  We then add an iterator over that temporary file, using the above <code>intsfromfile()</code> function, to a list of iterators that we'll use in the subsequent merge phase.<br /></p><pre class="prettyprint">iters = []<br />while True:<br />  a = array.array('i')<br />  a.fromstring(sys.stdin.buffer.read(40000))<br />  if not a:<br />      break<br />  f = tempfile.TemporaryFile()<br />  array.array('i', sorted(a)).tofile(f)<br />  f.seek(0)<br />  iters.append(intsfromfile(f))<br /></pre>Note that for an input containing a million values, this creates 100 temporary files each containing 10,000 values.<br /><p>Finally we merge all these files (each of which is sorted) together. The <code>heapq</code> module has a really nice function for this purpose:<code> heapq.merge(</code><i>iter1, iter2, ...</i><code>)</code> returns an iterator that yields the input values in order, assuming each input itself yields its values in order (as is the case here).<br /></p><pre class="prettyprint">a = array.array('i')<br />for x in heapq.merge(*iters):<br />  a.append(x)<br />  if len(a) >= 1000:<br />      a.tofile(sys.stdout.buffer)<br />      del a[:]<br />if a:<br />  a.tofile(sys.stdout.buffer)<br /></pre>This is another place where buffered I/O turned out to be essential: Writing each individual value to a file as soon as it is available slows the algorithm down about twofold. Thus, by simply adding input and output buffering, we gained a tenfold speed-up!<br /><br />And that's the main moral of the story.<br /><p>Another lesson is praise for the <code>heapq</code> module, which contains the iterator merge functionality needed in the output phase. Also, let's not forget the utility of the <code>array</code> module for managing binary data.</p><p>And finally, let this example remind you that Python 3.0 is notso different from Python 2.5!<br /></p>
+
+<h3>Comments (25)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>October 23, 2008</i></p>
+@olivier: that's a cool way of doing it, but not for Python, where an int takes 12 bytes and the list takes another 4 bytes per value.  Given some other overhead you'd end up having to make a lot of passes over the full input (the same number as would be feasible with my version -- I used 100 but it could likely be less), which would probably be slower.  It's interesting that a heap features in both algorithms.  I'm not convinced that it's the fastest way to sort though, despite the O(N log N) complexity.  Python's built-in sort is wicked.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>union</b> &mdash; <i>October 23, 2008</i></p>
+For nice code listings you can use google's own client side code highlighting lib:<BR/><BR/><A HREF="http://code.google.com/p/google-code-prettify/" REL="nofollow">google-code-prettify</A><BR/><BR/>My post on how to set it up:<BR/><A HREF="http://lukabloga.blogspot.com/2008/10/to-test-new-highlighting.html" REL="nofollow"><BR/>Code highlighting on blogger</A>
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>October 23, 2008</i></p>
+@union: I followed your recipe, and I verified that all the elements are indeed in the page, but it doesn't work.  What am I missing?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Boris Bluntschli</b> &mdash; <i>October 23, 2008</i></p>
+I think if you change the first two lines to<BR/><BR/>&lt;link href=&quot;http://google-code-prettify.googlecode.com/svn/trunk/src/prettify.css&quot; rel=&quot;stylesheet&quot; type=&quot;text/css&quot;/&gt;<BR/>&lt;script src=&quot;http://google-code-prettify.googlecode.com/svn/trunk/src/prettify.js&quot; type=&quot;text/javascript&quot;&gt;<BR/><BR/>it should work. You&#39;re currently linking to the SVN repository browser, not the files themselves.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>union</b> &mdash; <i>October 23, 2008</i></p>
+Yes Boris is correct, I included wrong url's ( but somehow managed to put the right ones in my template ).<BR/><BR/>I have corrected my original post or you can just use the tag's Boris posted in his comment.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>LetsEatLunch</b> &mdash; <i>October 23, 2008</i></p>
+Beastly..<A HREF="http://letseatlunch.org" REL="nofollow">.</A>
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Luis</b> &mdash; <i>October 24, 2008</i></p>
+Thanks Guido!<BR><BR/>By the way, when are you replying the other questions? :-)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Joel Hockey</b> &mdash; <i>October 26, 2008</i></p>
+I had a go at implementing this using a different approach which runs much faster on my computer.  I read the file multiple times and select values within a given range that will (hopefully) fit in the 1Mb memory limit.  This is then sorted and appended to the output.  I choose the ranges by partitioning the possible 32-bit values (-2^31, 2^31-1) into 8 sections.<BR/><BR/>The timing numbers I get are:<BR/>in-memory sort: 2.09s<BR/>guido merge sort: 10.90s<BR/>my select range sort: 2.92s<BR/><BR/>#!/usr/bin/env python3.0<BR/>import array<BR/><BR/>outf = open(&#39;joel-sorted.dat&#39;, &#39;wb&#39;)<BR/><BR/>INT_MIN, INT_MAX = -(2**31), 2**31-1<BR/>size = int(2**32 /  8)<BR/>cutoffs = range(INT_MIN, INT_MAX, size)<BR/><BR/># read file through and only collect values in our range<BR/>for i in range(len(cutoffs)):<BR/>inf = open(&#39;nums.dat&#39;, &#39;rb&#39;)<BR/>  min, max = cutoffs[i], cutoffs[i]+size<BR/>  a = array.array(&#39;i&#39;)<BR/>  while True:<BR/>    temp = array.array(&#39;i&#39;, inf.read(500000))<BR/>    if not temp:<BR/>      break<BR/>    for j in temp:<BR/>      if j &gt;= min and j &lt; max:<BR/>        a.append(j)<BR/>  <BR/>  # sort and append to output<BR/>  array.array(&#39;i&#39;, sorted(a)).tofile(outf)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Ralph Corderoy</b> &mdash; <i>October 27, 2008</i></p>
+Hi Joel Hockey, splitting 2**32 into 8 gives a range of 2**29.  All 1,000,000 integers, roughly 2**20, could easily fit into the first slice so you'd be sorting the whole file in one go;  thereby exceeding the memory limitation.  You'd need to split 2**32 into many more chunks than 8 to avoid exceeding memory, and that will probably slow you down a lot.  Cheers, Ralph.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Unknown</b> &mdash; <i>October 27, 2008</i></p>
+How about using <A HREF="http://numpy.scipy.org/" REL="nofollow">Numpy</A> to do read them in with frombuffer()?  Something like in the <A HREF="http://www.snisit.com/articles/python-multiprocessing-module/" REL="nofollow">multiprocess test here</A>.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Joel Hockey</b> &mdash; <i>October 27, 2008</i></p>
+Hi Ralph.  Yes it is possible for this approach to exceed the 2M memory limit if the numbers are skewed.  I should have mentioned that it makes the assumption that the numbers are uniformly random.<BR/><BR/>If the 1M 32-bit ints are sufficiently uniform though, then this approach uses about 1Mb of memory.  The range of possible values for a 32-bit signed int is [-2147483648, 2147483648) (lower number is included, upper number is excluded).  I break this range up into 8 smaller ranges - [-2147483648, -1610612736), [-1610612736, -1073741824), ... [1610612736, 2147483648).  Out of 1 million uniformly random 32-bit numbers, you would expect 125,000 to fall into each range.  In fact, as long as there are not more than 250,000 numbers in each sub-range, the approach will not exceed the memory limit.<BR/><BR/>I chose 8 sub-ranges to be conservative.  You could choose 3 or 4, or even possibly 2, but then you would need to sort the numbers in-place and be a lot trickier which is likely to make the code slower.  The performance for 8 was not much worse than 3, and not much different to a full in-memory sort.  My calculation for the memory used is:<BR/>* 500,000 bytes holding input numbers which can be reclaimed before sub-range sorting.<BR/>* 500,000 (approx) bytes holding numbers in given sub-range (125,000 32-bit ints)<BR/>* 500,000 (approx) bytes to hold sorted numbers in sub-range.<BR/><BR/>Total mem: approx 1Mb<BR/><BR/>Like I said, this does assume that the numbers are uniformly random.  I did consider doing a first pass of the numbers to work out the optimal bounds for the sub-ranges, but this crude approach was enough to satisfy my curiosity.<BR/><BR/>Hopefully Jon Bentley will show up soon and wow us all with some way to do it that is way faster and uses less memory.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Ted Hosmann</b> &mdash; <i>October 29, 2008</i></p>
+GvR - this is the post that put your new blog on my radar.  Subscribe to feed, Check.  <BR/><BR/>I am looking forward to reading many more posts - keep it up.<BR/><BR/>Also, thanks for Python.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Jurjen</b> &mdash; <i>November 03, 2008</i></p>
+This comment has been removed by the author.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Jurjen</b> &mdash; <i>November 03, 2008</i></p>
+Hmm. Still I am not convinced that the disk buffers for these 100 files don't actually just contain all the numbers, so that you seem to be cheating a bit: it is a "sort in disk buffer space".<BR/>I would be really hard, I think, to actually force the program to use little memory.<BR/>Still, heapq.merge is cool!
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Stoune</b> &mdash; <i>November 18, 2008</i></p>
+This is task more for Donald Knuth. <BR/>I think Python influence not so big.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Travis Oliphant</b> &mdash; <i>December 04, 2008</i></p>
+For what it's worth, NumPy and memory-mapped arrays can solve this problem quite simply and quickly (how much memory is used depends on the OS): <BR/><BR/>import numpy as np<BR/><BR/>np.memmap("file_with_integers", dtype=int).sort(kind='merge')
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Pranav Prakash</b> &mdash; <i>January 09, 2009</i></p>
+For a beginner like me, this code and post was surely educative enough. I have one more point to, "why Python"
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>February 03, 2009</i></p>
+private void SortFile(string unsortedFileName, string sortedFileName)<BR/>        {<BR/>            //Read the file into an array of ints<BR/>            byte[] file = System.IO.File.ReadAllBytes(unsortedFileName);<BR/>            int[] numbers = new int[file.Length / 4];<BR/>            for (int i = 0; i &lt; numbers.Length; i++)<BR/>            {<BR/>                numbers[i] = BitConverter.ToInt32(file, i);<BR/>            }<BR/><BR/>            //Sort the array<BR/>            Array.Sort(numbers);<BR/>            <BR/>            //Write the results back to file<BR/>            byte[] tempArray = new byte[4];<BR/>            for(int j = 0; j &lt; numbers.Length; j++)<BR/>            {<BR/>                tempArray = BitConverter.GetBytes(numbers[j]);<BR/>                file[j] = tempArray[0];<BR/>                file[j+1] = tempArray[1];<BR/>                file[j+2] = tempArray[2];<BR/>                file[j+3] = tempArray[3];<BR/>            }<BR/><BR/>            System.IO.File.WriteAllBytes(sortedFileName,file);<BR/>     <BR/>        }
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Wallacoloo</b> &mdash; <i>February 23, 2010</i></p>
+@Linn: By reading all 1000000 4byte integers in at once, you&#39;re using atleast 4000000 bytes of memory. But you&#39;re only given 2MB. Plus, it looks like you&#39;re using another 4000000 bytes in your &quot;file&quot; array.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>FutureNerd</b> &mdash; <i>August 03, 2010</i></p>
+The question is not a joke!  But since it seems like the kind of thing Microsoft would use in a job- interview puzzle (pointless obsessive byte-squeezing optimization!), I&#39;ll be a little cryptic:<br /><br />With a main working array that&#39;s only 2,000,000 bytes (Python or any language will have some fixed overhead, I think it&#39;s fair not to count that), you can write the program so that the only I/O it does is to read the unsorted input file in one pass, then write the sorted output file in one pass.  No temporary files, seeks, additional buffers, or virtual arrays are needed.<br /><br />2e6 bytes is a small percentage more than is needed.  Given a fixed percentage slack, the run time scales like n log n.<br /><br />In Python you can avoid the memory overhead that Guido mentions, by using the array module.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anand</b> &mdash; <i>July 11, 2011</i></p>
+http://anandtechblog.blogspot.com/2010/12/how-to-sort-4gb-files-google-question.html
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Shriram Kunchanapalli</b> &mdash; <i>April 26, 2012</i></p>
+@Anand:  What&#39;s the run time complexity of your solution?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>October 25, 2014</i></p>
+I use python for some specific purposes in my research (infectious disease modeling).  So I haven&#39;t worked with problems like this before.  I&#39;m trying to learn more about python, so here I am.<br /><br />I seem to be misunderstanding the code - to me it doesn&#39;t look like it solves the problem.  Can someone explain to me what my mistake is?<br /><br />It looks to me like the file is read in piece by piece.  Each piece is sorted, and then put into a temporary file.  The temporary files are eventually merged together into a longer file.  So it seems that the final file is going to be a bunch of ordered sections that are not themselves in order.  <br /><br />I feel like it&#39;s a problem to do with me not understanding the heapq.merge command completely.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>October 25, 2014</i></p>
+Joel: the magic is all in heapq.merge(). It does the &quot;merge&quot; phase of a merge-sort. Think of what happens at the very beginning. There are 1000 files each with 1000 sorted numbers. We want the smallest number of all, which must be the first number in one of the files (because they are sorted). It finds and yields this value, and advances that file&#39;s iterator. Now we want the next smallest number. Again, this must be at the head of one of the file iterators (but not necessarily the same one). And so on, until all files have been exhausted.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>October 26, 2014</i></p>
+Thanks for the quick reply.<br /><br />I felt like there had to be something in that step I didn&#39;t understand.
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="why-explicit-self-has-to-stay.html">&larr; Newer</a> &middot; <a href="about-this-blog.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

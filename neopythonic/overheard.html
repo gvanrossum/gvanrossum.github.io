@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Overheard - Neopythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="scala.html">&larr; Newer</a> &middot; <a href="yes-i-am-a-sore-loser.html">Older &rarr;</a></p>
+
+<h1>Overheard</h1>
+<p><i>November 14, 2008 &mdash; originally posted on
+<a href="https://neopythonic.blogspot.com/2008/11/overheard.html">Neopythonic</a></i></p>
+
+<hr>
+
+"All you can do with a shell script is make it worse. But since this is Python, you can make it better."
+
+<h3>Comments (8)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Andrey Nordin</b> &mdash; <i>November 14, 2008</i></p>
+Could you post a little example or a link to some really beautiful Python shell-like scripts?<BR/><BR/>I guess invoking external programs, creating a pipeline, quoting parameters, etc. makes Python scripts a little bit ugly, despite of the beauty of the language itself.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>tyr</b> &mdash; <i>November 15, 2008</i></p>
+lol<BR/>because it's true
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Unknown</b> &mdash; <i>November 15, 2008</i></p>
+seeing is believing
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Noah Gift</b> &mdash; <i>November 18, 2008</i></p>
+I actually tried to make this point in the book I wrote with Jeremy.  One of the real problems with shell scripts, is that people don't take them seriously.  Pretty soon, you have 2 thousands of something like Perl, but perhaps worse.  <BR/><BR/>With Python, you can write tests, documentation, and treat these "silly" scripts seriously.  Python is absolutely the best language for system administration, and shell-like scripting.<BR/><BR/>@andrey take a look at some of these examples:<BR/><BR/><A HREF="http://code.google.com/p/py4sa/source/browse/#svn/trunk/code" REL="nofollow">http://code.google.com/p/py4sa/source/browse/#svn/trunk/code</A><BR/><BR/>In addition to doing all of the things that say, Bash, does, better, i.e., more readable and testable, you can mix this with the power of the Python language.  You can easily create thread pools, use generators, wrap things in command line tools, and more.  Python puts the shell to shame!
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Dhruva Krishnamurthy</b> &mdash; <i>November 20, 2008</i></p>
+I wonder what you cannot do in perl that you can do in Python. All talk about writing unmaintainable code in perl is pure myth. Give me python, I can write a real maze of a code and make python look bad to a novice. Languages rarely can enforce disciplined and clean programming. They can just give you constructs to do clean programming!
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>November 24, 2008</i></p>
+Andrey Nordin, here's a good script, I think;<BR/><BR/>http://www.jperla.com/blog/2008/11/17/a-clean-python-shell-script/
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Robert</b> &mdash; <i>December 05, 2008</i></p>
+@Noah:<BR/><BR/>Take for example a file from your link:<BR/>http://code.google.com/p/py4sa/source/browse/trunk/code/cleansvn.py<BR/><BR/>That seems a lot worse than this:<BR/>find ./ -type d -name .svn -exec rm -rf {} \;<BR/><BR/>I'm not saying that shell scripts don't get horribly ugly and icky when trying to do something pretty complex, but to say that Python "puts the shell to shame" is far far far from accurate.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>DanyelLawson</b> &mdash; <i>December 26, 2008</i></p>
+I think it wrong and bigoted to think of shell scripting as only a bunch of hacked together scripts that use external programs.<BR/>Bash is a language which simplifies executing external programs.  But it is a language all on it&#39;s on.<BR/>I have made it my personal crusade to rewrite shell scripts that use external programs to do things that can be written in bash.<BR/>e.g:<BR/>find ./ -type d -name .svn -exec rm -rf {} \;<BR/><BR/>can be written in bash as:<BR/>finddo () { [[ &quot;$#&quot; == &quot;3&quot; ]] || { echo usage: $FUNCNAME &quot;directory&quot; &quot;action&quot; &quot;path_filter&quot;; return; }; local d; for d in &quot;$1&quot;/*; do if [ -d &quot;$d&quot; ]; then finddo &quot;$d&quot; &quot;$2&quot; &quot;$3&quot;; [[ &quot;$d&quot; == $3 ]] &amp;&amp; $2 $d; fi; done; }<BR/><BR/>and executed at the bash prompt or in a script as:<BR/>finddo . &quot;rm -rf&quot; &quot;*.svn&quot;<BR/><BR/>This executes the actions depth first to allow for destructive actions.
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="scala.html">&larr; Newer</a> &middot; <a href="yes-i-am-a-sore-loser.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

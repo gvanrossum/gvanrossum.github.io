@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Origin of metaclasses in Python - The History of Python</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="the-story-of-none-true-and-false-and-an-explanation-of-literals-keywords-and-bui.html">&larr; Newer</a> &middot; <a href="why-python-uses-0-based-indexing.html">Older &rarr;</a></p>
+
+<h1>Origin of metaclasses in Python</h1>
+<p><i>October 24, 2013 &mdash; originally posted on
+<a href="https://python-history.blogspot.com/2013/10/origin-of-metaclasses-in-python.html">The History of Python</a></i></p>
+
+<hr>
+
+<div>
+There was some speculation on python-ideas today on whether Python's metaclass design came from Ruby. It did not. And as long as we are speculating about the origins of language features, I feel the need to set the record straight.</div>
+<div>
+<br />I
+ was not inspired by Ruby at that point (or ever :-). Ruby was in fact 
+inspired by Python. Mats once told me that his inspiration was 20% 
+Python, 80% Perl, and that Larry Wall is his hero.<br />
+</div>
+<div>
+&nbsp;</div>
+<div>
+I wrote about metaclasses in Python in 1998: <a href="http://www.python.org/doc/essays/metaclasses/" target="_blank">http://www.python.org/doc/<wbr></wbr>essays/metaclasses/</a>.</div>
+<div>
+&nbsp;</div>
+<div>
+New-style classes were just the second or third iteration of the idea.</div>
+<div>
+&nbsp;</div>
+<div>
+I was inspired to implement new-style classes by a very 
+specific book, "Putting Metaclasses to Work" by Ira Forman and Scott 
+Danforth (<a href="http://www.amazon.com/Putting-Metaclasses-Work-Ira-Forman/dp/0201433052" target="_blank">http://www.amazon.com/<wbr></wbr>Putting-Metaclasses-Work-Ira-<wbr></wbr>Forman/dp/0201433052</a>).<br />
+</div>
+<div>
+But even Python's original design (in 1990, published in 
+1991) had the notion that 'type' was itself an object. The type pointer 
+in any object has always been a pointer to a special object, whose 
+"data" was a bunch of C function pointers implementing the behavior of 
+other objects, similar to a C++ vtable. The type of a type was always a 
+special type object, which you could call a meta-type, to be recognized 
+because it was its own type.<br />
+</div>
+I was only vaguely aware of Smalltalk at the time; I 
+remember being surprised by its use of metaclasses (which is quite different from that in Python or Ruby!) when I read about 
+them much later. Smalltalk's bytecode was a bigger influence of Python's
+ bytecode though. I'd read about it in a book  by Adele Goldberg and 
+others, I believe "Smalltalk-80: The Language and its Implementation" (<a href="http://www.amazon.com/Smalltalk-80-The-Language-its-Implementation/dp/0201113716" target="_blank">http://www.amazon.com/<wbr></wbr>Smalltalk-80-The-Language-its-<wbr></wbr>Implementation/dp/0201113716</a>).
+
+<h3>Comments (1)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>October 24, 2013</i></p>
+Also note that that 1998 essay contains a fully-functional Enum implementation that has many of the same features as PEP 435. (Via Christian Heimes.)
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="the-story-of-none-true-and-false-and-an-explanation-of-literals-keywords-and-bui.html">&larr; Newer</a> &middot; <a href="why-python-uses-0-based-indexing.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

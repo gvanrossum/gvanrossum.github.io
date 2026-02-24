@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Microsoft Ships Python Code... in 1996 - The History of Python</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="early-language-design-and-development.html">&larr; Newer</a> &middot; <a href="personal-history-part-2-cnri-and-beyond.html">Older &rarr;</a></p>
+
+<h1>Microsoft Ships Python Code... in 1996</h1>
+<p><i>January 28, 2009 &mdash; originally posted on
+<a href="https://python-history.blogspot.com/2009/01/microsoft-ships-python-code-in-1996.html">The History of Python</a></i></p>
+
+<hr>
+
+My thanks go to Guido for allowing me to share my own history of Python!<br /><br />I'll save my introduction to Python for another post, but the end result was its introduction into a startup that I co-founded in 1991 with several people. We were working on a large client/server system to handle Business-to-Consumer electronic shopping. Custom TCP protocols operating over the old X.25 network, and all that. Old school.<br /><br />In 1995, we realized, contrary to our earlier beliefs, that more consumers actually <i>were</i> on the Internet, and that we needed a system for our customers (the vendors) to reach Internet-based consumers. I was tasked to figure out our approach, and selected Python as my prototyping tool.<br /><br />Our first problem was moving to an entirely browser-based solution. Our custom client was no longer viable, so we needed a new shopping experience for the consumer, and server infrastructure to support that. At that time, talking to a web browser meant writing CGI scripts for the Apache and Netscape HTTP servers. Using CGI, I connected to our existing server backend to process orders, maintain the shopping basket, and to fetch product information. These CGI scripts produced plain, vanilla HTML (no AJAX in 1995!).<br /><br />This approach was less-than-ideal since each request took time to spin up a new CGI process. The responsiveness was very poor. Then, in December 1995, while attending the Python Workshop in Washington, DC, I was introduced to some Apache and Netscape modules (from Digital Creations, who are best known for Zope) which ran persistently within the server process. These modules used an RPC system called ILU to communicate with backend, long-running processes. With this system in place, the CGI forking overhead disappeared and the shopping experience was now quite enjoyable! We started to turn the prototype into real code. The further we went with it, the better it looked and more people jumped onto the project. Development moved <b>very</b> fast over the next few months (thanks Python!).<br /><br />In January 1996, Microsoft knocked on our door. Their internal effort at creating an electronic commerce system was floundering, and they needed people that knew the industry (we'd been doing electronic commerce for several years by that point) and somebody who was nimble. We continued to develop the software during the spring while negotiations occurred, and then the acquisition finalized in June 1996.<br /><br />Once we arrived at Microsoft with our small pile of Python code, we had to figure out how to ship the product on Windows NT. The team we joined had lots of Windows experience and built an IIS plugin to communicate over named pipes to the backend servers, which were NT Services with our Python server code embedded. With a mad sprint starting in July, we shipped Microsoft Merchant Server 1.0 in October, 1996.<br /><br />And yes... if you looked under the covers, somewhat hidden, was a Python interpreter, some extension DLLs, and a bunch of .pyc files. Microsoft certainly didn't advertise that fact, but it was there if you knew were to look.
+
+<h3>Comments (5)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Asim</b> &mdash; <i>January 28, 2009</i></p>
+Interesting story. Do you know what the Merchant Server got renamed to? Is it still part of their server stack?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>test beta blog</b> &mdash; <i>January 28, 2009</i></p>
+It was discontinued in 1998. Replaced by Commerce Server and SharePoint. For more: http://en.wikipedia.org/wiki/Microsoft_Site_Server
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Aleksandr Motsjonov</b> &mdash; <i>January 29, 2009</i></p>
+Reading all Your posts in printed version while going to University =) Thanks.<BR/>I sure You will print Big Book about all that! =)<BR/>Aleksandr, Estonia.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Kaushik</b> &mdash; <i>January 29, 2009</i></p>
+Does Commerce Server also uses Python code underneath some where??
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Juanjo Conti</b> &mdash; <i>March 16, 2009</i></p>
+Spanish version at <A HREF="http://www.juanjoconti.com.ar/2009/03/11/la-historia-de-python-microsoft-distribuye-codigo-python-en-1996/" REL="nofollow">la-historia-de-python-microsoft-distribuye-codigo-python-en-1996/</A>.
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="early-language-design-and-development.html">&larr; Newer</a> &middot; <a href="personal-history-part-2-cnri-and-beyond.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

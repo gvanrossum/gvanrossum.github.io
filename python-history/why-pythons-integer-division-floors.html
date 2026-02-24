@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why Python&#x27;s Integer Division Floors - The History of Python</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="karin-dewar-indentation-and-the-colon.html">&larr; Newer</a> &middot; <a href="from-list-comprehensions-to-generator-expressions.html">Older &rarr;</a></p>
+
+<h1>Why Python&#x27;s Integer Division Floors</h1>
+<p><i>August 24, 2010 &mdash; originally posted on
+<a href="https://python-history.blogspot.com/2010/08/why-pythons-integer-division-floors.html">The History of Python</a></i></p>
+
+<hr>
+
+<div>
+I was asked (again) today to explain why integer division in Python returns the floor of the result instead of truncating towards zero like C.</div>
+<div>
+<br /></div>
+<div>
+For positive numbers, there's no surprise:</div>
+<div>
+<br /></div>
+<div>
+&gt;&gt;&gt; 5//2</div>
+<div>
+2</div>
+<div>
+<br /></div>
+<div>
+But if one of the operands is negative, the result is floored, i.e., rounded away from zero (towards negative infinity):</div>
+<div>
+<br /></div>
+<div>
+&gt;&gt;&gt; -5//2</div>
+<div>
+-3</div>
+<div>
+&gt;&gt;&gt; 5//-2</div>
+<div>
+-3</div>
+<div>
+<br /></div>
+<div>
+This disturbs some people, but there is a good mathematical reason. The integer division operation (//) and its sibling, the modulo operation (%), go together and satisfy a nice mathematical relationship (all variables are integers):</div>
+<div>
+<br /></div>
+<div>
+a/b = q with remainder r</div>
+<div>
+<br /></div>
+<div>
+such that</div>
+<div>
+<br /></div>
+<div>
+b*q + r = a and 0 &lt;= r &lt; b<br />
+<div>
+<br /></div>
+<div>
+(assuming a and b are &gt;= 0).</div>
+<div>
+<br /></div>
+<div>
+If you want the relationship to extend for negative a (keeping b positive), you have two choices: if you truncate q towards zero, r will become negative, so that the invariant changes to 0 &lt;= abs(r) &lt; otherwise, you can floor q towards negative infinity, and the invariant remains 0 &lt;= r &lt; b.<span style="font-weight: bold;"> [update: fixed this para]</span><br />
+<div>
+<br /></div>
+<div>
+In mathematical number theory, mathematicians always prefer the latter choice (see e.g. <a href="http://en.wikipedia.org/wiki/Modulo_operation">Wikipedia</a>). For Python, I made the same choice because there are some interesting applications of the modulo operation where the sign of a is uninteresting. Consider taking a POSIX timestamp (seconds since the start of 1970) and turning it into the time of day.  Since there are 24*3600 = 86400 seconds in a day, this calculation is simply t % 86400.  But if we were to express times before 1970 using negative numbers, the "truncate towards zero" rule would give a meaningless result!  Using the floor rule it all works out fine.</div>
+<div>
+<br /></div>
+<div>
+Other applications I've thought of are computations of pixel positions in computer graphics. I'm sure there are more.</div>
+<div>
+<br /></div>
+<div>
+For negative b, by the way, everything just flips, and the invariant becomes:</div>
+<div>
+<br /></div>
+<div>
+0 &gt;= r &gt; b.</div>
+<div>
+<br /></div>
+<div>
+So why doesn't C do it this way?  Probably the hardware didn't do this at the time C was designed. And the hardware probably didn't do it this way because in the oldest hardware, negative numbers were represented as "sign + magnitude" rather than the two's complement representation used these days (at least for integers). My first computer was a Control Data mainframe and it used one's complement for integers as well as floats.  A pattern of 60 ones meant negative zero!</div>
+<div>
+<br /></div>
+<div>
+Tim Peters, who knows where all Python's floating point skeletons are buried, has expressed some worry about my desire to extend these rules to floating point modulo.  He's probably right; the truncate-towards-negative-infinity rule can cause precision loss for x%1.0 when x is a very small negative number. But that's not enough for me to break integer modulo, and // is tightly coupled to that.</div>
+<div>
+<br /></div>
+<div>
+PS. Note that I am using // instead of / -- this is Python 3 syntax, and also allowed in Python 2 to emphasize that you know you are invoking integer division.  The / operator in Python 2 is ambiguous, since it returns a different result for two integer operands than for an int and a float or two floats.  But that's a totally separate story; see <a href="http://www.python.org/dev/peps/pep-0238/">PEP 238</a>.</div>
+</div>
+</div>
+
+
+<h3>Comments (18)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>ark</b> &mdash; <i>August 24, 2010</i></p>
+Tim is right to be worried about extending the truncate-toward-negative-infinity rule to floating-point numbers.  The reason is that if a%b always has the sign of a when a&#39;s and b&#39;s signs differ, then a%b can always be represented exactly as a floating-point number if a and b can be represented exactly--at least, in every floating-point representation system I&#39;ve seen.  If, however, a%b takes on the sign of b when the signs differ, there are values of a and b that can preclude a%b from being represented exactly.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Unknown</b> &mdash; <i>August 24, 2010</i></p>
+Should note that C Classic didn&#39;t define the sign of the result, but did require that<br /><br />a == (a/b)*b + a%b<br /><br />hold whenever a/b was representable.  Not one C programmer in a million knew that, though ;-)  C99 finally did insist on giving the wrong answer, seemingly just to be compatible with FORTRAN.<br /><br />I&#39;ve never seen an integer use case where the wrong answer was helpful.  Use cases where the right answer are helpful abound.  For example, when trading equity options the 3rd Friday of the month is a crucial date, and<br /><br />import datetime<br />FRIDAY = 4<br /># Return date of third Friday of month.<br />def fri3(year, month):<br />    d = datetime.date(year, month, 1)<br />    diff = (FRIDAY - d.weekday()) % 7 + 14<br />    return d + datetime.timedelta(days=diff)<br /><br />is screamingly natural.  Weekdays, hours on a 24-clock, minutes, seconds, months in a year, year numbers in a century ... many things related to time are naturally represented by the ordinals in range(N) for some N, repeated endlessly.  Using the right definition of % allows uniform code to move forward or backward in such sequences.<br /><br />But for floats it&#39;s usually most useful to have<br /><br />    0 &lt;= a%b &lt;= abs(b/2)<br /><br />and damn the signs.  The mathematical result is exactly representable (ark&#39;s point) under that constraint too, and it caters to that floating mod is most often used for range reduction (so that it&#39;s helpful for the result to have the smallest absolute value possible).<br /><br />The integers are a subset of the reals in math, but that has nothing to do with floats ;-)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Unknown</b> &mdash; <i>August 24, 2010</i></p>
+LOL - it&#39;s wonderfully ironic that the commenting system destroyed the whitespace in my Python code snippet :-)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>wapiflapi</b> &mdash; <i>August 24, 2010</i></p>
+Thanks a lot for taking the time to answer this :)<br />Now everyone on the IRC channel owns me a cookie !<br /><br />And the explanation is very interesting, never thought about it this way before.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>August 24, 2010</i></p>
+Thanks Twitterers @dgou and @schuetzdj for reporting a text mistake; I&#39;ve fixed it now!
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Unknown</b> &mdash; <i>August 24, 2010</i></p>
+Thanks a lot for this answer =]<br />Finally I&#39;ll be able to stop wondering why Python integer division was implemented that way.<br />But now, I owe WapiFlapi a cookie...
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Eric Smith</b> &mdash; <i>August 25, 2010</i></p>
+The CDC behavior of 60 1&#39;s being negative zero indicates one&#39;s complement representation, not sign magnitude. Ah, the days of the Cyber-70!
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Kurt Rose</b> &mdash; <i>March 17, 2011</i></p>
+Not to argue that this was a bad decision, but I just wanted to report that this bit me when trying to convert integral cents into dollars and cents.  cents%100, cents/100 is a construct I learned in my very early days of programming.  It didn&#39;t occur to me that this wouldn&#39;t work in python, but it blew up rather spectacularly with negative amounts.<br /><br />Now, the Python standard library also has the very excellent Decimal class, which is what we use internally to represent all money amounts.  So the fix was to simply construct the Decimal, than divide it by 100, which is a shorter and cleaner code.  So, the story has a very happy ending =)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>gweis</b> &mdash; <i>January 24, 2013</i></p>
+It might be worth noting, that divmod for Decimal behaves different than divmod for int / float when used with negative numbers.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Dobes</b> &mdash; <i>April 16, 2013</i></p>
+For the benefit of those wondering which approach to take for their own programming language, consider that there are cases where the floor integer division doesn&#39;t obey the normal rules of algebra as well as truncating integer division; some apparently equivalent expressions will give different results:<br /><br />-5//2 * -1 == -2, but -1 * -5 // 2 == -3.<br /><br />-5//2 + 5//2 == -1, but (-5 + 5)//2 == 0.<br /><br />So, don&#39;t be afraid to adopt the same approach as C, Javascript, and so on worrying that it&#39;s less correct or more error prone.  Probably neither approach is really &quot;better&quot;, it&#39;s just a matter of preference.<br /><br />See http://en.wikipedia.org/wiki/Modulo_operation for a list of programming languages and how they chose to do integer division.<br />
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>April 16, 2013</i></p>
+@Dobes: indeed.  Also note that Python&#39;s approach is not ideal when generalized to floats.  Tim Peters was the first to point this out to me.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Geert</b> &mdash; <i>June 03, 2013</i></p>
+Just crap and a very bad decision. Just like 0.1 + 0.2 is not 0.3 in python. Float representation is -horrible- in python. May be &quot;mathematically&quot; correct, it doesn&#39;t make sense to 99% of people and just bugs 99% of people, no matter what you explain here
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Veky</b> &mdash; <i>August 30, 2013</i></p>
+Float representation is horrible everywhere. And .1+.2 is not .3 almost everywhere.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Austin Feller</b> &mdash; <i>June 29, 2014</i></p>
+@Dobes: &quot;The normal rules of algebra&quot; is an ill-defined phrase when discussing integer division. The integers are a ring not a field.<br /><br />Associativity breaks for any implementation of integer division. Consider (5 + 1)//2 vs. 5//2 + 1//2<br /><br />The fact that there is one special case when associativity works the way someone might naively expect in C when in general the &quot;normal rules of algebra&quot; are disobeyed, is not really an advantage of C. There is practically no conceivable situation in which you would want associativity exactly for the case of inverses. However, there is certainly a conceivable case where you&#39;d hope it would break: i.e. if you happen to think of a test case that only tests for associativity with inverses. Whatever code included your mistaken notion of how division should associate in C would have been a lot harder to debug than it is in a language like Python when it &quot;breaks&quot; for the obvious test case just as much as it does for all sorts of real scenarios.<br /><br />Floats on the other hand... well, the original implementation is so screwed up that it&#39;s not salvageable. If there were a few invisible trailing bits that got computed with addition and multiplication, but were ignored with comparisons,or if they had been designed to behave like a field, you could say without any reservation that Python&#39;s implementation is wrong and that C&#39;s implementation is right. As things stand, they&#39;re both wrong, and C/javascript&#39;s implementation is probably slightly less wrong for floats.<br /><br />Python&#39;s implementation for ints is the correct one. It respects the rules of mathematics much more thoroughly than C&#39;s because, unlike integer division, the modulo operation does have well-defined algebraic properties.<br /><br />When you are dealing with the field that is the natural numbers modulo 7, for example, is always correct under Pythons implementation; whereas, it is correct only as long as your values are positive for C&#39;s, which never happens because C&#39;s implementation returns negative integers even if all of the ones you started with were positive. grr, (I&#39;ve seen numerous non-theoretical use-cases for why you would want this. The most obvious have to do with positioning graphical components or with ABCDEFG testing -- a faster way of doing AB testing.)<br /><br />If you take a closer look at the list you linked to, you will notice that every language that was designed by people who really care about math has an operator either called &quot;mod&quot; or called &quot;%&quot; that does exactly the same thing as Python&#39;s implementation. There is some mixture among the quick and dirtier hacker languages. (All the languages with math in their name, Haskell, OCaml, Common Lisp, SML, R, Clojure, maple goes a step further). Every programming language I&#39;ve ever heard of a mathematician actually using does it this way. Certainly all of the programming languages that mathematicians have written.<br /><br />If you are writing your own programming language and you want to decide how to implement integer division, please stick with the way that all of the mathematicians use. There are very good reasons why they have decided that one particular implementation and not the other is correct.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Lynne Hand</b> &mdash; <i>October 18, 2014</i></p>
+Thanks. I&#39;m still not sure I understand 100% (I&#39;m here from Coursera, so I&#39;m still learning).<br /><br />FYI - &quot;Other applications I&#39;ve though of ...&quot;<br /><br />Should be &quot;...thought of...&quot; <br /><br />:)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>February 08, 2015</i></p>
+And here I thought it was because you could sometimes replace division by arithmetic shift right (with two&#39;s complement).  Silly me.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>February 08, 2015</i></p>
+And here I thought it was because you could sometimes replace division by arithmetic shift right (with two&#39;s complement).  Silly me.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>rainy</b> &mdash; <i>May 20, 2016</i></p>
+Another more general example where this is useful is iterating backwards and wrapping over a list (this can also be done with itertools but that&#39;s a bit more verbose and complex):<br /><br />i = end = 15<br />while True:<br /> val = mylist[i]<br /> i-=1<br /> if i==end: break
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="karin-dewar-indentation-and-the-colon.html">&larr; Newer</a> &middot; <a href="from-list-comprehensions-to-generator-expressions.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

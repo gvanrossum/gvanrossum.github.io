@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Detecting Cycles in a Directed Graph - Neopythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="capabilities-for-python.html">&larr; Newer</a> &middot; <a href="the-history-of-python-introduction.html">Older &rarr;</a></p>
+
+<h1>Detecting Cycles in a Directed Graph</h1>
+<p><i>January 29, 2009 &mdash; originally posted on
+<a href="https://neopythonic.blogspot.com/2009/01/detecting-cycles-in-directed-graph.html">Neopythonic</a></i></p>
+
+<hr>
+
+I needed an algorithm for detecting cycles in a directed graph.  I came up with the following.  It's probably something straight from a textbook, but I couldn't find a textbook that had one, so I came up with this myself.  I like the simplicity.  I also like that there's a well-defined point in the algorithm where you can do any additional processing on each node for which you find that is not part of a cycle.<br /><br />The function makes few assumptions about the representation of the graph; instead of a graph object, it takes in two function arguments that are called to describe the graph:<ul><li>def NODES(): an iterable returning all nodes<li>def EDGES(node): an iterable returning all nodes reached via node's outgoing edges</ul>In addition it takes a third function argument which is called once for each node:<ul><li>def READY(node): called when we know node is not part of any cycles</li></ul>The function returns None upon success, or a list containing the members of the first cycle found otherwise.  Here's the algorithm:<pre class="prettyprint">def find_cycle(NODES, EDGES, READY):<br />  todo = set(NODES())<br />  while todo:<br />    node = todo.pop()<br />    stack = [node]<br />    while stack:<br />      top = stack[-1]<br />      for node in EDGES(top):<br />        if node in stack:<br />          return stack[stack.index(node):]<br />        if node in todo:<br />          stack.append(node)<br />          todo.remove(node)<br />          break<br />      else:<br />        node = stack.pop()<br />        READY(node)<br />  return None<br /></pre><b>Discussion:</b> The EDGES() function may be called multiple times for the same node, and the for loop does some duplicate work in that case. A straightforward fix for this inefficiency is to maintain a parallel stack of iterators that is pushed and popped at the same times at the main stack, and at all times contains iter(node).  I'll leave that version as an excercise.<br /><br /><b>Update:</b> Fixed a typo in the algorithm (EDGES(top)) and renamed all to todo.
+
+<h3>Comments (25)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>January 29, 2009</i></p>
+That's very nice. I think it would make it even more easy to read and understand if `all` was renamed to `unchecked`.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Paul Harrison</b> &mdash; <i>January 29, 2009</i></p>
+If you need to do this for large graphs, Tarjan's algorithm can do it in linear time.<BR/><BR/><A HREF="http://www.logarithmic.net/pfh/blog/01208083168" REL="nofollow">Here is a Python implementation.</A>
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>January 29, 2009</i></p>
+@Paul: I believe my algorithm can be linear time too (in something like the number of nodes+edges) with the iter-stack optimization and e.g. a set parallel to the stack to be able to test "node in stack" in constant time (what @Johannes pointed out). <BR/><BR/>That's assuming stack pushes and pops and hash table lookups are linear time, which IMO they are or can be made to be with enough trickery (e.g. pre-allocating a fixed stack).<BR/><BR/>@mlk: good point. Or 'todo' (I like short names :-).
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>slobberchops</b> &mdash; <i>January 29, 2009</i></p>
+You could also make the function in to an iterable so that it can find all cycles.  Someone who wants just one could just call it and get the first element.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Paul Harrison</b> &mdash; <i>January 29, 2009</i></p>
+Ah, true.<BR/><BR/>Tarjan's algorithm can find *all* the cycles in a directed graph (or rather, all the strongly connected components, which includes things more complicated than cycles), with the same worst case complexity as detecting a single cycle, (which, now that I read your post more carefully, is what you are doing here). It's interesting that it's possible to do this fast.<BR/><BR/>By the way, "for node in EDGES(node):" should probably read "for node in EDGES(top):".
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Cimarron Taylor</b> &mdash; <i>January 30, 2009</i></p>
+http://grapy.googlecode.com has a strongly connected components function you can use for this as well.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Djabx</b> &mdash; <i>January 30, 2009</i></p>
+@Paul: I agree with you, the top variable is not used, make only sense if it's:<BR/>"for node in EDGES(top):"
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>lorg</b> &mdash; <i>January 30, 2009</i></p>
+I would recommend checking out the <A HREF="http://networkx.lanl.gov/" REL="nofollow">networkx</A> graph library.<BR/><BR/>Apart from being quite mature, it can also find strongly connected parts, which seems to be what you're interested in.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>January 30, 2009</i></p>
+This is not a linear algorithm because statements like "if node in stack" and "if node in all" are actually nested loops.<BR/><BR/>Here is another way to find cycles:<BR/><BR/>- count the number of incoming edges for each node. O(n+e)<BR/>- put each node with 0 incoming edges in a set S. O(n)<BR/>- while S has nodes:<BR/>- take a node n from S.<BR/>- delete n and update the number of incoming edges of the nodes connected to n. if any of those nodes now have 0 incoming edges, put them in S.<BR/>- endwhile O(n+e)<BR/>- if S is empty put there are still nodes left, you have cycle.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>January 30, 2009</i></p>
+@rjprins: True, "if node in stack" is a search loop (but could easily be replaced by a hash table lookup as I said above).  However "if node in todo" is a set membership test, which is a hash table lookup, not an implied loop.<BR/><BR/>To everyone recommending existing graphing libraries: I'm actually not interested in the cycles, I'm interesting in proving their absence, and then doing a bottom-up algorithm on the DAG. The graphs I am thinking of are not all that large; I'm expecting thousands of nodes but not millions (if you must know, it represents a program, not a social network :-).
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>subtenante</b> &mdash; <i>January 30, 2009</i></p>
+I had this problem way back in schooldays, I resolved it (in Fortran...) like this :<BR/><BR/>Another way to see the problem is through node activation, which results in matrix/vector multiplication. <BR/><BR/>"Activate" each node. <BR/><BR/>Iterate :<BR/>On each iteration, each node will activate its descendents and desactivate itself, and keep being activated only if one of its predecessors do activate it (see it as a flow of information that nodes push into their children). <BR/><BR/>After n iterations, if any node is still activated, there must be a cycle (or else all of the initial activations on the nodes would have extinguished).<BR/><BR/>To achieve it, the mathematical operation is matrix multiplication.<BR/><BR/>See the graph as a matrix of 0's where i does not point to j, and 1 where it does.<BR/><BR/>Multiply your matrix by a vector of 1's, get the result and iterate : multiply n times (n is the number of nodes) your matrx by the last result. If the sum of your last vector is greater than 1, you have a graph.<BR/><BR/>I didn't count the brute version of this algorythm might not be linear at all, rather in the O(n*n). Optimizations can be done (iterate only while you still have 1's, etc.).
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>lorg</b> &mdash; <i>January 30, 2009</i></p>
+@Guido:<BR/>1. Even when your problem is more limited in scope, I find using existing libraries is best. (Especially since finding strongly connected parts is O(V+E) (DFS twice), and any algorithm to prove that there aren't any cycles could not be better in this regard.)<BR/><BR/>2. Your programs don't have loops? Care to elaborate, or is this a future blog post? :)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>January 30, 2009</i></p>
+@lorg: (a) It's not so much the limited scope of my problem but the fact that the algorithm is really only a small part of much more complex code I am writing anyway.  (It's less than 20 lines!)<BR/><BR/>(b) Loops are runtime cycles, not compile-time cycles.  My edges are dependencies between variable and function definitions, not between values.  Eventually I will have to deal with recursive function definitions, but then I'll somehow have to break those cycles since I don't want to deal with cyclical definitions.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Unknown</b> &mdash; <i>February 09, 2009</i></p>
+your code is similar to something i used just the other day - it's basically your routine (i assume - i've not read it in detail, but assume it's dfs checking for duplicates) turned into a generator for edges: http://www.ics.uci.edu/~eppstein/PADS/DFS.py<BR/><BR/>in your case i think you'd just filter for the nontree nodes.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Samuel</b> &mdash; <i>February 12, 2009</i></p>
+I'm going to be off topic for which I apologize, but the bit of code here reminded me of something I was curious about earlier.<BR/><BR/>Is the 2 space indentation part of an internal Google coding guideline? I first noticed it in the app engine SDK. It seems all Python code coming out of Google shares this trait.<BR/><BR/>Just curious.. and sorry to get off topic. :D<BR/><BR/>Thank you for starting the history of Python blog. I find it fascinating and look forward to reading the next post.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Ralph Corderoy</b> &mdash; <i>February 25, 2009</i></p>
+Why the uppercased NODES, EDGES, and READY?  Don't want to be a hobgoblin, and I'm not, I prefer `my' to `self', but PEP 8 exists.  :-)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>March 06, 2009</i></p>
+&gt; Why the uppercased NODES, EDGES, and READY?<BR/><BR/>I was trying to emphasize the algorithm.  These three parametrize the algorithm, and I felt the need to call them out.  Any realistic implementation would not use functions but expand these in-line according to the needs of the application.  So you can think of them as template parameters or macros. :-)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Abrehet</b> &mdash; <i>March 17, 2009</i></p>
+It is interesting discussion. I am also looking for an algorithm to find cycles + loop from directed graph possibly with linear complexity. This discussion gives me some idea. I will post which method I choose later<BR/>Abrehet
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Unknown</b> &mdash; <i>August 27, 2010</i></p>
+sorry.what we want is not present here.we want the efficient algorithm to find out loop in a directed graph.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>rrauenza</b> &mdash; <i>April 12, 2012</i></p>
+What is the definition of a node that is READY?  Playing with some cycles, it isn&#39;t quite obvious to me.<br /><br /># aren&#39;t d and e not part of a cycle?<br />graph = { &#39;a&#39;: [&#39;b&#39;, &#39;c&#39;],                                                      <br />          &#39;b&#39;: [&#39;c&#39;],                                                           <br />          &#39;c&#39;: [&#39;a&#39;], # cycle                                              <br />          &#39;d&#39;: [&#39;e&#39;,],                                                          <br />          &#39;e&#39;: [],                                                              <br />        }                                                                       <br />                                                                                <br />def ready(node):                                                                <br /> print &quot;node %s is not in a cycle&quot; % node                                       <br />                                                                                <br />def nodes():                                                                    <br /> &quot;&quot;&quot; Return all of the nodes &quot;&quot;&quot;                                                <br /> return graph.keys()                                                            <br />                                                                                <br />def edges(node):                                                                <br /> &quot;&quot;&quot; Return the children of node &quot;&quot;&quot;                                            <br /> return graph[node]                                                             <br />                                                                                <br />cycles = find_cycle(nodes, edges, ready)                                        <br />                                                                                <br />print &quot;cycles: %s&quot; % cycles<br /><br />$ ./cycle.py  <br />cycles: [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;]
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Ralph Corderoy</b> &mdash; <i>April 12, 2012</i></p>
+I don&#39;t think Guido&#39;s definition is that it will call READY() on all nodes that aren&#39;t in a cycle before returning a cycle that exists, or None. From a quick look, whether some get passed to READY() before the first cycle is spotted depends. Break you cycle and then see if READY() is being called.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>February 28, 2013</i></p>
+I just got an email fro Peter Norvig pointing out that the efficiency of the algorithm can be fixed by using an OrderedDict. Nice!
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Peter Norvig</b> &mdash; <i>February 28, 2013</i></p>
+Here&#39;s my version using OrderedDict -- O(1) membership, and no ned to re-generate links.<br /><br />def find_cycle(nodes, links):<br />    &quot;&quot;&quot;Given a set of nodes, and a function links(node) =&gt; [child, ...], return<br />    a path of nodes that forms a cycle, or None if there is no cycle. Example:<br />    &gt;&gt;&gt; find_cycle(range(10), lambda x: [x+1, (x+2)%10])<br />    [9, 1, 3, 5, 7, 9]<br />    &quot;&quot;&quot;<br />    # Adapted from a blog post by Guido:<br />    # http://neopythonic.blogspot.com/2009/01/detecting-cycles-in-directed-graph.html<br />    # Maintain path as a a depth-first path in the implicit tree; <br />    # path is represented as an OrderedDict of {node: [child,...]} pairs.<br />    while nodes:<br />        root = nodes.pop()<br />        path = OrderedDict({root: links(root)})<br />        while path:<br />            # Consider the children at the fringe of the tree<br />            children = path[next(reversed(path))]<br />            while children:<br />                child = children.pop()<br />                if child in path: ## Cycle found<br />                    pathlist = list(path)<br />                    return pathlist[pathlist.index(child):] + [child]<br />                if child in nodes: ## New child not seen before<br />                    path[child] = links(child)<br />                    nodes.remove(child)<br />                    break<br />            else: ## no more children; pop back up a level<br />                path.popitem()<br />    return None
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>March 01, 2013</i></p>
+Here&#39;s Peter&#39;s version: https://www.dropbox.com/s/s0hc6jr47hmoitf/find_cycle_norvig.py (He posted it here but the indentation was all messed up.)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>feffe81</b> &mdash; <i>May 26, 2013</i></p>
+Some literatur:<br /><br />K.A.HawickandH.A.James, <br />EnumeratingCircuitsandLoopsinGraphswithSelf-ArcsandMultiple-Arcs
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="capabilities-for-python.html">&larr; Newer</a> &middot; <a href="the-history-of-python-introduction.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

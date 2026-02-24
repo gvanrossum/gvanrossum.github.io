@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Introduction and Overview - The History of Python</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="pythons-design-philosophy.html">&larr; Newer</a></p>
+
+<h1>Introduction and Overview</h1>
+<p><i>January 13, 2009 &mdash; originally posted on
+<a href="https://python-history.blogspot.com/2009/01/introduction-and-overview.html">The History of Python</a></i></p>
+
+<hr>
+
+<span style="font-weight: bold;font-size:130%;" >   Introduction</span><br /><br />Python is currently one of the most popular dynamic programming languages, along with Perl, Tcl, PHP, and newcomer Ruby. Although it is often viewed as a "scripting" language, it is really a general purpose programming language along the lines of Lisp or Smalltalk (as are the others, by the way).   Today, Python is used for everything from throw-away scripts to large scalable web servers that provide uninterrupted service 24x7. It is used for GUI and database programming, client- and server-side web programming, and application testing.  It is used by scientists writing applications for the world's fastest supercomputers and by children first learning to program.<br />In this blog, I will shine the spotlight on Python's history.  In particular, how Python was developed, major influences in its design, mistakes made, lessons learned, and future directions for the language.<br /><br /><span style="font-weight: bold;">Acknowledgment:</span> I am indebted to <a href="http://www.dabeaz.com/">Dave Beazley</a> for many of the better sentences in this blog. (For more on the origins of this blog, see <a href="http://neopythonic.blogspot.com/2009/01/history-of-python-introduction.html">my other blog</a>.)<br /><br /><span style="font-weight: bold;font-size:130%;" >A Bird's Eye View of Python</span><br /><br />When one is first exposed to Python, they are often struck by way that Python code looks, at least on the surface, similar to code written in other conventional programming languages such as C or Pascal.   This is no accident---the syntax of Python borrows heavily from C.  For instance, many of Python's keywords (if, else, while,  for, etc.) are the same as in C, Python identifiers have the same naming rules as C, and most of the standard operators have the same meaning as C.  Of course, Python is obviously not C and one major area where it differs is that instead of using braces for statement grouping, it uses indentation.  For example, instead of writing statements in C like this<br /><pre>if (a &lt; b) {<br />    max = b;<br />} else {<br />    max = a;<br />}</pre>Python just dispenses with the braces altogether (along with the trailing semicolons for good measure) and uses the following structure<br /><pre>if a &lt; b:<br />    max = b<br />else:<br />    max = a</pre>The other major area where Python differs from C-like languages is in its use of dynamic typing.    In C, variables must always be explicitly declared and given a specific type such as int or double.   This information is then used to perform static compile-time checks of the program as well as for allocating memory locations used for storing the variable’s value.   In Python, variables are simply names that refer to objects.   Variables do not need to be declared before they are assigned and they can even change type in the middle of a program.  Like other dynamic languages, all type-checking is performed at run-time by an interpreter instead of during a separate compilation step.<br /><br />Python’s primitive built-in data types include Booleans, numbers (machine integers, arbitrary-precision integers, and real and complex floating point numbers), and strings (8-bit and Unicode). These are all immutable types, meaning that values are represented by objects that cannot be modified after their creation. Compound built-in data types include tuples (immutable arrays), lists (resizable arrays) and dictionaries (hash tables).<br /><br />For organizing programs, Python supports packages (groups of modules and/or packages), modules (related code grouped together in a single source file), classes, methods and functions. For flow control, it provides if/else, while, and a high-level for statement that loops over any “iterable” object. For error handling, Python uses (non-resumable) exceptions. A raise statement throws an exception, and try/except/finally statements specify exception handlers. Built-in operations throw exceptions when error conditions are encountered.<br /><br />In Python, all objects that can be named are said to be "first class."  This means that functions, classes, methods, modules, and all other named objects can be freely passed around, inspected, and placed in various data structures (e.g., lists or dictionaries) at run-time. And speaking of objects, Python also has full support for object-oriented programming including user-defined classes, inheritance, and run-time binding of methods.<br /><br />Python has an extensive standard library, which is one of the main reasons for its popularity. The standard library has more than 100 modules and is always evolving. Some of these modules include regular expression matching, standard mathematical functions, threads, operating systems interfaces, network programming, standard internet protocols (HTTP,FTP, SMTP, etc.), email handling, XML processing,  HTML parsing, and a GUI toolkit (Tcl/Tk).<br /><br />In addition, there is a very large supply of third-party modules and packages, most of which are also open source. Here one finds web frameworks (too many to list!), more GUI toolkits, efficient numerical libraries (including wrappers for many popular Fortran packages), interfaces to relational databases (Oracle, MySQL, and others), SWIG (a tool for making arbitrary C++ libraries available as Python modules), and much more.<br /><br />A major appeal of Python (and other dynamic programming languages for that matter) is that seemingly complicated tasks can often be expressed with very little code.  As an example, here is a simple Python script that fetches a web page, scans it looking for URL references, and prints the first 10 of those.<br /><pre># Scan the web looking for references<br /><br />import re<br />import urllib<br /><br />regex = re.compile(r'href="([^"]+)"')<br /><br />def matcher(url, max=10):<br />    "Print the first several URL references in a given url."<br />    data = urllib.urlopen(url).read()<br />    hits = regex.findall(data)<br />    for hit in hits[:max]:<br />        print urllib.basejoin(url, hit)<br /><br />matcher("http://python.org")</pre>This program can easily be modified to make a web crawler, and indeed Scott Hassan has told me that he wrote Google’s first web crawler in Python. Today, Google employs millions of lines of Python code to manage many aspects of its operations, from build automation to ad management (Disclaimer: I am currently a Google employee.)<br /><br />Underneath the covers, Python is typically implemented using a combination of a bytecode compiler and interpreter. Compilation is implicitly performed as modules are loaded, and several language primitives require the compiler to be available at run-time. Although Python’s de-facto standard implementation is written in C, and available for every imaginable hardware/software platform, several other implementations have become popular. Jython is a version that runs on the JVM and has seamless Java integration.  IronPython is a version for the Microsoft .NET platform that has similar integration with other languages running on .NET.  PyPy is an optimizing Python compiler/interpreter written in Python (still a research project, being undertaken with EU funding). There’s also Stackless Python, a variant of the C implementation that reduces reliance on the C stack for function/method calls, to allow co-routines, continuations, and microthreads.
+
+<h3>Comments (18)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>January 13, 2009</i></p>
+Very interesting so far.  I'd also be curious to find out what elements of Python's syntax were borrowed from other languages.  As you note, "syntax of Python borrows heavily from C."  But I know that it was influenced by more than just C.  Any chance you could address this in a future post?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Mike</b> &mdash; <i>January 13, 2009</i></p>
+Thanks for taking the time to do this.  I'm looking forward to it.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Vitriolix</b> &mdash; <i>January 13, 2009</i></p>
+Nice, I'm looking forward to reading the whole series.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anand</b> &mdash; <i>January 14, 2009</i></p>
+Great start. I guess this will add more popularity to the Python "lore". <BR/><BR/>Perhaps Python should include something like a "past" module, similar to the Zen of Python, where one can see a capsule of the history when it is imported :)<BR/><BR/>Btw, will this blog comment only on the past or will it give some indications to the future of Python too ?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>RichB</b> &mdash; <i>January 14, 2009</i></p>
+It appears the first Google crawler was written in Java:<BR/><BR/>http://groups.google.co.uk/group/comp.lang.java/msg/88fa10845061c8ba?hl=en
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Ceyhun</b> &mdash; <i>January 14, 2009</i></p>
+Waiting for more. Thanks for Python ;)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Dave Beazley</b> &mdash; <i>January 14, 2009</i></p>
+Guido,<BR/><BR/>I'm glad to see you posting this!   I learned a LOT about Python when I gave much of this material an editing round last year.  It was an honor to work on it--so thanks for the shout out :-).  <BR/><BR/>For everyone else reading, I'll just say there is a lot of interesting stuff yet to come.<BR/><BR/>--Dave B.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>January 14, 2009</i></p>
+@RichB: that was before Google was founded. Apparently Larry never got his question answered, and switched to Python... (True, with a C extension for parsing HTML.)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>andrewljohnson</b> &mdash; <i>January 14, 2009</i></p>
+Guido,<BR/><BR/>Thanks for all your work. Where I used to write words, I now write Python code. I look forward to reading more about the genesis of python, and using it as I improve my website.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>SELVA</b> &mdash; <i>January 14, 2009</i></p>
+Guido,<BR/><BR/>     Thank you for your interest in recalling all your basic works and presenting for us. It is a great opportunity to the new comers and the developers who have been pushed into the python pool as a part time user and becomes a full time developer in python.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>January 16, 2009</i></p>
+Guido,<BR/><BR/>Thank you for your awesome article. I translated the current two articles at here to Chinese and put on my blog. Hope you do not mind. <BR/><BR/>The URL of my translated this article is http://blog.cnliufeng.com/2009/01/translate-introduction-and-overview/<BR/><BR/>Here is another one: http://blog.cnliufeng.com/2009/01/translate-pythons-design-philosophy/<BR/><BR/>If you are not pleased for them, please leave a word here and I'll remove them at once.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Pykler</b> &mdash; <i>January 19, 2009</i></p>
+I wonder what would happen if I try to:<BR/><BR/><B>from __future__ import braces</B>
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Juanjo Conti</b> &mdash; <i>January 20, 2009</i></p>
+I traslated this article to spanish and I'll try to translate the others as well.<BR/><BR/>Spanish translation: <A HREF="http://www.juanjoconti.com.ar/2009/01/20/la-historia-de-python-introduccion-y-repaso/" REL="nofollow">http://www.juanjoconti.com.ar/2009/01/20/la-historia-de-python-introduccion-y-repaso/</A>
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>January 20, 2009</i></p>
+Thanks for all the translations!
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Juanjo Conti</b> &mdash; <i>January 20, 2009</i></p>
+@Guido,<BR/><BR/>you can link the translations at the bottom of your posts, as Paul Graham does. It's very handy for readers.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Uzah</b> &mdash; <i>January 26, 2009</i></p>
+Guido, assuming you took computer science 101, why do you call an Array a "list" ? Is it because they are implemented as linked lists ?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Konrad</b> &mdash; <i>January 28, 2009</i></p>
+I remember seeing Alex Martelli's talk about history of recent (then) Python releases. It would be a great lecture if he found time to put that down on this blog.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>deepak m r...and eyes at my height...</b> &mdash; <i>May 26, 2009</i></p>
+Thank u Guido.I am a student and i have been tryin since last few days to implementa search engine in python.And this would definitely be a starting place for me.
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="pythons-design-philosophy.html">&larr; Newer</a></p>
+
+</div>
+</body>
+</html>

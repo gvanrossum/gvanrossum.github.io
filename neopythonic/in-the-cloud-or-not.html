@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>In the Cloud or Not? - Neopythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="the-emperors-new-mind.html">&larr; Newer</a> &middot; <a href="scala.html">Older &rarr;</a></p>
+
+<h1>In the Cloud or Not?</h1>
+<p><i>December 08, 2008 &mdash; originally posted on
+<a href="https://neopythonic.blogspot.com/2008/12/in-cloud-or-not.html">Neopythonic</a></i></p>
+
+<hr>
+
+Some people love the cloud. (As in cloud computing, e.g. Google App Engine, Amazon EC2, Microsoft Azure.) Others hate it. They gripe about lock-in, proprietary APIs and so on. (I would provide links to examples of both attitudes, but I don't have time right now, and you can fill those in yourself easily. :-)<br /><br />I wonder if, apart from the field being young, the differences of opinion may be similar to the different attitude towards home ownership: some folks hate renting, citing landlord conflicts, noisy neighbors and so on. Others hate home ownership, due to the outsize financial commitment and risk (all too clear to many these days), the never-ending maintenance (new roof, new fence, new furnace, new bathroom, new kitchen, it never ends). I'm kind of in the middle myself, having had good landlords in the past, and disliking the maintenance effort/cost for my own home these days, but enjoying the independence.<br /><br />Obviously cloud computing would be more similar to renting, while traditional datacenter ownership to home ownership (though without the aspect of building up wealth through ownership :-). Someone else can take the analogy further, and compare different styles of cloud services to different ways landlords can run their business. (E.g. with Google App Engine you get  carpet and furniture as part of the deal, and meals delivered as an option, while Amazon EC2 rents out bare concrete units where you can do as you please. There's a market for both.)<br /><br />If that's the case, we should expect that the love/hate posts will never stop, and we'll never convince all haters to love the cloud. But there will be plenty of business for the landlords from those who prefer not to own their own servers, and we might as well cater to them rather than be discouraged by the cloud haters.
+
+<h3>Comments (13)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>December 08, 2008</i></p>
+enjoyed this post and announced it in my twitter at<BR/>http://twitter.com/dexin
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Adam Olsen</b> &mdash; <i>December 08, 2008</i></p>
+I suspect that as the field matures it will become more commoditized.  Someone will create a framework that provides the same API as (for example) GAE, but on a much smaller scale and entirely self-controlled.<BR/><BR/>The hardware will become more important than the software.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Dave Peck</b> &mdash; <i>December 08, 2008</i></p>
+There are many problems and circumstances where cloud computing is the best choice financially. <BR/><BR/>It's okay to prefer "owning" your infrastructure, but if you insist on it without running the numbers you might find yourself at a competitive disadvantage.<BR/><BR/>(That's not to say that everything belongs in the cloud. A little back-of-the-envelope math convinced me that if Flickr used AWS, they would have to convert 80+% of their users to pro accounts before they could break even. That said, does anybody know if Flickr is profitable as-is?)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Noah Gift</b> &mdash; <i>December 08, 2008</i></p>
+I still rent an actual machine in a datacenter which has CentOS 5.1 running on it.  It is nice to have my little machine I can access from anywhere in the world, but I also like using Google App Engine to make quick and dirty websites in under 60 seconds.  <BR/><BR/>I probably won't ever give up my personal playground where I can do whatever I want, but I also know the pain of doing it yourself, and like not having to have the hassle of setting up Python modules correctly to work with Apache, etc.<BR/><BR/>I think the future is going to involve a migration toward automation and cloud type environments, as it just doesn't make sense for 95% of people to be like me, and rent a 100 dollar a month server, or run their own servers.  It just isn't scalable from a human perspective, not just a technology perspective.  Who wants to actually run their own mail server anymore when Google Mail does such a great job, unless your a large corporation, or really like mail because your THAT kind of geek.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Unknown</b> &mdash; <i>December 09, 2008</i></p>
+Luckily computing is flexible enough to eventually render most of the debate - and the housing analogy - moot.<BR/><BR/>A business relying on the cloud for hosted applications might want some local resources so they can work in the event of internet outages. Another with their own infrastructure might want not only data backup in the cloud, but fail-over compute backups too.<BR/><BR/>As it dawns on the more mainstream IT world that both data and code can be moved around, we'll see both data and code be cached and backed up, completely blurring the lines between local and remote computation.<BR/><BR/>I think the argument between owning your own and renting in the cloud will simply become one over shades of grey, and the vast majority will use some combination of both.<BR/><BR/>Dave: We used to work as interns together at NRL, like 15 years ago. :)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>December 09, 2008</i></p>
+Shades of gray make sense. Just like in the housing analogy you have different levels of independence: a totally self-contained home in the prairie; or a home in a suburb with local regulations and taxes that pay for shared resources (water, power, sewer, cable); or a house in a home owners association which has more of the same; then you go to townhouses and condos where the ownership is even more shared.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>December 09, 2008</i></p>
+The same logic can be applied to many fields, technological or not. <BR/><BR/>However I came to see a recurrent pattern common among people of both sides who related their bad experiences and blogged about it.<BR/><BR/>Most of what I saw looks like people who probably chose the wrong tool for the job. <BR/><BR/>Hosting your primary production site on a emergent technology remains a bet and the odds are not quite on your side. <BR/><BR/>In situations like this it's easy to conclude that the tool isn't good or it's flawed when it reality it's just used beyond it's capability or purpose.<BR/><BR/>I would not consider using a could service to host a serious project, at least not yet. But I can easily see how it can be a wonderful cache server or CDN. <BR/><BR/>There is plenty of way to exploit those new toys without compromising stability. It's also most likely the best way to test drive these new technologies.<BR/><BR/>- Haineault<BR/><BR/>my 2¢
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>December 11, 2008</i></p>
+I don't think the rent v.s. buy metaphor works out here. If I'm renting, I can always later decide to buy instead. If I own a house, I can sell it and start renting again. However... if I build my application against cloud APIs that lock me in, I'm stuck - I can't just switch to my own hosting without a significant rewrite.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>December 11, 2008</i></p>
+Simon: Actually the rent/buy metaphor does work, it just points out that the cloud companies need to work on avoiding lock-in. Lock-in is not a good business model, it's been compared to sharecropping.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>René Dudfield</b> &mdash; <i>December 11, 2008</i></p>
+Cloud computing has been happening for years in the form of hosted websites.<BR/><BR/>There are millions of websites out there in the cloud, a long time before GAE google, and EC2 Amazon released their offerings.<BR/><BR/>Why do people not like GAE in particular?  You can't use many python libraries or features, and it's some sort of weird not-python, like how zope was not-python.  I guess some people never learn... <BR/><BR/>WE WANT python!   not-python leaves a bad taste in our mouths.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>December 13, 2008</i></p>
+"(though without the aspect of building up wealth through ownership :-)"<BR/><BR/>Actually, cloud computing is exactly that aspect; you have a datacentre that you spent money on, and now you rent it out to other people to get money from it.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>December 15, 2008</i></p>
+Matthew Yglesias linked to an interesting study arguing <A HREF="http://feeds.feedburner.com/~r/matthewyglesias/~3/484025818/the_case_against_homeownership.php" REL="nofollow">against home ownership</A>. So given your analogy, there is a good case for cloud computing.<BR/><BR/>There is also the analogy with biological (or sociological) specialization: Amazon, Google etc. are experts at data warehousing, so that task could more effectively be outsourced to them, leaving solutions providers to focus on their core competencies (and allowing them to rent peak processing power as needed rather than having machines inefficiently standing idle).
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Todd H.</b> &mdash; <i>January 06, 2009</i></p>
+I agree with what Adam O. said.  The game changes once a compatible (preferably OSS) solution exists or the cloud frameworks themselves open sourced. It is a fairly strong value proposition being able to write and deploy an application using a given framework that allows for cloud and/or internal resources to be utilized.  Having that knob to turn would allow you to optimize resource utilization based on other factors like: cyclic economics, service levels, timing, etc. If it is done right with decent deployment tools that allowed you to bidirectionally move a running instance between the cloud and internal resource, the impact could be significant.
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="the-emperors-new-mind.html">&larr; Newer</a> &middot; <a href="scala.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

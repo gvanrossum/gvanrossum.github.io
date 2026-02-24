@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>New App Engine Book - Neopythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="highs-and-lows-of-ieee-computer-magazine.html">&larr; Newer</a> &middot; <a href="so-you-want-to-learn-python.html">Older &rarr;</a></p>
+
+<h1>New App Engine Book</h1>
+<p><i>June 15, 2009 &mdash; originally posted on
+<a href="https://neopythonic.blogspot.com/2009/06/new-app-engine-book.html">Neopythonic</a></i></p>
+
+<hr>
+
+At Google I/O I received a copy of <i>Using </i><i>Google App Engine</i> by Charles Severance, published by O'Reilly. I haven't kept track, but this appears one of the first App Engine books to actually hit the stores -- an Amazon search for App Engine showed up one other book (<i>Developing with Google App Engine</i> by Eugene Ciara, published by APress) and many titles available for pre-order (including additional titles from the same publishers).<div><br /></div><div>Severance's book is a quick read if you're already familiar with the basic premises of web programming. I think it would do well in an introductory course about the topic. (The author teaches at the University of Michigan so this is likely how he developed the material in the first place.) In fact, quite a bit of the book could well have come from a pre-existing earlier course: the chapters on HTML, CSS, Python and JavaScript barely mention App Engine.</div><div><br /></div><div>Don't get me wrong, I think that's a good approach: in my experience quite a few App Engine users are new to web programming in general, or could at least use a refresher course. If you don't fall in this category, don't feel offended: you just probably aren't the intended audience for this book. On the other hand, if you've developed for the web but haven't used Python before, you could probably just skip the HTML/CSS chapter and dive right into Python and App Engine.</div><div><br /></div><div>If you're a blank sheet where it comes to programming, don't expect to come out an experienced Python developer: the book only covers enough of the language so you can get started with App Engine without feeling you're just copying and pasting text. The same is actually true for any topic covered -- in many cases the book actually recommends that you study a topic more in-depth using other resources. But in each case the book's coverage is enough to get you started with the creation of dynamic web sites, and that's the important part. After all, you didn't learn your mother tongue by studying the rules of grammar either: you learned a few nouns, a few verbs, a few adjectives, and a few grammatical forms ("Daddy throw toy again") and you were on your way to communicating with others.</div><div><br /></div><div>Actually, if you read this book from cover to cover, you might not be ready to create the Greate American Website, but you'll be well past the "Daddy throw toy" level. For example, you'll be creating App Engine datastore models with ease, tying them together with forms, and you'll even be able to use simple AJAX patterns. You will also have learned about the importance of caching, and you'll have more than a fleeting experience debugging problems using tracebacks and logs.</div><div><br /></div><div>I also enjoyed some of the history bits that Severance presents (it makes me feel old to see 1990 referred to as ancient history :-). A downside is that sometimes the exercises given at the end of each chapter seem to be focused more on assessing that you were awake during class than that you actually have learned a useful skill (e.g. "Give a brief history of the major phases of the internet"). Teachers considering to use this book in the classroom might appreciate such questions; but for self-study, I would focus on the difference between the class= and id= attributes in HTML...</div><div><br /></div><div>What's missing? The book doesn't touch Django (except for the templating facility built into App Engine's webapp package, which is based on Django). If our customer support traffic is any indication, Django is very popular with professional App Engine developers. The book also doesn't describe the various APIs offered by App Engine for things like sending mail, fetching other web resources by URL, or image processing. But arguably you can learn those directly from the App Engine docs. Oh, and the book doesn't touch on App Engine's Java support. I expect other books will fill that void.</div>
+
+<h3>Comments (12)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Unknown</b> &mdash; <i>June 15, 2009</i></p>
+Thanks for the review, Guido! Now I have something authoritative I can point people to when trying to explain to people what the book is, and why they should read it.<br /><br />And you&#39;re right about it being teaching material: The text was adapted from lesson plans Charles Severance made for one of his classes.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>June 15, 2009</i></p>
+Great review Guido. It clearly let me know who could benefit from this book and who couldn&#39;t, and when to recommend it. Thanks!
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Luis</b> &mdash; <i>June 15, 2009</i></p>
+Guido, I just wanted to ask you about the reasons for your strong support of Django. It seemed to me that your blessing of Django as the pyton web framework was rather strange, considering all the good alternatives out there (not that there&#39;s anything wrong with Django!).<br />For example, I&#39;m a happy user of webpy, which in my humble oppinion, could well be a part of the standard library due to its sheer simplicity and &quot;pythonicity&quot; (as far as I know, it was the inspiration behind webapp).<br /><br />Don&#39;t you think Django is, perhaps, too complex and bloated for the majority of web projects?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>June 15, 2009</i></p>
+Luis: if you&#39;ve ever been to PyCon you know that Django rules.  Just one factual correction: the webapp &quot;mini-framework&quot; in App Enginge was not inspired by webpy in any way. I also don&#39;t see any resemblance, so I think maybe you&#39;re just talking about something else?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Luis</b> &mdash; <i>June 15, 2009</i></p>
+Guido: Thanks for your quick reply!<br />I was referring to this comment from Bret Taylor http://bret.appspot.com/entry/experimenting-google-app-engine<br /><br />There he says &quot;I used a web framework we use at FriendFeed. It looks a lot like the webapp framework that ships with App Engine and web.py (which inspired both of them)&quot;.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>June 15, 2009</i></p>
+Ah, I was confused.  I thought you were referring to PyWeb.  Given what Bret Taylor says in that blog, you&#39;re probably right that web.py inspired webapp -- it must have happened while Bret was the PM, long before I joined App Engine.<br /><br />Regarding adding web.py to the stdlib, does having it in the stdlib really accomplish something besides taking sides in the debate about which is a better web framework?  (Please continue this discussion on python-ideas.)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Luis</b> &mdash; <i>June 15, 2009</i></p>
+Guido: I don&#39;t feel authoritative to suggest ideas about the standard library. I&#39;ve never used python for anything significative, sorry!<br />It&#39;s just that webpy is really very simple, yet powerful enough to take into any task. It&#39;s just one single module, things don&#39;t get magically created in misterious places, it&#39;s templating system is extremelly simple, etc, etc...<br />It&#39;s distintion between GET and POST methods is the stroke of a genius. I see it as a polished and more complete version of webapp.<br /><br />That&#39;s why I see it as a good minimal &quot;webapp&quot; for python, not just for GAE.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>s|mono</b> &mdash; <i>June 16, 2009</i></p>
+any chance to see - maybe just rough - stats on &quot;customer support traffic&quot;?<br /><br />i was wondering what the ratio of java : python people is on appengine.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>June 16, 2009</i></p>
+simono: I honestly have no idea; why don&#39;t you look up the groups yourself? groups.google.com should give you all the message stats you want.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Mihai</b> &mdash; <i>June 16, 2009</i></p>
+Somebody reposted your review, does it have your consent ? It seemed like a twitter spam and has tons of ads on it&#39;s blog: http://www.pythonprogramminglanguage.info/2009/06/15/new-app-engine-book/
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>June 16, 2009</i></p>
+Thanks Mihai, that&#39;s definitely not okay. But what can I do? I don&#39;t feel like going after those losers.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Joe Bowman</b> &mdash; <i>June 18, 2009</i></p>
+I actually made some tweaks to gaeutilities for the author while he was writing that book. Now I&#39;m waiting for task queues in order to rewrite the utilities yet again. I suppose if any other authors decide to write about appengine and include django, I&#39;ll have to point them to the django middleware that allows you to plug gaeutilities session object right in (works with appengine-patch, one day I&#39;ll get around to testing native appengine django).
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="highs-and-lows-of-ieee-computer-magazine.html">&larr; Newer</a> &middot; <a href="so-you-want-to-learn-python.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

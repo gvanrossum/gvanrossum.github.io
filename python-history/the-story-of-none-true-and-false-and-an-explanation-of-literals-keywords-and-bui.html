@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The story of None, True and False (and an explanation of literals, keywords and builtins thrown in) - The History of Python</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="the-history-of-bool-true-and-false.html">&larr; Newer</a> &middot; <a href="origin-of-metaclasses-in-python.html">Older &rarr;</a></p>
+
+<h1>The story of None, True and False (and an explanation of literals, keywords and builtins thrown in)</h1>
+<p><i>November 10, 2013 &mdash; originally posted on
+<a href="https://python-history.blogspot.com/2013/11/story-of-none-true-false.html">The History of Python</a></i></p>
+
+<hr>
+
+I received an interesting question in the mail recently:<br />
+<blockquote class="tr_bq">
+<i>What is the difference between keywords and literals? Why are True and False keywords rather than literals in python3?</i> </blockquote>
+<blockquote class="tr_bq">
+<i>I was horrified recently to find that assigning to True/False works in 
+python2. So I went digging, and found that True and False were created 
+to be 'constants' like None in PEP 285. Assignment to None was 
+disallowed in 2.4, but not to True/False until python3. Was there a 
+reason None was originally built as a variable rather than a literal? </i></blockquote>
+Let's start with the first question: keywords and literals.<br />
+<br />
+A keyword, in the context of defining the syntax of a language, also known as a reserved word, is something that looks like an identifier in the language, but from the parser's point of view act like a token of the language. An identifier is defined as a sequence of one or more letters, digits and underscores, not starting with a digit. (This is Python's definition, but many languages, like C or Java, use the same or a very similar definition.)<br />
+<br />
+The important thing to remember about keywords is that a keyword cannot be used to name a variable (or function, class, etc.). Some well-known keywords in Python include 'if', 'while', 'for', 'and', 'or'.<br />
+<br />
+A literal, on the other hand, is an element of an expression that describes a constant value. Examples of literals are numbers (e.g. 42, 3.14, or 1.6e-10) and strings (e.g. "Hello, world"). Literals are recognized by the parser, and the exact rules for how literals are parsed are often quite subtle. For example, these are all numeric literals in Python 3:<br />
+<blockquote class="tr_bq">
+123<br />
+1.0<br />
+1.<br />
+.01e10<br />
+.1e+42<br />
+123.456e-100<br />
+0xfffe<br />
+0o755</blockquote>
+but these are not:<br />
+<blockquote class="tr_bq">
+. (dot)<br />
+e10 (identifier)<br />
+0y12 (the literal 0 followed by the identifier y12)<br />
+0xffe+10 (the literal 0xffe followed by a plus sign and and the number 10)</blockquote>
+Note the distinction between a constant and a literal. We often write code defining "constants", e.g.<br />
+<blockquote class="tr_bq">
+MAX_LEVELS = 15</blockquote>
+Here, 15 is a literal, but MAX_LEVELS is not -- it is an identifier, and the all-caps form of the name suggests to the reader that it is probably not changed anywhere in the code, which means that we can consider it a constant -- but this is just a convention, and the Python parser doesn't know about that convention, nor does it enforce it.<br />
+<br />
+On the other hand, the parser won't let you write<br />
+<blockquote>
+15 = MAX_LEVELS</blockquote>
+This is because the left-hand side of the assignment operator (=) must be a variable, and a literal is not a variable. (The exact definition of variable is complex, since some things that look like expressions are also considered to be variables, such as d[k], (a, b), and foo.bar -- but not f() or () or 42. This definition of variable is also used by the "del" statement.)<br />
+<br />
+Now on to None, True and False.<br />
+<br />
+Let's begin with None, because it has always been in the language. (True and False were relatively recent additions -- they first made their appearance in Python 2.2.1, to be precise.) None is a singleton object (meaning there is only one None), used in many places in the language and library to represent the absence of some other value. For example, if d is a dictionary, d.get(k) will return d[k] if it exists, but None if d has no key k. In earlier versions of Python, None was just a "built-in name". The parser had no special knowledge of None -- just like it doesn't have special knowledge of built-in types like int, float or str, or built-in exceptions like KeyError or ZeroDivisionError. All of these are treated by the parser as identifiers, and when your code is being interpreted they are looked up just like any other names (e.g. the functions and variables you define yourself). So from the parser's perspective, the following are treated the same, and the parse tree it produces (&lt;name&gt; = &lt;name&gt;) is the same in each case:<br />
+<blockquote class="tr_bq">
+x = None<br />
+x = int<br />
+x = foobar</blockquote>
+On the other hand, the following  produce different parse trees (&lt;name&gt; = &lt;literal&gt;):<br />
+<blockquote class="tr_bq">
+x = 42<br />
+x = 'hello'</blockquote>
+because the parser treats numeric and string literals as different from identifiers. Combining this with the earlier MAX_LEVEL examples, we can see that if we swap the left and right hand sides, the first three will still be accepted by the parser (&lt;name&gt; = &lt;name&gt;), while the swapped version of the second set will be rejected (&lt;literal&gt; = &lt;name&gt; is invalid).<br />
+<br />
+The practical consequence is that, if you really want to mess with your readers, you can write code that reassigns built-ins; for example, you could write:<br />
+<blockquote class="tr_bq">
+int = float<br />
+def parse_string(s):<br />
+&nbsp;&nbsp;&nbsp; return int(s)<br />
+print(parse_string('42'))&nbsp;&nbsp;&nbsp; # Will print '42.0'</blockquote>
+Some of you may respond to this with "So what? Reasonable programmers don't write such code." Others may react in the opposite way, saying "Why on earth does the language allow assignment to a built-in name like 'int' at all?!"<br />
+<br />
+The answer is subtle, and has to do with consistency and evolution of the language. I bet that without looking it up you won't be able to give a complete list all built-in names defined by Python. (I know I can't.) Moreover, I bet that many of you won't recognize every single name on that list. (To see the list, try typing dir(__builtins__) at the Python command prompt.)<br />
+<br />
+Take for example the weird built-ins named copyright, credits or license. They exist so that we can mention them in the greeting shown when you start Python interactively:<br />
+<blockquote class="tr_bq">
+<span style="font-size: x-small;"><span style="font-family: &quot;Courier New&quot;,Courier,monospace;">Python 3.4.0a4+ (default:0917f6c62c62, Oct 22 2013, 10:55:35)<br />[GCC 4.2.1 Compatible Apple LLVM 4.2 (clang-425.0.28)] on darwin<br />Type "help", "copyright", "credits" or "license" for more information.<br />&gt;&gt;&gt; credits<br />Thanks to CWI, CNRI, BeOpen.com, Zope Corporation and a cast of thousands<br />for supporting Python development.&nbsp; See www.python.org for more information.<br />&gt;&gt;&gt;&nbsp;</span></span></blockquote>
+&nbsp;In order for this to work, we made them built-ins. But does this mean you shouldn't be allowed to use 'credits' as a variable or parameter name? I think not. Certainly many people don't realize that these esoteric built-ins even exist, and they would be surprised if they were prevented from using them as variable names. From here, it's just a gradual path. Many people write functions or methods with arguments named str or len, or with names like compile or format. Moreover, suppose you wrote some Python 2.5 code where you used bytes as a variable name. In Python 2.6, we added a built-in function named 'bytes' (it's an alias for str, actually). Should your code now be considered invalid? There's no reason for that, and in fact your code will be fine. (Even in Python 3, where bytes is one of the fundamental types.)<br />
+<br />
+On the other hand, you cannot have a variable named 'if' or 'try', because these are reserved words (keywords) that are treated special by the parser. Because you cannot use these as variable or function names anywhere, ever, in any Python program, everyone using Python has to know about all the reserved words in the language, even if they don't have any need for them. For this reason, we try to keep the list of reserved words small, and the core developers hem and haw a lot before adding a new reserved word to the language.<br />
+<br />
+In fact, many proposed new features have been killed  because they would require a new keyword; others have been modified to avoid that need. Also, when we do decide to add a new keyword, we  start a deprecation campaign at least one release before the new keyword is introduced, warning developers to choose a different name for their variables. (There's also a trick to allow developers to choose to use the new keyword right away; this is why we have e.g. "from __future__ import with_statement".)<br />
+<br />
+There's no such concern for built-ins. Code that happens to use the name of a new built-in as a variable or function name will continue to function (as long as you don't also try to use the new built-in in the same function). While we still try to be conservative with the introduction of new built-ins, at least we don't have to worry about breaking working code by merely adding something to the language. The (small) price we pay for this is the possibility that some joker intentionally redefines a built-in just to confuse others. But there are tons of other ways to write unreadable code, and I don't see this as a particularly bad problem.<br />
+<br />
+So, after this long detour about built-ins vs. keywords, back to None. Why  did we eventually make None a reserved word? Frankly, the reasons were perhaps mostly social. Unlike some built-ins and many exceptions, None is so central to using Python that you really can't be using Python without knowing about None. So people were (like our question-asker) "horrified" when they found that assignment to None was actually allowed at all. Worse, there was the concern (whether founded or not) that the way name lookup in Python works, "evaluating" the expression None is slow, because it requires at least two dictionary lookups (all names are looked up in the globals dict before being looked up in the built-ins dict).<br />
+<br />
+In the end we decided that there was no downside to making None a keyword (there is no code that actually assigns to it) and it might make some code a tiny bit faster, or catch rare typos. There was still a one-time cost to the developer community (changes to the parser and documentation) but this was small enough that we din't hesitate very long.<br />
+<br />
+The situation for True/False is a little different. They weren't always part of the language, and many people had invented their own convention. People would define constants named true and false, True and False, or TRUE and FALSE, and use those consistently throughout their code. I don't recall which spelling was most popular, but when we introduced True and False into the language, we definitely did not want to break any packages that were defining their own True and False constants. (One concern was that those packages would have to have a way to continue to run on previous Python versions.)<br />
+<br />
+So, essentially our hand was forced in this case, and we had to introduce True and False as built-in constants, not as keywords. But over time, code defining its own versions of True and False (by whichever name) became more and more frowned upon, and by the time Python 3 came around, when we looked at opportunities for cleaning up the language, we found that it was logical to make True and False keywords, by analogy to None.<br />
+<br />
+And there you have it. It's all completely logical, once you understand the context. :-) Sorry for the long response; I hope it's been educational.<br />
+<br />
+<b>UPDATE:</b> I still forgot to answer whether None/True/False are literals or keywords. My answer is that they are both. They are keywords because that's how the parser recognizes them. They 
+are literals because that's their role in expressions and because they 
+stand for constant values. One could argue about whether things like 
+{'foo': 42} are literals; personally I'd prefer to give these some other
+ name, because otherwise what would you call {'foo': x+1}? The <a href="http://docs.python.org/3/reference/expressions.html#displays-for-lists-sets-and-dictionaries" target="_blank">language reference</a> calls both of these "displays".
+
+<h3>Comments (16)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Steve</b> &mdash; <i>November 10, 2013</i></p>
+It is false that this post has not been educational. <br />(Forgive me, couldn&#39;t resist.)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Bryan Chen</b> &mdash; <i>November 10, 2013</i></p>
+Moral of the story: When first designing a new language, always make True/False as keywords.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Snirp</b> &mdash; <i>November 11, 2013</i></p>
+@Bryan Chen:<br />That is definitely not the moral of this story. The moral is that languages and their use evolve over time and therefore it is good practice to design and maintain your language to allow for change/improvement.<br /> <br />In retrospect True/False could have been keywords. By using keywords sparingly and incorporating mechanisms like __future__, the designers left room to fix this.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Ralph Corderoy</b> &mdash; <i>November 11, 2013</i></p>
+Having &quot;credits&quot;, etc., be variables has always seemed very icky to me.  The REPL could have recognised invalid Python as its own commands to provide access to them, similar to SQL REPLs;  few expect «python -c &#39;print credits&#39;» to work.<br /><br />Worse, http://bugs.python.org/issue8220 shows how exit() exists without importing sys.  I&#39;ve had others use site.py&#39;s exit thinking they were using sys&#39;s.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>patrys</b> &mdash; <i>November 11, 2013</i></p>
+Isn&#39;t there an inherent gain for C code that also needs to deal with these values?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Tom Kent</b> &mdash; <i>November 11, 2013</i></p>
+Small typo:<br />&gt;&gt;&gt; x = 0xfffe<br />&gt;&gt;&gt; x<br />65534<br />&gt;&gt;&gt; x = 0xfffe+10<br />&gt;&gt;&gt; x<br />65544<br />&gt;&gt;&gt;<br />
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Tom Kent</b> &mdash; <i>November 11, 2013</i></p>
+It isn&#39;t a literal, but unlike all the others is valid.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>RB14</b> &mdash; <i>November 11, 2013</i></p>
+Some time ago I asked @ Stackoverflow why Python&#39;s built-ins methods can&#39;t be overridden or why can&#39;t you add new methods to built-ins?<br /><br />Best answer I got was that if it were allowed, libraries that use these built-ins might give bad results because it breaks the assumptions those libraries made about the built-ins. But since you say yourself that built-ins variables such as int, str... CAN be overridden, I see no reason why they can&#39;t be just extended with new methods, or override their default behaviour. Further more, I believe that libraries (external modules), have their own namespace and once a function is defined inside a module to use a certain object, it can&#39;t be overridden from another module:<br /><br />module1.py:<br />print(int)<br /><br />module2.py:<br />int = 5<br />import module1<br /><br />This will print &quot;&quot;, (which is the int class string representation), and not &quot;5&quot;.<br /><br />Here is my question @ SO (it starts with a different question in mind, but very soon I got to the point I made here):<br />http://stackoverflow.com/questions/19083160/can-literals-in-python-be-overridden<br /><br />Guido, I&#39;d love to get your statement on that matter.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>November 11, 2013</i></p>
+@RB14: It&#39;s not the same. When you reassign e.g. &#39;str&#39;, you are messing only with your *own* code (the scope of the assignment). When you redefine the built-in itself, you are messing with *everyone&#39;s* code.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>RB14</b> &mdash; <i>November 12, 2013</i></p>
+Well, clearly I didn&#39;t think this through. I mistakenly mixed up variables and objects... Thanks for clarifying.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>abdulapopoola</b> &mdash; <i>November 15, 2013</i></p>
+Brilliant! 
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Gathogo</b> &mdash; <i>November 18, 2013</i></p>
+Very educational indeed, thanks Guido.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Jason</b> &mdash; <i>November 20, 2013</i></p>
+Tangental question (maybe better asked at StackOverflow):<br /><br />I was quiet surprised that:<br /><br />for x in None :<br />   print x<br /><br />raised: TypeError: &#39;NoneType&#39; object is not iterable<br /><br />My (naive) expectation was the loop would work like &#39;for x in () :&#39; aka pass right over nothing.<br /><br />Why would I do this?  Well it&#39;s quite common (AFAICT) to return None in functions.  It&#39;s also common to iterate over the results of a function.  It&#39;d be &#39;nice&#39; if I could:<br /><br />for x in function_possibly_returning_None :<br />    print x<br /><br />rather than <br /><br />myiterable = function_possibly_returning_None<br />if myiterable :<br />    for x in myiterable :<br />        print x<br />
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Ralph Corderoy</b> &mdash; <i>November 20, 2013</i></p>
+Jason, it seems wrong that a function could either return an iterable, e.g. list, or None.  Why would it not return an empty list, tuple, etc?  A function returning None to indicate none probably returns a non-iterable for non-none.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Aaron Hall</b> &mdash; <i>March 18, 2014</i></p>
+To Jason&#39;s question, I wonder how the BDFL would view:<br /><br />for x in None or (): print(x)<br /><br />as a workaround.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>barnert</b> &mdash; <i>August 06, 2014</i></p>
+I&#39;d expect that any function that returns either a (possibly-empty) iterable or None presumably means something by returning None—e.g., it&#39;s distinguishing between &quot;your query returned no values from the table&quot; and &quot;the table doesn&#39;t exist to query&quot;.<br /><br />So, if I write code that calls such a function and wants to ignore the important distinction it&#39;s making and treat the two the same way, it&#39;s probably a good thing that I have to do so explicitly—e.g., it if it is not None else (), or a try/except.<br /><br />Of course if the library is badly-designed and makes a distinction for no reason… well, that&#39;s no different from any other badly-designed library; the ideal solution is to fix it upstream or wrap it in a sensible API, but for quick&amp;dirty use, the fact that I have to make my workarounds explicit is again probably more of a useful signal to the reader than a waste of his attention.
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="the-history-of-bool-true-and-false.html">&larr; Newer</a> &middot; <a href="origin-of-metaclasses-in-python.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

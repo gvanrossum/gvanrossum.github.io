@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dynamically Loaded Modules - The History of Python</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="the-great-or-grand-renaming.html">&larr; Newer</a> &middot; <a href="the-problem-with-integer-division.html">Older &rarr;</a></p>
+
+<h1>Dynamically Loaded Modules</h1>
+<p><i>March 17, 2009 &mdash; originally posted on
+<a href="https://python-history.blogspot.com/2009/03/dynamically-loaded-modules.html">The History of Python</a></i></p>
+
+<hr>
+
+Python’s implementation architecture made it easy to write extension modules written in C right from the start. However, in the early days, dynamic loading technology was obscure enough that such extensions had to be statically linked into Python interpreter at build time. To do this, C extension modules had to be added to a shell script that was used to generate the Makefile for Python and all of its extension modules.<br /><br />Although this approach worked for small projects, the Python community started producing new extension modules at an unanticipated rate, and demanded that extension modules could be compiled and loaded separately. Shortly thereafter, code interfacing to the platform-specific dynamic linking API was contributed which allowed the import statement to go out to disk looking for a shared library as well as a “.py” file. The first mention of dynamic loading in the CVS logs stems from January 1992 and most major platforms were supported by the end of 1994.<br /><br />The dynamic linking support proved to be very useful, but also introduced a maintenance nightmare.  Each platform used a different API and some platforms had additional constraints. In January 1995, the dynamic linking support was restructured so that all the dynamic linking code was concentrated in a single source file.  However, the approach resulted in a large file cluttered with conditional compilation directives (#ifdef).   In December 1999, it was restructured again with the help of Greg Stein so that the platform-specific code for each platform was placed in a file specific to that platform (or family of platforms).<br /><br />Even though Python supported dynamically loadable modules, the procedure for building such modules often remained a mystery to many users.  An increasingly large number of users were building modules--especially with the introduction of extension building tools such as SWIG.  However, a user wishing to distribute an extension module faced major hurdles getting the module to compile on all possible combinations of platforms, compilers, and linkers.  In a worst-case scenario, a user would have to write their own Makefile and configuration script for setting the right compiler and linker flags. Alternatively, a user could also add their extension module to Python's own Makefile and perform a partial Python rebuild to have the module compiled with the right options. However, this required end users to have a Python source distribution on-hand.<br /><br />Eventually, a Python extension building tool called distutils was invented that allowed building and installing extension modules from anywhere. The necessary compiler and linker options were written by Python’s makefile to a data file, which was then consulted by distutils when building extension modules.   Largely written by Greg Ward, the first versions of distutils were distributed separately, to support older Python versions.  Starting with Python 1.6 it was integrated into Python distributions as a standard library module.<br /><br />It is worth noting that distutils does far more than simply building extension modules from C source code.  It can also install pure Python modules and packages, create Windows installer executables, and run third party tools such as SWIG. Alas, its complexity has caused many folks to curse it, and it has not received the maintenance attention it deserved. As a result, in recent times, 3rd party alternatives (especially ez_install, a.k.a. "eggs") have become popular, unfortunately causing fragmentation in the development community, as well as complaints whenever it doesn't work. It seems that the problem in its full generality is just inherently difficult.
+
+<h3>Comments (4)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>March 17, 2009</i></p>
+Cython, the successor to Pyrex, looks like a really interesting third-party tool for actually writing external modules or wrappers by compiling Python  code down to C. For standard Python, the C code makes the appropriate calls into the Python runtime, but further optimizations can be done with type specifiers or decorators. Something like distutils is still needed to compile the C code.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>March 17, 2009</i></p>
+I try to be optimistic and consider easy_install (and all the surrounding tools) to be prototypes that will show what Python needs to provide out of the box in some future version.<BR/><BR/>Personally, I think I use maybe about a third of the features that setuptools provide, and consider the rest to be mistakes.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Wheat</b> &mdash; <i>March 18, 2009</i></p>
+Correction, ez_install (easy_install) is not equal to eggs. Eggs is a deployment format. easy_install is a command-line installation tool that install packages in egg format. Although support for both the install tool and using the egg format is part of the same setuptools project.<BR/><BR/>Eggs do allow platform-specific binary data to be part of the distribution though, providing another way of getting around the problems of compilation by allowing a developer to build extension modules on their compiler-enabled computer and ship those pre-built binaries directly to the end-user.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Joac</b> &mdash; <i>April 01, 2010</i></p>
+we are making a translation to spanish for this blog, that you can find in http://www.juanjoconti.com.ar/2010/04/01/la-historia-de-python-modulos-cargados-dinamicamente/<br />If you wish add a link, it&#39;s this: http://www.juanjoconti.com.ar/categoria/aprendiendo-python/historia/ <br /><br />Thanks for make Python.
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="the-great-or-grand-renaming.html">&larr; Newer</a> &middot; <a href="the-problem-with-integer-division.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

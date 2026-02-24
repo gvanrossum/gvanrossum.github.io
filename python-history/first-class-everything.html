@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>First-class Everything - The History of Python</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="how-everything-became-an-executable-statement.html">&larr; Newer</a> &middot; <a href="adding-support-for-user-defined-classes.html">Older &rarr;</a></p>
+
+<h1>First-class Everything</h1>
+<p><i>February 27, 2009 &mdash; originally posted on
+<a href="https://python-history.blogspot.com/2009/02/first-class-everything.html">The History of Python</a></i></p>
+
+<hr>
+
+<span style="font-style: italic;">[Folks, please don't use the comments section of this blog to ask questions. If you want to suggest a topic for a future blog entry, send me email. (Use Google to find my home page, which has my email address.) If you want to propose a change or discuss the merits of alternative designs, use the python-ideas mailing list at python.org.]</span><br /><br />One of my goals for Python was to make it so that all objects were "first class."  By this, I meant that I wanted all objects that could be named in the language (e.g., integers, strings, functions, classes, modules, methods, etc.) to have equal status.   That is, they can be assigned to variables, placed in lists, stored in dictionaries, passed as arguments, and so forth.<br /><br />The internal implementation of Python made this simple to do.  All of Python's objects were based on a common C data structure that was used everywhere in the interpreter.  Variables, lists, functions, and everything else just used variations of this one data structure---it just didn't matter if the structure happened to represent a simple object such as an integer or something more complicated such as a class.<br /><br />Although the idea of having "first-class everything" is conceptually simple,  there was still one subtle aspect of classes that I still needed to address---namely, the problem of making methods first class objects.<br /><br />Consider this simple Python class (copied from last week's blog post):<br /><pre><span style="font-family: courier new;">class A:</span><br /><span style="font-family: courier new;">     def __init__(self,x):</span><br /><span style="font-family: courier new;">         self.x = x</span><br /><span style="font-family: courier new;">     def spam(self,y):</span><br /><span style="font-family: courier new;">        print self.x, y</span></pre>If methods are going to be first-class objects, then they can be assigned to other variables and used just like other objects in Python.  For example, someone could write a Python statement such as "s = A.spam".    In this case, the variable "s" refers to a method of a class, which is really just a function.  However, a method is not quite the same as ordinary function.  Specifically, the first argument of a method is supposed to be an instance of the class in which a method was defined.<br /><br />To deal with this, I created a type of callable object known as an "unbound method."   An unbound method was really just a thin wrapper around the function object that implemented a method, but it enforced a restriction that the first argument had to be an instance of the class in which the method was defined.  Thus, if someone wanted to call an unbound method "s" as a function, they would have to pass an instance of class "A" as the first argument.  For example, "a = A(); s(a)". (*)<br /><br />A related problem occurs if someone writes a Python statement that refers to a method on a specific instance of an object.  For example, someone might create an instance using "a = A()" and then later write a statement such as "s = a.spam".   Here, the variable "s" again refers to a method of a class, but the reference to that method was obtained through an instance "a" . To handle this situation, a different callable object known as a "bound method." is used.   This object is also a thin wrapper around the function object for the method.   However, this wrapper implicitly stores the original instance that was used to obtain the method.  Thus, a later statement such as "s()" will call the method with the instance "a" implicitly set as the first argument.<br /><br />In reality, the same internal object type is used to represent bound and unbound methods.  One of the attributes of this object contains a reference to an instance.   If set to None, the method is unbound.  Otherwise, the method is bound.<br /><br />Although bound and unbound methods might seem like an unimportant detail, they a critical part of how classes work underneath the covers.   Whenever a statement such as "a.spam()" appears in a program, the execution of that statement actually occurs in two steps.  First, a lookup of "a.spam" occurs.  This returns a bound method--a callable object.    Next, a function call operation "()" is applied to that object to invoke the method with user supplied arguments.<br /><br />__________<br />(*) In Python 3000, the concept of unbound methods has been removed, and the expression "A.spam" returns a plain function object. It turned out that the restriction that the first argument had to be an instance of A was rarely helpful in diagnosing problems, and frequently an obstacle to advanced usages --- some have called it "duck typing self" which seems an appropriate name.
+
+<h3>Comments (3)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>February 28, 2009</i></p>
+Very glad to hear that unbound methods (and the self type restriction) is gone in Python 3000!  Somehow I missed that in reading through the change notes.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Nick Fabry</b> &mdash; <i>March 02, 2009</i></p>
+Thanks for the explanation of why bound and unbound methods existed.  I had learned about both, and used them in my own code, but they never made sense - I never quite understood their purpose.  Your historical explanation clicked for me and made it crystal clear!  It also clarified the reason for ditching unbound methods in favor of plain functions.<BR><BR/><BR><BR/>Have you ever thought of writing a python teaching book that approaches it from a historical point of view?  You have a knack for conceiving &amp; explaining things clearly...
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Juanjo Conti</b> &mdash; <i>April 25, 2009</i></p>
+Spanish translation <A HREF="http://www.juanjoconti.com.ar/2009/04/25/la-historia-de-python-todo-de-primera-clase/" REL="nofollow">here</A>.
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="how-everything-became-an-executable-statement.html">&larr; Newer</a> &middot; <a href="adding-support-for-user-defined-classes.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

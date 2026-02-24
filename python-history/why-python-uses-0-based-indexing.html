@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why Python uses 0-based indexing - The History of Python</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="origin-of-metaclasses-in-python.html">&larr; Newer</a> &middot; <a href="karin-dewar-indentation-and-the-colon.html">Older &rarr;</a></p>
+
+<h1>Why Python uses 0-based indexing</h1>
+<p><i>October 24, 2013 &mdash; originally posted on
+<a href="https://python-history.blogspot.com/2013/10/why-python-uses-0-based-indexing.html">The History of Python</a></i></p>
+
+<hr>
+
+I was asked on Twitter why Python uses 0-based indexing, with a link to a new (fascinating) post on the subject (<a class="ot-anchor" href="http://exple.tive.org/blarg/2013/10/22/citation-needed/" rel="nofollow">http://exple.tive.org/blarg/2013/10/22/citation-needed/</a>).
+ I recall thinking about it a lot; ABC, one of Python's predecessors, 
+used 1-based indexing, while C, the other big influence, used 0-based. 
+My first few programming languages (Algol, Fortran, Pascal) used 1-based
+ or variable-based. I think that one of the issues that helped me decide
+ was slice notation.<br /><br />Let's first look at use cases. Probably the 
+most common use cases for slicing are "get the first n items" and "get 
+the next n items starting at i" (the first is a special case of that for
+ i == the first index). It would be nice if both of these could be 
+expressed as without awkward +1 or -1 compensations.<br /><br />Using 
+0-based indexing, half-open intervals, and suitable defaults (as Python 
+ended up having), they are beautiful: a[:n] and a[i:i+n]; the former is 
+long for a[0:n].<br /><br />Using 1-based indexing, if you want a[:n] to 
+mean the first n elements, you either have to use closed intervals or 
+you can use a slice notation that uses start and length as the slice 
+parameters. Using half-open intervals just isn't very elegant when 
+combined with 1-based indexing. Using closed intervals, you'd have to 
+write a[i:i+n-1] for the n items starting at i. So perhaps using the 
+slice length would be more elegant with 1-based indexing? Then you could
+ write a[i:n]. And this is in fact what ABC did -- it used a different 
+notation so you could write a@i|n.(See <a class="ot-anchor" href="http://homepages.cwi.nl/%7Esteven/abc/qr.html#EXPRESSIONS" rel="nofollow">http://homepages.cwi.nl/~steven/abc/qr.html#EXPRESSIONS</a>.)<br /><br />But
+ how does the index:length convention work out for other use cases? TBH 
+this is where my memory gets fuzzy, but I think I was swayed by the 
+elegance of half-open intervals. Especially the invariant that when two 
+slices are adjacent, the first slice's end index is the second slice's 
+start index is just too beautiful to ignore. For example, suppose you 
+split a string into three parts at indices i and j -- the parts would be
+ a[:i], a[i:j], and a[j:].<br /><br />So that's why Python uses 0-based indexing.
+
+<h3>Comments (15)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>October 24, 2013</i></p>
+To anyone who prefers 1-based indexing: you are the same people who screwed up the calendar, starting at year 1 and calling the 1900s the 20th century (and arguing that the year 2001 ought to be the start of the next millennium). Haven&#39;t you done enough damage? :-)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Lawrence Kesteloot</b> &mdash; <i>October 24, 2013</i></p>
+Dijkstra had a monograph about this: https://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD831.html<br /><br />Also I should point out that the correct first number is zero, and kids should be taught to count &quot;0, 1, 2, ...&quot;. It fixes a lot of problems that you get if you start a 1. In this light, there&#39;s no argument at all for starting indexing at 1.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>October 24, 2013</i></p>
+As I pointed out in my G+ post, Dijkstra did not consider start:size as an option. Sadly, that&#39;s the way C++ seems to be going (https://www.cilkplus.org/tutorial-array-notation). 
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>October 24, 2013</i></p>
+Y combinator&#39;s thread on this topic mention that in 1985 Inside Macintosh explained why graphics coordinates are 0-based: https://news.ycombinator.com/item?id=6601515 (search for &quot;Macintosh&quot;).
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>John Cowan</b> &mdash; <i>October 24, 2013</i></p>
+If you count objects 0, 1, 2 you wind up with a value that&#39;s smaller than the number of objects.  0-based indexing works because it is <i>not</i> ordinal.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>MLW</b> &mdash; <i>October 25, 2013</i></p>
+Your mention of graphics coordinates reminds of another index holy war about the location of the origin: top-left or bottom-left?<br /><br />I like ot&#39;s description of indices as boundaries rather than labels. I think it gives both the 0th and 1st camps something to hang their hats on :).
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Veky</b> &mdash; <i>October 25, 2013</i></p>
+Except the indices as boundaries analogy is broken. :-(<br /><br />&quot;abcdefghijklmnop&quot;[:3:-1]<br /><br />Note that it ends in e, not in d as it should if you consider 3 as a boundary.<br /><br />When I first encountered this, I thought it was a bug. Boundaries metaphor was something I deeply embraced.<br /><br />Maybe it could stay that way? Guido, can slice semantics with negative stride be changed?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>October 25, 2013</i></p>
+I agree that slices with negative strides are confusing. We can&#39;t change them (it would break too much code) but you can usually avoid them by using the reversed() function instead, e.g. &#39;&#39;.join(reversed(&quot;abcdefghijklmnop&quot;[3:])). Still not ideal, but how often do you need a string backwards (apart from palindrome puzzles :-)?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Veky</b> &mdash; <i>October 26, 2013</i></p>
+You&#39;ve seen my code on CheckIO. More often than you think. :-P<br /><br />But seriously... not only strings, any indexable iterables have same problem. And you haven&#39;t seem to have problems with breaking code (especially without any confirmed examples) before. At least in Py4K? :-)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Phaedrus</b> &mdash; <i>October 26, 2013</i></p>
+You seriously think it makes more sense to have a year 0?  If the FIRST year isn&#39;t year 1, then you end up with the SECOND year being year 1.  Yeah, that makes sense.  NOT.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>October 27, 2013</i></p>
+That Cilk thing goes against the entire STL by not using .start() .end() half-closed intervals. What were these guys thinking, or were they even thinking at all.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>October 27, 2013</i></p>
+Over on python-ideas we&#39;re discussing negative strides now. The best way to use them is to also use negative indexes. E.g. a[::-1] == a[-1:-1-len(a):-1].
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Harald Hoyer</b> &mdash; <i>June 23, 2015</i></p>
+Time has the notation of 1:?? in the second hour of the day. What&#39;s your issue with the years again? 
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Eric MacDonald</b> &mdash; <i>February 21, 2016</i></p>
+This is an old post and interesting, but I think there is a hardware angle you aren&#39;t considering in indexing.  I&#39;m a EE prof, worked at IBM and Motorola previously.  Hardware wants zero indexing.  Think about a logical decoder (heart of SRAM memory driving word lines for instance).  If you have a four bit decoder, you have options of 0 to 15 as the input so you drive out wordline0 to wordline15.  16 doesn&#39;t fit.  Also, in a reverse FOR loop with a terminating value of zero, you can use the Z bit (zero flag - NAND of all index bits) for free.  Many early assembly languages had instructions for this to avoid an explicit check for termination.    Interesting to hear the CS perspective.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>February 21, 2016</i></p>
+Hi Eric, thanks for adding that point. In high school I built and used simple digital logic and in college I used CDC assembler, so I&#39;m well aware of the hardware preference for 0-based indexing. This is also of course where C&#39;s 0-base indexing comes from. But Python, priding itself in being a high-level language, needs to be able to motivate its position in this matter without reference to the implementation.
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="origin-of-metaclasses-in-python.html">&larr; Newer</a> &middot; <a href="karin-dewar-indentation-and-the-colon.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

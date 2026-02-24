@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>So you want to learn Python? - Neopythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="new-app-engine-book.html">&larr; Newer</a> &middot; <a href="final-words-on-tail-calls.html">Older &rarr;</a></p>
+
+<h1>So you want to learn Python?</h1>
+<p><i>May 26, 2009 &mdash; originally posted on
+<a href="https://neopythonic.blogspot.com/2009/05/so-you-want-to-learn-python.html">Neopythonic</a></i></p>
+
+<hr>
+
+There's never a lack of books to use for learning Python. I occasionally receive books for review, but I don't have a particularly good yardstick to judge such books by: I find that they all contain some factual errors and some oddities of presentation, but I have no idea whether those matter for the readers. Even Knuth's books are full of errors: for example <a href="http://www-cs-faculty.stanford.edu/%7Euno/taocp.html">the errata for Vol. 1 (2nd ed.) are a staggering 80 pages</a>, but I doubt anybody besides Knuth himself is bothered by this knowledge.<br /><br />Recently I got a review copy of "Hello World", and a colleague kindly lent me his copy of "Practical Programming". I think it's interesting to compare the two a bit, since they both claim to be teaching Python programming to people who haven't programmed before. And yet their audiences are totally different!<br /><br />"Hello World", published by Manning, is written by Warren Sande and his son Carter. The subtitle is "Computer programming for kids and other beginners", but I think if you're not a kid any more you might get annoyed by the rather popular writing style. If you <span style="font-style: italic;">are</span> a kid, well, you will probably enjoy a book written with you in mind, and you will learn plenty. The only prerequisites are reading and typing skills, a computer that wasn't built in the stone age, and a desire to learn more about what goes on inside that computer. The book uses short chapters with lots of illustrations, often cartoons and jokes. There are lots of opportunities to try out the material and learn that way. Each chapter ends with a review section, some tests, and more experiments to try. The book pays plenty of attention to typical "gotchas", so that if you get stuck at some point, there probably is help nearby to get you unstuck.<br /><br />"Practical Programming" is written by Jennifer Campbell, Paul Gries, Jason Montojo, and Greg Wilson. This a team composed of three university professors and a former student of theirs. Their purported goal is to teach Computer Science (with Capital Letters), and Python is merely a teaching vehicle. But they spend about half of the book on Python itself, covering roughly the same material as any introduction to Python, including "Hello World". Their intended audience is clearly more mature than that of the Sandes, and I would think that Carter Sande and his friends would have a hard time staying focused on the material as presented by Campbell et al. -- their illustrations and diagrams are more functional but a lot less fun.<br /><br />Both books present a number of projects and running examples. Again, the difference in audience makes it likely that if you love one, you'll hate the other, and vice versa. "Hello World" uses examples from computer games. The games are extremely simple though: modern computer games are some of the most complex system around, and you can't expect to approach them using PyGame and a couple hundred lines of Python. "Practical Programming" takes its example from scientific data processing with an environmental touch: for example, a numerical series is presented as whale sightings over the years and 2-dimensional data is taken from deforestation data. No doubt this is done in an attempt to appeal to a certain kind of student, though the number of potential applications is so large that some students might just as well be turned off by the specific set of choices.<br /><br />In the end, "Hello World" will leave the reader with a fair amount of practical Python experience, enough to get them started on the long road to becoming a programmer if they are so inclined, or at least enough to give them some idea of what it is that programmers do. "Practical Programming" tries to go further: it presents some well-known algorithms (there's even a discussion of MergeSort), and it has introductory chapters on topics like object-oriented programming and databases. The overall focus is still on being able to use all this new knowledge in one's professional life, and I hesitate to agree with the authors' apparent view that it teaches "Computer Science". Calling it "Computer Use" would cover the contents better, I think, and that's more in line with the series title as well ("The Pragmatic Programmers", also the publisher).<br /><br />So, how <span style="font-style: italic;">do</span> you learn about Computer Science? Some would no doubt recommend "Structure and Interpretation of Computer Programs" by Abelson and Sussman here. (Someone sent me review copy of that book too.) But really, SICP (as it is often referred to) has its own agenda: convincing the reader that the most important thing computers can do is interpreting computer programs. This agenda has arguably caused the proliferation of Scheme implementations and indoctrinated many young minds with certain ideas about how to design and implement programming languages. But personally, I recommend you go straight to <a href="http://www-cs-faculty.stanford.edu/%7Euno/taocp.html">the source</a>. After all these years, there is still no substitute for Knuth.<br /><br />[UPDATE: fixed book titles as commenters pointed out my typos.]
+
+<h3>Comments (25)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Ken Farmer</b> &mdash; <i>May 27, 2009</i></p>
+Perfect timing!  I've promised to teach my two boys how to program using python this summer.  We've already started with a simple calculator that determines the weight of a giant of any size made of any of 500 different materials.<br /><br />That was fun and has been a good basis for layering additional language features.  But I've been wondering what would be the next good exercise.  Few of the books I've found include any.  Can you tell me if "Hello World" includes anything else besides games?  For example, grabbing content off the web, analyzing data, etc.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>May 27, 2009</i></p>
+Please read the table of the contents of the books at http://helloworldbook.com, http://www.pragprog.com/titles/gwpy/practical-programming, http://mitpress.mit.edu/sicp/.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Mike Verdone</b> &mdash; <i>May 27, 2009</i></p>
+Do you have any suggests on expert or advanced Python programming books? While there are lots of books that will teach how "how to program in Python from the ground up" there are very few that go in depth on features like __magic__ functions and variables, operator overloading, generators, the peculiarities of the class system, properties, the descriptor protocol, etc. Somehow I learned a lot of that stuff but I don't recall how. I wish I could recommend a book.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Robert</b> &mdash; <i>May 27, 2009</i></p>
+I'm not cut out for self-learning a computer language. <br />Hate the fact that Python (instructor-led) classes resources are almost none-existent (try searching for one in this little town called NYC Metro)<br /><br />sigh
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Talin</b> &mdash; <i>May 27, 2009</i></p>
+I still maintain that the Python tutorial (on the Python.org site) is a fine way to start learning the language.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Josh Stone</b> &mdash; <i>May 27, 2009</i></p>
+<I>SICP (as it is often referred to) has its own agenda: convincing the reader that the most important thing computers can do is interpreting computer programs.</I>Um... what else do computers do?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Jonathan Ellis</b> &mdash; <i>May 27, 2009</i></p>
+"Python for Dummies" is another excellent book for teaching the true novice.  I have not yet seen "Hello World" but all the other "beginning" books I have looked at assume more background than a real beginner will have.  It's surprisingly difficult to write at that level, and probably requires a lot of "user testing" to get right.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>NSFW</b> &mdash; <i>May 27, 2009</i></p>
+I'm sorry - I really don't understand the meaning of the last paragraph around SICP's agenda.<br /><br />Should I take away that reading (can you name a specific book perhaps?) Knuth is better than reading SICP for learning CS?<br /><br />For me, SICP was the one book that I got the most out of; and yes I also came away from it as a Scheme programmer! That said - I'll program in anything.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>May 27, 2009</i></p>
+Isn't interpreting computer programs pretty much the _only_ thing that computers do?  That's not so much an "agenda" as a fact.<br /><br />To further illustrate this brain-dead point:<br /><br />Storing files, viewing the internet, word processing -- File manager = program, web-browser = program, word processor = program.<br /><br />Would it be an "agenda" to convince someone that the most important thing that cars do is drive?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>May 27, 2009</i></p>
+No, by that view cars would do nothing but burn gasoline.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Michael Niessner</b> &mdash; <i>May 27, 2009</i></p>
+"Would it be an "agenda" to convince someone that the most important thing that cars do is drive?"<br /><br />Yes, it would. People drive cars. The definition is "To guide, control, or direct (a vehicle)." Trying to convince   someone that cars drive would just be wrong and would likely indicate you have some evil agenda.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>fdr</b> &mdash; <i>May 28, 2009</i></p>
+This comment has been removed by the author.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>fdr</b> &mdash; <i>May 28, 2009</i></p>
+I do not understand the stab at SICP as having an "agenda" more so than any other book. It's called the Structure and Interpretation of Computer Programs, and that's exactly what it is about. No book I know of so gracefully takes a person from "(define (square x) (* x x))" to a garbage collector in one volume.<br /><br />It teaches -- and excellently so, in my opinion -- a way to read and reason about computer programs of multiple paradigms while providing conceptual tools to do so expertly. I'm a little surprised you'd be so quick to denigrate the importance of this book for a set of works that is, as far as I can tell, close to orthogonal in its subject matter.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Lam</b> &mdash; <i>May 28, 2009</i></p>
+Okay, once you tried to demonstrate that Tail Call Optimization is evil, something that, even after almost half a month, I still cannot stomach. Now, you try to say that SICP is a bad book just because it tries to explain one of the weirdest ability of computer programs (aka interpreting other programs). Now, I DON'T want to learn Python.<br /><br />Let's talk about SICP. The book has 5 chapters, only one of which (4th one) is about interpreter, the first 3 are about programming in general and the last one is on compilation.<br /><br />Now, SICP is not about how to impress your clueless peers by throw out the buggiest program possible that has a pretty interface, nor how to write yet-another-accounting-program, nor how to get the top paying job. No, it is about programming and computer program. It is written for college-level students, whose goal are supposed to be understanding and command over their subject matter, not for children who want to satisfy their ego.<br /><br />As such, it tries to demonstrate a simple way, with the minimal number of tools necessary, to do everything with a computer. It is supposed to teach modern magic, which relies not on a huge library and consumer-centric ideologies, but on deep understanding of both theory and pratice of Computer Science. If you care reading it, from time to time, you will see comments like "This is not how such and such things are implemented, since real implementation wants efficiency; we just want to show a simple way to do this". If its secret agenda is to convince the young minds that interpretion, why would it bothers with these comments?<br /><br />The best effect of SICP I experience is that nothing seems either mysterious or difficult anymore. Once, to me, compiler is like the hardest thing possible, and many problems are just impenetratable. Even writing an OS is easier to gasp than a compiler: at least you have something to start with (the compiler itself), right? Now, after SICP, nothing is impossible in my view. Yes, it is difficult, but it is possible. And the book also blurs the distinction between programming paradigms, or between code and data. In short, I feel EMPOWERED: I can do everything, as long as I am careful enough.<br /><br />Maybe this is why Lispers are generally better programmers than, says, Pythonians, or Java programmers, or (God forbids) Basic and Cobol programmer. Because their communities, their books, their programming languages tell them that, "hey, you CAN do it. Nothing is impossible, eh?", not, "NO, YOU ARE FORBIDDEN TO DO SUCH AND SUCH, YOU UNWORTHY, STUPID, UNDISCIPLINED CREATURES. THESE ARE THE ONLY THINGS YOU CAN DO."<br /><br />By the way, I think I have discovered the secret agenda of Python and its community. Let me guess: take away the can-do spirit of the programmers, enslave them into some pre-defined ways of doing things, and jail them into the von Neumann architecture forever. What a noble cause!<br /><br />You know, once upon the time, Computer Science is the best, the most optimistic, the funniest discipline to be in, since it is where we, humans, deal directly with our thoughts, and can do anything that we can think of, unlimitted by physical restrain. Now, look at this kind of languages, Python and its kindreds of Java and C# and C++ and (I highly suspect) Ruby, which seek to, um, "protect" the programmers, and render programmers no more than mere coders. How sad that is.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>AlSweigart</b> &mdash; <i>May 28, 2009</i></p>
+I wrote a book aimed at young adults and nonprogrammers called "Invent Your Own Computer Games with Python". It's available for free under a Creative Commons license here: <A HREF="http://pythonbook.coffeeghost.net" REL="nofollow">http://pythonbook.coffeeghost.net</A>The problem I kept coming across with other books is that they teach programming concepts well enough, but there aren't any complete examples for the reader to follow.<br /><br />This book provides complete source code for several small game projects (Guess the Number, Tic Tac Toe, encryption, Othello, etc.) kind of like the old BASIC source code listings you'd find in magazines.<br /><br />The book is undergoing heavy editing and will be published by No Starch Press as "Playing with Python". What do you think?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Aaron</b> &mdash; <i>May 30, 2009</i></p>
+&gt;ChrisOH&gt; that the most important thing that cars do is drive?<br /><br />&gt;Guido&gt; No, by that view cars would do nothing but burn gasoline.<br /><br />I think your comparison is faulty.  <br /><br />The physical task that cars accomplish is transporting persons and goods from one place to another.  They use fuel (gasoline) to provide the necessary power to accomplish this task. <br /><br />The physical task that computers accomplish is to interpret computer programs that describe input, output, and storage to peform, and further programs to process. They use fuel (electrical current) to provide the necessary power to accomplish this task. <br /><br />&quot;cars consume fuel&quot; is a faulty analogy -- &quot;computer interpret programs&quot; is an identified task they are design perform, but &quot;consume fuel&quot; is how they perform it, and is common to each system.<br /><br />-- as a side note, I misinterpreted your post originally.  I thought the statement about the agenda of the book was meant to be complimentary, causing much confusion in reading the rest of the paragraph.  Just as &quot;cars move people&quot; is simple, elegant, pragmatic, so to is &quot;computer interpret programs&quot;.  But I guess not.<br /><br />-- I too was also surprised that you find Knuth more accessible.<br /><br />-- Lastly, I do want to say something complimentary apart from the infighting that resulted ... I do like the note on the difference between learning _programming_ (ie, getting stuff done with computers) and the science and _theory_ (ie, understanding how and why programming works, and how to improved it).  Both aspects are valuable, and I appreciate your recommendations on the former.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>coderpunk</b> &mdash; <i>June 03, 2009</i></p>
+I&#39;d be interested to see someone rewrite TAOCP in Python. I&#39;ve tried several times to read it but never made it further than a few chapters. I think his assembly examples are a bit outdated, and this is coming from an experienced assembly programmer.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>September 01, 2009</i></p>
+And you&#39;ve all missed the point he was making about SICP.<br /><br />What he said was that it leaves one with the impression that the most important thing a computer does is run programs.<br /><br />The most important thing a computer does is serve the purpose to which a user has set it. It&#39;s important that the software runs, definitely, however if all it does is run you still haven&#39;t accomplished anything.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>September 01, 2009</i></p>
+You misunderstand about SICP.<br /><br />A computer which merely runs is no great accomplishment unless it does so in service to a user.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Unknown</b> &mdash; <i>October 06, 2009</i></p>
+I&#39;m just wondering ...<br />I came across dozens if not even hundreds of books of the style &quot;python for absolute beginners&quot;<br /><br />However, I only found very rare good books about python for intermediate or pros. Is there no need ? or is python not mature enough for this audience ;) ? <br /><br />I miss book titles like<br /><br />Python for the C programmer<br />or <br />We are even welcome Ruby and Lua programmers come to the the bright side of live<br />or<br />Python Essentials Just the facts<br />or <br />Python starts where Fortran stops<br />or<br />The not so easy Python part<br /><br />To summarise I like to see more books which assume that the reader is known to the basics of programming and just need some guiding to the special parts and needs of python... maybe with a one by one compare to the &quot;home&quot; language of the reader.<br /><br />I really get annoyed to skip almost 2/3 of a book because of the ever repeating <br />* what is a for construct<br />* what does if then else<br />* how to install python <br />* how to start python<br />* what is an interpreter <br />* blablalbla<br /><br />Just my two cents <br /><br />TW
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>dtm</b> &mdash; <i>June 02, 2010</i></p>
+<i>The games are extremely simple though: modern computer games are some of the most complex system around, and you can&#39;t expect to approach them using PyGame and a couple hundred lines of Python.</i><br /><br />My daughter, upon reading the preface to <i>Hello World</i> whined disappointedly: &quot;Daddy, these look like WarioWare DIY games&quot; (meaning that the graphics look - surprise - like they were drawn by kids messing around, and not by professionals) She accepted that you don&#39;t need fancy graphics to make a good game, but was clearly disappointed.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>TrackLeech</b> &mdash; <i>August 22, 2012</i></p>
+Is this a verified Guido van Rossum&#39;s Blog or a fake.<br />
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>August 22, 2012</i></p>
+It&#39;s me alright!
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Unknown</b> &mdash; <i>August 22, 2012</i></p>
+As mentioned before,<br />can we see a review of advanced python programming books.<br /><br />There are so many beginner books for each and every programming language. However, finding a book which e.g., can be used as reference for python seems to be much more difficult (Implementation references not printed version of the online documentation).<br /><br />So far I couldn&#39;t find a good book for python which shows how to improve python code, where are bottlenecks and common gotchas and how certain (maybe unknown to the reader) python features can simplify or optimize certain algorithms and procedures.<br /><br />That is, we have many books to choice from to learn <br />print &quot;Hello World!&quot;<br />but far less choices to learn how to make a function call as efficient as possible.<br /><br />However, this is important to move python (and programmers) forward and to show &quot;serious&quot; programmers that python is not as bloated and as slow as they might believe.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>August 22, 2012</i></p>
+Try the Python Cookbook by Alex Martelli.  It may not focus on performance tuning but it definitely shows the way for advanced users and discusses wizard-level language and library features.
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="new-app-engine-book.html">&larr; Newer</a> &middot; <a href="final-words-on-tail-calls.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

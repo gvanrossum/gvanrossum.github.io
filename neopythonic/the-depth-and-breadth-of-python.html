@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The depth and breadth of Python - Neopythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="before-python.html">&larr; Newer</a> &middot; <a href="asynchronous-rpc-in-app-engine-today.html">Older &rarr;</a></p>
+
+<h1>The depth and breadth of Python</h1>
+<p><i>June 03, 2011 &mdash; originally posted on
+<a href="https://neopythonic.blogspot.com/2011/06/depth-and-breadth-of-python.html">Neopythonic</a></i></p>
+
+<hr>
+
+As of late I'm noticing a trend: I'm spending more time having in-person in-depth conversations, and less time coding. While I regret the latter, I really enjoy the former. Certainly more than weekly meetings,  code reviews, or bikeshedding email threads. (I'm not all that excited about blogging either, as you may have guessed; but some things just don't fit in 140 characters.)<br /><br />Two conversations with visitors I particularly enjoyed this week were both with very happy Python users, and yet they couldn't be more different. This to me is a confirmation of Python's enduring depth and breadth: it is as far away of a one-trick language as you can imagine.<br /><br />My first visitor was <a href="http://www.cs.sunysb.edu/%7Eliu/">Annie Liu</a>, a professor of computer science (with a tendency to theory :-) at Stony Brook University in New York State. During an animated conversation that lasted nearly three hours (and still she had more to say :-) she explained to me the gist of her research, which appears to be writing small Python programs that implement fundamental algorithms using set comprehensions, and then optimizing the heck out of it using an automated approach she summarized as the three I's: Iterate, incrementalize, and implement. While her academic colleagues laugh at her for her choice of such a non-theoretical language like Python, her students love it, and she seems to be having the last laugh, obtaining publication-worthy results that don't require advanced LaTeX skills, nor writing in a dead language like SETL (of which she is also a great fan, and which, via ABC, had some influence on Python -- see also below).<br /><br />Annie told me an amusing anecdote about an inscrutable security standard produced by NiST a decade ago, with a fifty-page specification written in Z. She took a 12-page portion of it and translated it into a 120-line Python program, which was much more readable than the original, and in the process she uncovered some bugs in the spec!<br /><br />Another anecdote she recounted had reached me before, but somehow I had forgotten about it until she reminded me. It concerns the origins of Python's use of indentation. The anecdote takes place long before Python was created. At an IFIP working group meeting in a hotel, one night the delegates could not agree about the best delimiters to use for code blocks. On the table were the venerable BEGIN ... END, the newcomers { ... }, and some oddities like IF ... FI and indentation. In desperation someone said the decision had to be made by a non-programmer. The only person available was apparently Robert Dewar's wife, who in those days traveled with her husband to these events. Despite the late hour, she was called down from her hotel room and asked for her independent judgement. Immediately she decided that structuring by pure indentation was the winner. Now, I've probably got all the details wrong here, but apparently Lambert Meertens was present, who went on to design Python's predecessor, ABC, though at the time he called it <span style="font-style: italic;">B</span> (the italics meant that <span style="font-style: italic;">B</span> was not the name of the language, but the name of the variable containing the name of the language). I checked my personal archives, and the first time I heard this was from Prof. Paul Hilfinger at Berkeley, who recounted a similar story. In his version, it was just Lambert Meertens and Robert Dewar, and Robert Dewar's wife chose indentation because she wanted to go to bed. Either way it is a charming and powerful story. <span style="font-weight: bold;">(UPDATE: indeed <a href="http://python-history.blogspot.com/2011/07/karin-dewar-indentation-and-colon.html">the real story</a> was quite different.)</span><br /><br />Of course Annie had some requests as well. I'll probably go over these in more detail on python-ideas, but here's a quick rundown (of what I could remember):<br /><ul><li>Quantifiers. She is really longing for the "<a href="http://homepages.cwi.nl/%7Esteven/abc/qr.html#TESTS">SOME x IN xs HAS pred</a>" notation from ABC (and its sibling "EACH x IN xs HAS pred"), which superficially resemble Python's any() and all() functions, but have the added semantics of making x available in the scope executed when the test succeeds (or fails, in the case of EACH -- then x represents a counterexample).</li><li>Type declarations. (Though I think she would be happy with Python 3 function annotations, possibly augmented with the attribute declarations seen in e.g. Django and App Engine's model classes.)</li><li>Pattern matching, a la Erlang. I have been eying these myself from time to time; it is hard to find a syntax that really shines, but it seems to be a useful feature.</li><li>Something she calls labels or yield points. It seems somewhat similar to yield statements in generators, but not quite.</li><li>She has only recently begun to look at distributed algorithms (she had some Leslie Lamport anecdotes as well) and might prefer sets to be immutable after all. Though that isn't so clear; her work so far has actually benefited from mutating sets to maintain some algorithmic invariant. (The "incrementalize" of the three I's actually refers to a form of "differentiation" of expressions that produce a new set for each input.)</li></ul>The contrast with my visitor the next day couldn't be greater. Through a former colleague I got an introduction to Drew Houston, co-founder and CEO of the vastly successful start-up company <a href="http://www.dropbox.com/">Dropbox</a>. Dropbox currently has 25 million users, stores petabytes of data on Amazon S3, is profitable, and is not for sale. Drew is an easygoing MIT graduate who is equally comfortable discussing custom memory allocators, the world of venture capitalism, and how to keep engineers happy; he likes hard problems and winning.<br /><br />Python plays an important role in Dropbox's success: the Dropbox client, which runs on Windows, Mac and Linux (!), is written in Python. This is key to the portability: everything except the UI is cross-platform. (The UI uses a Python-ObjC bridge on Mac, and wxPython on the other platforms.) Performance has never been a problem -- understanding that a small number of critical pieces were written in C, including a custom memory allocator used for a certain type of objects whose pattern of allocation involves allocating 100,000s of them and then releasing all but a few. Before you jump in to open up the Dropbox distro and learn all about how it works, beware that the source code is not included and the bytecode is obfuscated. Drew's no fool. And he laughs at the poor competitors who are using Java.<br /><br />Next Monday I'm  having lunch with another high-tech enterpreneur, a Y-combinator start-up founder using (and contributing to) App Engine. Maybe I should just cancel all weekly meetings and sign off from all mailing lists and focus on two things: meeting Python users and coding. That's the life!
+
+<h3>Comments (25)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Daniel Larsson</b> &mdash; <i>June 03, 2011</i></p>
+@Snagglepants<br />Apparently the Dropbox fan&#39;s have more in common with Apple users then previously believed. <br /><br />Tacky? Dude, you might want to read up on netiquette and buy a dictionary.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>June 03, 2011</i></p>
+One more flame about dropbox v. spideroak (or other competitors) and I&#39;ll turn off commenting and delete all comments about that topic.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Tony</b> &mdash; <i>June 03, 2011</i></p>
+Please dont turn commenting off: they are very interesting
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>June 03, 2011</i></p>
+Thought about any(): it might have been interesting to have it return either an empty tuple (if False) or a 1-tuple containing the value (if True). Too late for that now, though.<br /><br />Regarding while/if: Perhaps it&#39;s time to revisit the idea of an &#39;as&#39; clause on these conditionals (the tuple trick above could handle the cases where the condition and required value inside the clause don&#39;t match up)<br /><br />As far as immutability goes, perhaps someone would care to take the freeze() PEP back up (PEP 351)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>João Bernardo</b> &mdash; <i>June 03, 2011</i></p>
+As we&#39;re talking about language requests:<br />Something that really could be done but probably won&#39;t are ranges in the form 1..10. :)<br /><br />As Ellipsis took the triple dot syntax a ruby-like range can&#39;t be made.<br /><br />BTW, I always tought it was inconsistent to have mylist[1:5] but 1:5 alone don&#39;t work as a range.<br /><br />Just toughts... :P
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Carl</b> &mdash; <i>June 03, 2011</i></p>
+As far as I can tell, wouldn&#39;t an optional second arg to any() do the job for SOME:<br /><br />def any(iterable, fn = ident):<br />    for x in iterable:<br />        if fn(x):<br />            return True<br />    return False
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Nick</b> &mdash; <i>June 04, 2011</i></p>
+Sounds awesome.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Laurence Rowe</b> &mdash; <i>June 04, 2011</i></p>
+@Carl<br />You can already use: any(ident(x) for x in iterable)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Ralph Corderoy</b> &mdash; <i>June 04, 2011</i></p>
+Hi Guido.  This &quot;while some x in xs has pred:&quot;, will x on each iteration be the first element of xs where pred(x) and xs needs changing each iteration?  If so, we&#39;ve only x, and not its index to be able to efficiently alter xs.  Also, &quot;some&quot; doesn&#39;t emphasise first and is more suggestive of a x where pred(x) being plucked at random.  Cheers, Ralph.<br /><br />P.S.  Isn&#39;t an upside-down E an E by another name?  :-)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>June 04, 2011</i></p>
+@Ralph Corderoy: xs is typically a set or dict so no index is needed.  And the suggestion of &quot;some&quot; (or &quot;any&quot; for that matter) that it&#39;s an arbitrary element is intentional, since loops over sets/dicts use an arbitrary order.<br /><br />Which reminds me, Annie also asked for an arb() function that is like Ian&#39;s first().  It&#39;s been discussed on python-dev in the past, but we could never agree on what it should return if the collection is empty.  None feels wrong because the collection could very well contain None as a legitimate value.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Roger Pate</b> &mdash; <i>June 04, 2011</i></p>
+Why not have arb() behave like next(iterator[, default])? (Throw by default, but a value can be specified.)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Zaheer Soebhan</b> &mdash; <i>June 04, 2011</i></p>
+Besides all the stories about some important decision making, it&#39;s really cool to see how some of the best ideas are coming from interacting with other people.<br />So I totally agree with &quot;focus on two things: meeting Python users and coding. That&#39;s the life!&quot;<br />I find programming less fun without interacting with other people. I guess it&#39;s all about sharing ideas and coming up with great solutions together. It probably makes us feel like a better programmer as well as a better human being.<br /><br />Thank you for sharing your ideas about programming and life in general, Guido! Good luck!<br /><br />PS: Robert Dewar&#39;s wife should be given an award for her input on the greatest programming language of all! ;)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Yousuf</b> &mdash; <i>June 06, 2011</i></p>
+Oh! Pattern Matching. Guido, please give us pattern matching. It makes life so much more beautiful in Erlang. With Python being a thing of beauty, it must must must have Pattern Matching.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>James O&#x27;Beirne</b> &mdash; <i>June 07, 2011</i></p>
+Quick question: when you said you &quot;checked your personal archives&quot; per the indentation question, were you going back and reading journals that you&#39;d kept or simply browsing over old mail?<br /><br />I ask because I&#39;m curious as to how you record, organize, and store your thoughts.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>June 07, 2011</i></p>
+I wish I&#39;d kept journals!  No, I just searched my GMail for &quot;Robert Dewar&quot; and found a message from 2005 where I had summarized the story as I had heard it then and sent it off to an old colleague (who didn&#39;t reply).
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Dmitrey</b> &mdash; <i>June 10, 2011</i></p>
+Some proposition to yield &quot;SOME x IN xs HAS pred&quot; and &quot;EACH x IN xs HAS pred&quot; on existing Python language programming constructs, mentioned in answers, definitely will suffer by lack of performance. I have awful lot of &quot;all&quot; and &quot;any&quot; in my Python mathematical code (OpenOpt, FuncDesigner), and both Pyhon and numpy versions of &quot;all&quot; and &quot;any&quot; suffer the mentioned drawback of evaluating all elements before yielding result, while very often checking only several elements would be enough. <br /><br />The thing I would like you to pay attention - it would be very essential to get the new Python constructs  numpy-style compatible, where &quot;all&quot; and &quot;any&quot; often are evaluated along a chosen dimension of n-dimensional array (e.g. all(X==10, axis=1) or mere all(X==10, 1)). <br /><br />Incompatibility between numpy and Python &quot;min&quot; and &quot;max&quot; styles already is a terrible headache, especially for newbies. It&#39;s very hard to find the bug. Python max(-1,0) is 0, while numpy treats max(-1,0) as max of array with single element &quot;-1&quot; along axis 0 and thus result is -1.<br /><br />I hope it will be taken into account to reduce numpy-python incompatibility.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>June 10, 2011</i></p>
+@Dmitrey: we&#39;re getting pretty far off-topic here, but I suggest that NumPy was in the fault by redefining min() and max() that way.  This could be avoided by requiring a keyword for axis, e.g. max(a, axis=0).  Perhaps NumPy can evolve in this direction?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Dmitrey</b> &mdash; <i>June 10, 2011</i></p>
+Well, at first, it will bring some backward incompatibility to previous numpy versions, at second, I&#39;m not a NumPy developer and thus cannot affect decisions they make. Thus here I mere want to prevent appearing of another one incompatibility. Checking predicates along axis of n-dimensional array will certainly be used very often in scientific/engineering Python software to speedup calculations instead of using &quot;all&quot;/&quot;any&quot; along the involved axis. <br /><br />Sometimes I wonder what NumPy developers do (they often doesn&#39;t care even about bug reports I inform), but of course it&#39;s absolutely up to them. For example, one of most essential task numpy certainly require - possibility for downloading it from easy_install or linux channels (e.g. apt-get) with ACML (for AMD processors, free of charge and without royalites) or MKL (Intel processors, free-for-educational) (currently it requires lots of makefile changes and other efforts). But since Enthought (who sponsor numpy and thus affect their decisions) included MKL into their EPD, they seems to be not interested of it any longer - they prefer to force people buy their EPD with MKL than having it easily available with numpy download for free.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Dmitrey</b> &mdash; <i>June 10, 2011</i></p>
+By the way, Python and numpy &quot;sum&quot; are also incompatible. E.g. Python:<br /><br />&gt;&gt;&gt; sum([1,2],-1)<br />2<br />Now suppose a programmer replaced in a Python file header &quot;from numpy import func1, func2, ...&quot; by &quot;from numpy import *&quot;, or imported &quot;sum&quot; from numpy to perform his own operations somewhere in his part of the file. Then somewhere in other part of the file we&#39;ll get <br /><br />&gt;&gt;&gt; from numpy import *<br />&gt;&gt;&gt; sum([1,2],-1)<br />3<br /><br />It can be obtained in most inappropriate time and be very hard to find the error (or even worse, it can be not revealed at all).<br /><br />As for the predicates check, I think it&#39;s better to handle them in more lower level (e.g. C language), and possibly to have it parallel computed (at least, by default or by an optional argument). On the other hand, maybe it&#39;s better to wait with all those parallel computations changes till Python 3.3 where LLVM-based JIT will be implemented (I hope it will be already done that time, isn&#39;t it?)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>June 10, 2011</i></p>
+Sorry, Unladen Swallow is dead: http://qinsb.blogspot.com/2011/03/unladen-swallow-retrospective.html
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Composing</b> &mdash; <i>June 11, 2011</i></p>
+Another +1 for pattern matching arguments.<br /><br />What about something like <br /><br />def f([h,*t]) :<br /><br />for cutting up lists? It&#39;s close enough to [H|T] and consistent with *args notation.<br /><br />Empty lists would still be [].
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Shuphanin</b> &mdash; <i>June 24, 2011</i></p>
+Seize the day Guido, just make sure everything you do in your life is pure enjoyment! (And I bet it is!)<br /><br />I&#39;ll just quote this lyric from a song. (http://www.pubnub.com/blog/internet-heroes-song-crockford-dahl-wall-torvalds-resig-souders)<br /><br />&quot;Guido Van Rossum, thanks for the Python. More like Van Awesome, maybe Van Right On.&quot;
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>sunny1304</b> &mdash; <i>July 02, 2011</i></p>
+I would like to thank Guido van Rossum for Python. I am a student of computer science and started python 3 weeks ago and now my world is changed. Honestly I never learned anything with such joy like Python. In python I feel like everything is possible to solve. .......<br /><br />Thanks Guido van Rossum ...you are my favorite person.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>sunny1304</b> &mdash; <i>July 02, 2011</i></p>
+I would like to thank Guido van Rossum for Python. I am a student of computer science and started python 3 weeks ago and now my world is changed. Honestly I never learned anything with such joy like Python. In python I feel like everything is possible to solve. .......<br /><br />Thanks Guido van Rossum ...you are my favorite person.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Martin Blech</b> &mdash; <i>November 29, 2012</i></p>
+I think pattern matching would be a great addition to Python. I did a small experiment implementing it as an external library (here: http://github.com/martinblech/pyfpm) but the new syntax requires a parser of its own. Language-level support would be much better. Still, pyfpm lets you do stuff like:<br /><br />unpacker(&#39;head :: tail&#39;) &lt;&lt; (1, 2, 3)<br />unpacker.head # 1<br />unpacker.tail # (2, 3)<br /><br />or<br /><br />@match_args(&#39;head :: tail&#39;)<br />def match(head, tail):<br />    return head, tail<br /><br />match([1, 2, 3]) # (1, (2, 3))
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="before-python.html">&larr; Newer</a> &middot; <a href="asynchronous-rpc-in-app-engine-today.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Great (or Grand) Renaming - The History of Python</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="origins-of-pythons-functional-features.html">&larr; Newer</a> &middot; <a href="dynamically-loaded-modules.html">Older &rarr;</a></p>
+
+<h1>The Great (or Grand) Renaming</h1>
+<p><i>March 31, 2009 &mdash; originally posted on
+<a href="https://python-history.blogspot.com/2009/03/great-or-grand-renaming.html">The History of Python</a></i></p>
+
+<hr>
+
+When Python was first created, I always envisioned it as a stand-alone program, occasionally linking in third-party libraries. The source code therefore freely defined global names (in the C/linker sense) like ‘object’, ‘getlistitem’, ‘INCREF’ and so on. As Python’s popularity grew, people started to ask for an “embedded” version of Python, which would itself be a library that could be linked into other applications – not unlike the way that Emacs incorporates a Lisp interpreter.<br /><br />Unfortunately, this embedding was complicated by name clashes between Python’s global names and those defined by the embedding application – the name 'object’ was especially popular. To deal with this problem, a naming convention was chosen, whereby all Python globals would have a name starting with “Py” or “_Py” (for internal names that had to be global for technical reasons) or “PY” (for macros).<br /><br />For backwards compatibility reasons (there were already many third party extension modules) and to ease the transition for core developers (who had the old names engrained in their brain) there were two phases. In phase one the linker saw the old names, but the source code used the new names, which were translated to the old names using a large number of C preprocessor macros. In phase two the linker saw the new names, but for the benefit of some laggard extension modules that hadn’t been ported yet, another set of macros now translated the old names to the new names. In both phases, the code could mix old and new names and work correctly.<br /><br />I researched the history of these renamings a bit in our <a href="http://svn.python.org/view/python/trunk/">Subversion logs</a>. I found <a href="http://svn.python.org/view?view=rev&amp;revision=4583">r4583</a> from January 12, 1995, which signalled phase two of the great renaming was started by introducing the new names to all header files. But in December 1996 the renaming of .c source files was still going on. Around this time the renaming seems to have been renamed, and checkin comments often refer to the "Grand Renaming". The backwards compatibility macros were finally removed in May 2000, as part of the Python 1.6 release effort. The check-in comment for <a href="http://svn.python.org/view?view=rev&amp;revision=15313">r15313</a> celebrates this event.<br /><br />Much credit goes to Barry Warsaw and Roger Masse, who participated in the unthankful task of renaming the contentes of file after file after file (albeit with the help of a script). They also helped with the equally tedious task of adding unit tests for much of the standard library.<br /><br />Wikipedia has a reference to an earlier Great Renaming event, which apparently involved renaming USENET groups. I probably unconsciously remenbered that event when I named Python's Great Renaming. I also found some references to a later Grand Renaming in Sphinx, the package used for generating Python's documentation. Zope also seems to have had a Grand Renaming, and some recent Py3k discussions also used the term for the PyString -> PyBytes renaming (although this is a minor one compared to the others).<br /><br />Great or Grand Renamings are often traumatic events for software developer communities, since they requires the programmers' brains to be rewired, documentation to be rewritten, and complicate the integration of patches created before the renaming but applied after. (This is especially problematic when unrenamed branches exist.)
+
+<h3>Comments (1)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Juanjo Conti</b> &mdash; <i>April 05, 2010</i></p>
+Spanish translation at <a href="http://www.juanjoconti.com.ar/2010/04/06/la-historia-de-python-el-gran-o-enorme-renombrado/" rel="nofollow">juanjoconti.com.ar</a>
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="origins-of-pythons-functional-features.html">&larr; Newer</a> &middot; <a href="dynamically-loaded-modules.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

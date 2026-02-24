@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Asynchronous RPC in App Engine Today - Neopythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="the-depth-and-breadth-of-python.html">&larr; Newer</a> &middot; <a href="a-new-app-engine-datastore-api.html">Older &rarr;</a></p>
+
+<h1>Asynchronous RPC in App Engine Today</h1>
+<p><i>January 24, 2011 &mdash; originally posted on
+<a href="https://neopythonic.blogspot.com/2011/01/asynchronous-rpc-in-app-engine-today.html">Neopythonic</a></i></p>
+
+<hr>
+
+While I was laying the groundwork for a <a href="http://neopythonic.blogspot.com/2011/01/new-app-engine-datastore-api.html">new datastore client library</a> with support for asynchronous requests, I added some low-level support for asynchronous RPCs that you can use today. The only App Engine API with documented support for asynchronous RPCs is <a href="http://code.google.com/appengine/docs/python/urlfetch/asynchronousrequests.html">urlfetch</a>, and it happens to be quite useful with that.<br /><br />Suppose you want to fetch some data from a remote service. The remote service has two instances, both of which are slightly flaky. What you want to do is send off requests to both servers simultaneous (this is the easy part) and then <span style="font-style: italic;">wait for the first one to give you a result</span>. The latter uses the new API that I'm about to describe here.<br /><pre><br />from google.appengine.api import urlfetch, apiproxy_stub_map<br /><br />urls = ['http://service1.com', 'http://service2.com']  # Etc.<br /><br />rpcs = []<br />for url in urls:<br />   rpc = urlfetch.create_rpc(deadline=1.0)<br />   urlfetch.make_fetch_call(rpc, url)<br />   rpcs.append(rpc)<br /><br />rpc = apiproxy_stub_map.UserRPC.wait_any(rpcs)<br /># Now rpc is the first rpc that returned a result. Have at it!<br /></pre><br />That's all! If you're interested in learning more about this handy class method,  just check out its <a href="http://code.google.com/p/googleappengine/source/browse/trunk/python/google/appengine/api/apiproxy_stub_map.py#555">docstring in the App Engine SDK</a>. Note that technically you should loop until it doesn't return None.<br /><br />You can also repeatedly call wait_any() to get subsequent result. Make sure to remove the rpc it returns (if any) from the list, since otherwise it will return the same rpc over and over again: the specification of wait_any() says it returns the first rpc in the given list that completes, regardless of whether you have seen it before.<br /><br />Also note that there currently is no way to cancel the other RPCs, which is why I passed a low deadline to the<span style="font-style: italic;"></span> create_rpc() call. The problem is that even if you completely ignore the other RPCs, the App Engine runtime still waits for them to finish or timeout.<br /><br />Finally, there is also a similar class method UserRPC.wait_all(), which waits until <span style="font-style: italic;">all</span> RPCs in the list you pass it are complete. (It doesn't return anything.)<br /><br />PS. Don't look too closely at the implementation of these methods. It may change as we think of a better way to do it. But we're committed to the API.
+
+<h3>Comments (8)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>wingi</b> &mdash; <i>January 24, 2011</i></p>
+Is it possible that all services (over google protocoll buffer) are asynchroc callable in the app engine? I found the first tries on <a href="http://blog.notdot.net/2010/09/Under-the-hood-with-App-Engine-APIs" rel="nofollow">Nick Johnson blog</a> and it make sense for many use cases.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>January 24, 2011</i></p>
+If you dig deep enough (nearly) every App Engine API can be called asynchronously. Eventually we may publish and document stable APIs for more of them. Datastore Plus will do this for the datastore.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Tony Arkles</b> &mdash; <i>January 24, 2011</i></p>
+A friend of mine put together <a href="http://code.google.com/p/asynctools/" rel="nofollow">AsyncTools</a> a while to do datastore retrieval async and in parallel, but I don&#39;t know if they&#39;re still being maintained.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>January 24, 2011</i></p>
+I know of asynctools -- it currently works but it uses undocumented internal APIs that we cannot guarantee will keep working.  The groundwork we did for Datastore Plus included providing a more maintainable API (mainly, datastore_rpc.py and datastore_query.py). While this new API is not yet documented, we feel comfortable that we can promise not to break 3rd party tools built on top of this API.<br /><br />However, Datastore Plus will eventually make asynctools unnecessary so there may be no need to develop another 3rd party library for async datastore interaction.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Unknown</b> &mdash; <i>January 28, 2011</i></p>
+Hi Guido,<br /><br />Is there any documentation on how to make your own functions/modules support async? I would love to read those. Your new Datastore API might solve the problem for Datastore calls, but i have other requirements like having to generate thumbnails using the PIL for multiple images. I would ideally love to do those calls async. But there is nothing available for me to do it currently. Another example is also, when I am constructing a large KML file, i would ideally love to do this in chunks aync and merge them together. So, docs on how to do this would be very helpful.<br /><br />I am not an advanced Python user, but i thought one of the great things about functional programming is it makes async programming simple. That is, i had expected to just call any function async by calling a helper function and passing in the function to executed async and a callback. Is this not possible in python?<br /><br />Also, in the url_fetch examples you have shown, during the wait_any &amp; the wait_all calls, are we paying appengine costs when the handler is waiting on external HTTP requests? If so, is there a way around. Can there be a concept of an AsyncRequestHandler like from other programming frameworks which would allow the thread to do something else while it is waiting on the request and thus avoid appengine costs.<br /><br />If the url_fetch HTTP async calls are creating new threads, is there a limit to the number of async calls that can be made? Is the limit per handler or for all concurrent handlers summed together?<br /><br />Thank You,<br />Vish<br /><br />Thank You,<br />Vish
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>January 28, 2011</i></p>
+Vish:<br /><br />- Making your own async versions of standard App Engine APIs is not recommended; it would be possible by reverse engineering the synchronous API code (the source code is all in the SDK) but we cannot guarantee the stability of such reverse-engineered solutions -- when we change the underlying protocol we make sure to change the client library too, but your reverse-engineered solution might break. Please file bugs in the App Engine issue tracker for specific APIs you&#39;d like to see grow an async variant.<br /><br />- The &quot;functional programming&quot; solution you mention looks like it would be based on threads; this is not available in App Engine. In Python itself, though, you might be interested in PEP 3148.<br /><br />- You are not paying for CPU time while wait_any() is blocked. Of course the real time clock ticks on, but this does not affect what yuo are charged. The real time taken by requests may factor into how future requests will be scheduled, but using async APIs most likely makes your total elapsed real time smaller, which will improve your scheduling. :-)<br /><br />- The async calls do not create threads. At the lowest level we receive callbacks from the infrastructure -- in fact at the lowest level even synchronous calls are implemented using a fundamentally asynchronous implementation!<br /><br />Hope this answers all your questions,<br /><br />--Guido
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Unknown</b> &mdash; <i>January 29, 2011</i></p>
+Thank you for the reply. This is great information which is not apparent from the docs. I really appreciate it.<br /><br />Thank You,<br />Vish
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>master</b> &mdash; <i>October 24, 2011</i></p>
+How to determine what the URL fetch RPC object?
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="the-depth-and-breadth-of-python.html">&larr; Newer</a> &middot; <a href="a-new-app-engine-datastore-api.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

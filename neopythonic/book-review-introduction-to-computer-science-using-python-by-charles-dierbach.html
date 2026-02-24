@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Book review: Introduction to Computer Science Using Python (by Charles Dierbach) - Neopythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="kings-day-speech.html">&larr; Newer</a> &middot; <a href="letter-to-a-young-programmer.html">Older &rarr;</a></p>
+
+<h1>Book review: Introduction to Computer Science Using Python (by Charles Dierbach)</h1>
+<p><i>October 28, 2013 &mdash; originally posted on
+<a href="https://neopythonic.blogspot.com/2013/10/book-review-charles-dierbach.html">Neopythonic</a></i></p>
+
+<hr>
+
+After much back and forth I received a nice new Python book in the mail. The book's full title is "<a href="http://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Dstripbooks&amp;field-keywords=Introduction-Computer-Science-Using-Python+dierbach&amp;rh=n%3A283155%2Ck%3AIntroduction-Computer-Science-Using-Python+dierbach">Introduction to Computer Science Using Python: A Computational Problem-Solving Focus</a>", and its author is a very experienced educator, Charles Dierbach.<br />
+<br />
+This is not your average Python book -- it is a college text intended for first-semester CS courses that happens to use Python. As such, in assumes absolutely no previous programming experience, and it looks like any previous computer experience is optional. Not only that, but the book starts with a step-by-step introduction to the art of computational problem solving. This is an idea that goes well beyond hacking together a website!<br />
+<br />
+The book is incredibly thorough: there are exercises throughout the text (not just at the end of each chapter), and it includes a plethora of examples, screenshots, tables, charts, diagrams, and photos. (Yes, my picture is in there -- so are Alan Turing, JFK, and K&amp;R. :-)<br />
+<br />
+The author is not afraid of taking a stance; for example, he omits the 'break' and 'continue' statement because they do not fit within the paradigm of structured programming. This actually fits with the general goal of the book, which is to give an overview of many areas of computer science without getting too deep into the minutiae of any topic. I love the final chapter, which is an overview of the history of computing, starting with Charles Babbage and Ada Lovelace.<br />
+<br />
+At the same time, the book gives plenty of useful practical information, such as instructions for using IDLE and an extensive explanation of turtle graphics, culminating in a horse race simulation. (The author's Baltimore roots seem to show through here. :-)<br />
+<br />
+All in all, I think this book is a great text for anyone teaching CS1 or interested in familiarizing themselves with computer science through serious self-study.
+
+<h3>Comments (7)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Nathan</b> &mdash; <i>October 28, 2013</i></p>
+I&#39;m curious: do you think this boom would be of value to experienced Pythonistas?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Veky</b> &mdash; <i>October 28, 2013</i></p>
+Teaching CS1 without break statement?? We, as a civilization, value taking the stance precisely because it makes it easier to see if somebody is right or wrong. And he is, simply, wrong here.<br /><br />I&#39;ve seen people like him. They (if they are consistent) also believe every function should have only one return statement, and it has to be at the end, outside any loops. Exceptions are banned -- because, hey, what is essentially a break, or return from a loop, than a well-packaged exception?<br /><br />They are much more likely to litter the code with various boolean flags, setting and clearing them as needed, and add them as additional constraints at the beginning of the loop, having to duplicate code between loop start and break point after the loop.<br /><br />Moreover, Python makes it exceptionally (no pun intended, unfortunately:) hard to do so; and Python is right, because there should preferably be only one obvious way to do it, and it _has_ a break statement. Instead of simple for loop over any iterable, you have to use while loop if you must add a condition, and then it becomes the nightmare of indices, inequalities, off by one errors and various other wooly stuff that makes people think programming is hard.<br /><br />continue is mostly a syntactic sugar (but in language such as Python, where every condition inside nested loops shifts left margin one more level to the right, it&#39;s really nice to have it), but break is essential to structured programming.<br /><br />I suppose he doesn&#39;t by any chance have a picture of Don Knuth in his book? Because if he has, I&#39;m telling him to Knuth right away. :-P Knuth was writing about this phenomenon, almost 40 years ago. See http://cs.sjsu.edu/~mak/CS185C/KnuthStructuredProgrammingGoTo.pdf. His verdict: even goto is correct in some cases (this was before exceptions became easy to use). And removing features of well designed languages in name of some philosophical point never ends well, and usually accomplishes the opposite.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Thomas Heller</b> &mdash; <i>October 29, 2013</i></p>
+It&#39;s nice to see a programming book again that does NOT start with &#39;print &quot;Hello, World.&quot;&#39;
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Technobrowse</b> &mdash; <i>November 14, 2013</i></p>
+Hey Guido, This is a really awesome book, but have you taken a look @ &quot;Python for Everyone&quot; ? Its really quite good.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Vishal</b> &mdash; <i>March 05, 2014</i></p>
+For starters, writing a simple *management web application requires: <br />1. 4 data types (int, string, list, dictionary<br />2. (if elif else) and for<br />3. functions (optional)<br />4. class and object (if using gae)<br /><br />Rest is clutter for the beginner.<br /><br />Experiment I am running.<br />http://gdriv.es/lumos
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>October 06, 2014</i></p>
+As an actual student using this book, I can tell you it is riddled with mistakes.  This book is to provide the student with a foundation and an introduction to programming but when there are blatant grammatical errors (which spell check could have easily caught) and periods, underscores and other elements missing in the book, it makes it extremely frustrating to learn.  If anyone can give me some guidance on who to contacting to get these corrections implemented, it would be truly appreciated.  Hopefully I can save other people from having an extremely frustrating experience.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>DVM - Delphi Virtual Machine</b> &mdash; <i>April 24, 2015</i></p>
+Guido.<br />Please, add the &quot;begin/end&quot; commands for define blocks in Python.<br />For a language you want to define as easy to understand, the lack of these commands is not clear to developers that they feel much better documented with beginnings and blocks purposes. It is a very small price to pay in two lines and not have to worry about all the other to remain within the scope of action for any Block when necessary. Indentation was a very well thought-out solution and so was placed in languages that originally had not (but still not having). Believe dozens of languages breeders who use indentation can not be wrong when compared to a single developer that wanted to do different. Think about it.
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="kings-day-speech.html">&larr; Newer</a> &middot; <a href="letter-to-a-young-programmer.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Personal History - part 1, CWI - The History of Python</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="personal-history-part-2-cnri-and-beyond.html">&larr; Newer</a> &middot; <a href="a-brief-timeline-of-python.html">Older &rarr;</a></p>
+
+<h1>Personal History - part 1, CWI</h1>
+<p><i>January 20, 2009 &mdash; originally posted on
+<a href="https://python-history.blogspot.com/2009/01/personal-history-part-1-cwi.html">The History of Python</a></i></p>
+
+<hr>
+
+Python’s early development started at a research institute in Amsterdam called <a href="http://www.cwi.nl/">CWI</a>, which is a Dutch acronym for a phrase that translates into English as Centre for Mathematics and Computer Science. CWI is an interesting place; funded by the Dutch government’s Department of Education and other research grants, it  conducts academic-level research into computer science and mathematics.  At any given time there are plenty of Ph.D. students wandering about and old-timers in the profession may still remember its original name, the Mathematical Centre. Under this name, it was perhaps most famous for the invention of <a href="http://en.wikipedia.org/wiki/ALGOL_68">Algol 68</a>.<br />
+<br />
+I started working at CWI in late 1982, fresh out of university, as a programmer in the <a href="http://en.wikipedia.org/wiki/ABC_%28programming_language%29">ABC</a> group led by <a href="http://en.wikipedia.org/wiki/Lambert_Meertens">Lambert Meertens</a> and <a href="http://en.wikipedia.org/wiki/Steven_Pemberton">Steven Pemberton</a>. After 4 or 5 years the ABC project was terminated due to the lack of obvious success and I moved to CWI’s <a href="http://en.wikipedia.org/wiki/Amoeba_distributed_operating_system">Amoeba</a> group led by <a href="http://www.huygens.org/sape/">Sape Mullender</a>. Amoeba was a micro-kernel-based distributed system being jointly developed by CWI and the <a href="http://en.wikipedia.org/wiki/Vrije_Universiteit">Vrije Universiteit of Amsterdam</a>, under leadership of <a href="http://en.wikipedia.org/wiki/Andrew_S._Tanenbaum">Andrew Tanenbaum</a>. In 1991 Sape left CWI for a professorship at the <a href="http://en.wikipedia.org/wiki/University_of_Twente">University of Twente</a> and I ended up in the newly formed CWI multimedia group led by <a href="http://homepages.cwi.nl/%7Edcab/">Dick Bulterman</a>. <br />
+<br />
+Python is a direct product of my experience at CWI.  As I explain later, ABC gave me the key inspiration for Python, Amoeba the immediate motivation, and the multimedia group fostered its growth.   However, so far as I know, no funds at CWI were ever officially earmarked for its development.  Instead, it merely evolved as an important tool for use in both the Amoeba and multimedia groups.<br />
+<br />
+My original motivation for creating Python was the perceived need for a higher level language in the Amoeba project. I realized that the development of system administration utilities in C was taking too long. Moreover, doing these in the Bourne shell wouldn’t work for a variety of reasons. The most important one was that as a distributed micro-kernel system with a radically new design, Amoeba’s primitive operations were very different (and finer-grain) than the traditional primitive operations available in the Bourne shell. So there was a need for a language that would “bridge the gap between C and the shell.”  For a long time, this was Python’s main catchphrase.<br />
+<br />
+At this point, you might ask "why not port an existing language?" In my view, there weren’t a lot of suitable languages around at that time. I was familiar with Perl 3, but it was even more tied to Unix than the Bourne shell. I also didn’t like Perl’s syntax--my tastes in programming language syntax were strongly influenced by languages like <a href="http://en.wikipedia.org/wiki/ALGOL">Algol 60</a>, Pascal, Algol 68 (all of which I had learned early on), and last but not least, ABC, on which I’d spent four years of my life. So, I decided to design a language of my own which would borrow everything I liked from ABC while at the same time fixing all its problems (as I perceived them).<br />
+<br />
+The first problem I decided to fix was the name! As it happened, the ABC team had some trouble picking a name for its language. The original name for the language, <span style="font-style: italic;">B</span>, had to be abandoned because of confusion with another language named B, that was older and better known. In any case, <span style="font-style: italic;">B</span> was meant as a working title only (the joke was that <span style="font-style: italic;">B</span> was the name of the variable containing the name of the language--hence the italics). The team had a public contest to come up with a new name, but none of the submissions made the cut, and in the end, the internal back up candidate prevailed. The name was meant to convey the idea that the language made programming “as simple as ABC”, but it never convinced me all that much.<br />
+<br />
+So, rather than over-analyzing the naming problem, I decided to under-analyze it. I picked the first thing that came to mind, which happened to be <a href="http://en.wikipedia.org/wiki/Monty_Python%27s_Flying_Circus">Monty Python’s Flying Circus</a>, one of my favorite comedy troupes. The reference felt suitably irreverent for what was essentially a “<a href="http://en.wikipedia.org/wiki/Skunkworks_project">skunkworks project</a>”. The word “Python” was also catchy, a bit edgy, and at the same time, it fit in the tradition of naming languages after famous people, like Pascal, Ada, and Eiffel. The Monty Python team may not be famous for their advancement of science or technology, but they are certainly a geek favorite. It also fit in with a tradition in the CWI Amoeba group to name programs after TV shows.<br />
+<br />
+<span style="font-style: italic; font-weight: bold;"></span>For many years I resisted attempts to associate the language with snakes. I finally gave up when O’Reilly wanted to put a snake on the front of their first Python book "Programming Python". It was an O’Reilly tradition to use animal pictures, and if it had to be an animal, it might as well be a snake.<br />
+<br />
+With the naming issue settled, I started working on Python in late December 1989, and had a working version in the first months of 1990. I didn’t keep notes, but I remember vividly that the first piece of code I wrote for Python’s implementation was a simple LL(1) parser generator I called “pgen."  This parser generator is still part of the Python source distribution and probably the least changed of all the code. This early version of Python was used by a number of people at CWI, mostly, but not exclusively in the Amoeba group during 1990. Key developers besides myself were my officemates, programmers <a href="http://homepages.cwi.nl/%7Esjoerd/">Sjoerd Mullender</a> (Sape’s younger brother) and <a href="http://homepages.cwi.nl/%7Ejack/">Jack Jansen</a> (who remained one of the lead developers of the Macintosh port for many years after I left CWI).<br />
+<br />
+On February 20, 1991, I first released Python to the world in the <a href="http://www.faqs.org/faqs/alt-sources-intro/">alt.sources</a> newsgroup (as 21 <a href="http://en.wikipedia.org/wiki/Uuencode">uuencoded</a> parts that had to be joined together and uudecoded to form a compressed tar file). This version was labeled 0.9.0, and released under a license that was an almost verbatim copy of the MIT license used by the X11 project at the time, substituting “Stichting Mathematisch Centrum”, CWI’s parent organization, as the responsible legal entity. So, like almost everything I’ve written, Python was open source before the term was even invented by <a href="http://en.wikipedia.org/wiki/Eric_S._Raymond">Eric Raymond</a> and <a href="http://en.wikipedia.org/wiki/Bruce_Perens">Bruce Perens</a> in late 1997.<br />
+<br />
+There was immediately a lot of feedback and with this encouragement I kept a steady stream of releases coming for the next few years. I started to use <a href="http://en.wikipedia.org/wiki/Concurrent_Versions_System">CVS</a> to track changes and to allow easier sharing of coding responsibilities with Sjoerd and Jack (Coincidentally, CVS was originally developed as a set of shell scripts by <a href="http://en.wikipedia.org/wiki/Dick_Grune">Dick Grune</a>, who was an early member of the ABC group). I wrote a FAQ, which was regularly posted to some newsgroup, as was customary for FAQs in those days before the web, started a mailing list, and in March 1993 the <a href="http://groups.google.com/group/comp.lang.python/topics">comp.lang.python</a> newsgroup was created with my encouragement but without my direct involvement. The newsgroup and mailing list were joined via a bidirectional gateway that still exists, although it is now implemented as a feature of mailman – the dominant open source mailing list manager, itself written in Python.<br />
+<br />
+In the summer of 1994, the newsgroup was buzzing with a thread titled “<a href="http://legacy.python.org/search/hypermail/python-1994q2/1040.html">If Guido was hit by a bus?</a>” about the dependency of the growing Python community on my personal contributions. This culminated in an invitation from Michael McLay for me to spend two months as a guest researcher at <a href="http://www.nist.gov/">NIST</a>, the US National Institute for Standards and Technology, formerly the National Bureau of Standards, in Gaithersburg, Maryland. Michael had a number of “customers” at NIST who were interested in using Python for a variety of standards-related projects and the budget for my stay there was motivated by the need to help them improve their Python skills, as well as possibly improving Python for their needs.<br />
+<br />
+The <a href="http://legacy.python.org/workshops/1994-11/attendees.pics.html">first Python workshop</a> was held while I was there in November 1994, with NIST programmer <a href="http://en.wikipedia.org/wiki/Ken_Manheimer">Ken Manheimer</a> providing important assistance and encouragement. Of the approximately 20 attendees, about half are still active participants in the Python community and a few have become major open source project leaders themselves (<a href="http://www.zope.com/about_us/management/james_fulton.html">Jim Fulton</a> of <a href="http://www.zope.org/">Zope</a> and <a href="http://barry.warsaw.us/">Barry Warsaw</a> of <a href="http://en.wikipedia.org/wiki/GNU_Mailman">GNU mailman</a>). With NIST’s support I also gave a keynote for about 400 people at the Usenix Little Languages conference in Santa Fe, organized by <a href="http://en.wikipedia.org/wiki/Tom_Christiansen">Tom Christiansen</a>, an open-minded Perl advocate who introduced me to Perl creator <a href="http://en.wikipedia.org/wiki/Larry_Wall">Larry Wall</a> and Tcl/Tk author <a href="http://home.pacbell.net/ouster/">John Ousterhout</a>.<br />
+<br />
+<span style="font-style: italic;">Next installment: how I got a job in the US...</span>
+
+<h3>Comments (13)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>January 21, 2009</i></p>
+Kudos, very interesting to read the history of my favorite language and it's creator.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>NevilleDNZ</b> &mdash; <i>January 21, 2009</i></p>
+Consumers Guide to Programming Languages:<BR/>(from CS320 and NutWorks - October 1986)<BR/><BR/> * ALGOL 68 - An Astin Martin. An impressive car, but not just anyone can drive it. [...]<BR/><BR/> * Python - Nimbus 2000 broomstick.<BR/><BR/>Did the ALGOL 68 compiler at "Centrum voor Wiskunde en Informatica" ever get ported to Intel and/or does it's source code survive?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Intchanter</b> &mdash; <i>January 21, 2009</i></p>
+Out of curiosity, I searched the archives to see how old a version I could find.  I managed to find 0.9.1, posted February 20/21, 1991.  Since the sources were not yet available for download at python.org, I tarred them up and sent them to webmaster@python.org, so hopefully we'll soon see them there.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Juanjo Conti</b> &mdash; <i>January 26, 2009</i></p>
+Spanish translation: <A HREF="http://www.juanjoconti.com.ar/2009/01/26/la-historia-de-python-historia-personal-parte-1-cwi/" REL="nofollow">here</A><BR/><BR/>BTW, Guido, in the mail artitle says "LL(1)" but there is no (1) footnote.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Juanjo Conti</b> &mdash; <i>January 26, 2009</i></p>
+Forget the LL(1) comment. My mistake.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>February 09, 2009</i></p>
+Question: When did you choose the &quot;&gt;&gt;&gt;&quot; prompt, and why that prompt?<BR/><BR/>Thank you!
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>July 13, 2009</i></p>
+The &gt;&gt;&gt; prompt was taken from ABC. I have no idea where they got it from.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>July 25, 2011</i></p>
+When did you create &quot;The Zen of Python&quot;?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>July 25, 2011</i></p>
+@Vini: I didn&#39;t create the Zen of Python. Tim Peters wrote it. Barry Warsaw documented when:<br />http://www.wefearchange.org/2010/06/import-this-and-zen-of-python.html
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Stroller</b> &mdash; <i>May 30, 2013</i></p>
+Took a compiler course in about 1978 from Robert Sibley.  He gave us about 150 8.5 x 11 sheets memeographed titled QUASI.  Many of the pages has large margins since they were originally 8 x 10.  No collaborations at that time just reverse engineer with help of snoopy of generic pseudo assembler and machine code to produse language parsers for things in COBOL, PL/1 and FORTRAN then add some police box type add ons.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Forgnet</b> &mdash; <i>September 07, 2013</i></p>
+Very interesting to read as an young python programming lover. :)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>October 08, 2013</i></p>
+Wonder if anyone from NSA was at the NIST conference.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Eko</b> &mdash; <i>November 03, 2013</i></p>
+Wow. Really interesting to read the history of _currently_ my favourite language. I am introduced to computer at the age of 14th. Never really interested, until I see the output of a DOS tree command. I am not sure why I was intrigued by that output!<br /><br />I journey to many programming languages since, starting from gw basic,quick basic,pascal,c,java,c++,visual basic 6.0, visual c++ 6.0, .NET, php, cocoa/ios .. and finally.. Python. And I am loving Python the most!<br /><br />I am not sure why I love Python. Maybe because you use a simple Indentation to denote a block of code. I never had that kind of thrilled in my entire lifetime! <br /><br />And also, as Python is very active in web development, I am helped by it. Previously, I am not that interested in web development. But with Python... wow, I feel like travelling back to my 14th, and starting to learn to program.. again.<br /><br />I also encourage/promote Python in my local communities in a CoderDojo activities, using this blog as tutorial blog : http://pythonthusiast.pythonblogs.com<br /><br /><br />Thanks Guido!
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="personal-history-part-2-cnri-and-beyond.html">&larr; Newer</a> &middot; <a href="a-brief-timeline-of-python.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

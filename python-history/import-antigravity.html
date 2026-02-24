@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>import antigravity - The History of Python</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="method-resolution-order.html">&larr; Newer</a> &middot; <a href="import-this-and-the-zen-of-python.html">Older &rarr;</a></p>
+
+<h1>import antigravity</h1>
+<p><i>June 21, 2010 &mdash; originally posted on
+<a href="https://python-history.blogspot.com/2010/06/import-antigravity.html">The History of Python</a></i></p>
+
+<hr>
+
+The antigravity module, referencing the <a href="http://xkcd.com/353/">XKCD comic mentioning Python</a>, was added to Python 3 by Skip Montanaro. You can read more about it here, one of the first spottings that I know of: <a href="http://sciyoshi.com/blog/2008/dec/30/import-antigravity/">http://sciyoshi.com/blog/2008/dec/30/import-antigravity/</a>).<br /><br />But it really originated in Google App Engine! It was a last-minute addition when we launched App Engine on April 7, 2008. A few weeks before launch, when most code was already frozen, the App Engine team at Google decided we wanted an easter egg. After a great many suggestions, some too complex, some too obscure, some too risky, we chose the "antigravity" module. The App Engine version is a little more elaborate than the Python 3 version: it defines a fly() function while can randomly do one of two things: with a probability of 10%, it redirects to the XKCD comic; otherwise, it simply renders the text of the comic in HTML (with a link to the comic on the last line). To invoke it in your App Engine app, you'd have to write a little main program, like this:<blockquote><pre>import antigravity<br /><br />def main():<br />    antigravity.fly()<br /><br />if __name__ == '__main__':<br />    main()</pre></blockquote><br /><br /><b>Update:</b> The Python 3 stdlib version has an easter egg inside the easter egg, if you inspect the source code: it defines a function that purports to implement the <a href="http://xkcd.com/426/">XKCD geohashing algorithm</a>.
+
+<h3>Comments (2)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Unknown</b> &mdash; <i>June 22, 2010</i></p>
+I say we have a new genre -- python poetry, e.g.:<br /><br />    from energy import nuclear<br />    global warming<br />    <br />    del warming<br />    nuclear()
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Unknown</b> &mdash; <i>December 22, 2010</i></p>
+The antigravity module is also included in Python 2.7.
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="method-resolution-order.html">&larr; Newer</a> &middot; <a href="import-this-and-the-zen-of-python.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

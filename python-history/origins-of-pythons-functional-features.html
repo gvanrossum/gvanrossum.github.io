@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Origins of Python&#x27;s &quot;Functional&quot; Features - The History of Python</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="and-the-snake-attacks.html">&larr; Newer</a> &middot; <a href="the-great-or-grand-renaming.html">Older &rarr;</a></p>
+
+<h1>Origins of Python&#x27;s &quot;Functional&quot; Features</h1>
+<p><i>April 21, 2009 &mdash; originally posted on
+<a href="https://python-history.blogspot.com/2009/04/origins-of-pythons-functional-features.html">The History of Python</a></i></p>
+
+<hr>
+
+I have never considered Python to be heavily influenced by functional languages, no matter what people say or think. I was much more familiar with imperative languages such as C and Algol 68 and although I had made functions first-class objects, I didn't view Python as a functional programming language. However, earlier on, it was clear that users wanted to do much more with lists and functions.<br />
+<br />
+A common operation on lists was that of mapping a function to each of the elements of a list and creating a new list.  For example:<br />
+<blockquote>
+<pre>def square(x):
+    return x*x
+
+vals = [1, 2, 3, 4]
+newvals = []
+for v in vals:
+    newvals.append(square(v))</pre>
+</blockquote>
+<br />
+In functional languages such as Lisp and Scheme, operations such as this were provided as built-in functions of the language. Thus, early users familiar with such languages found themselves implementing comparable functionality in Python. For example:<br />
+<blockquote>
+<pre>def map(f, s):
+    result = []
+    for x in s:
+            result.append(f(x))
+    return result
+
+def square(x):
+    return x*x
+
+vals = [1, 2, 3, 4]
+newvals = map(square,vals)</pre>
+</blockquote>
+<br />
+A subtle aspect of the above code is that many people didn't like the fact that you to define the operation that you were applying to the list elements as a completely separate function.   Languages such as Lisp allowed functions to simply be defined "on-the-fly" when making the map function call. For example, in Scheme you can create anonymous functions and perform mapping operations in a single expression using lambda, like this:<br />
+<blockquote>
+<pre>(map (lambda (x) (* x x)) '(1 2 3 4))  </pre>
+</blockquote>
+<br />
+Although Python made functions first-class objects, it didn't have any similar mechanism for creating anonymous functions.<br />
+<br />
+In late 1993, users had been throwing around various ideas for creating anonymous functions as well as various list manipulation functions such as map(), filter(), and reduce().   For example, Mark Lutz (author of "Programming Python") posted some code for a function that created functions using exec:<br />
+<blockquote>
+<pre>def genfunc(args, expr):
+    exec('def f(' + args + '): return ' + expr)
+    return eval('f')
+
+# Sample usage
+vals = [1, 2, 3, 4]
+newvals = map(genfunc('x', 'x*x'), vals)</pre>
+</blockquote>
+<br />
+Tim Peters then followed up with a solution that simplified the syntax somewhat, allowing users to type the following:<br />
+<blockquote>
+<pre>vals = [1, 2, 3, 4]
+newvals = map(func('x: x*x'), vals)</pre>
+</blockquote>
+<br />
+It was clear that there was a demand for such functionality.  However, at the same time, it seemed pretty "hacky" to be specifying anonymous functions as code strings that you had to manually process through exec.   Thus, in January, 1994, the map(), filter(), and reduce() functions were added to the standard library.  In addition, the lambda operator was introduced for creating anonymous functions (as expressions) in a more straightforward syntax.    For example:<br />
+<blockquote>
+<pre>vals = [1, 2, 3, 4]
+newvals = map(lambda x:x*x, vals)</pre>
+</blockquote>
+<br />
+These additions represented a significant, early chunk of contributed code. Unfortunately I don't recall the author, and the SVN logs don't record this. If it's yours, leave a comment! <b>UPDATE: </b>As is clear from Misc/HISTORY in the repo these were contributed by Amrit Prem, a prolific early contributor.<br />
+<br />
+I was never all that happy with the use of the "lambda" terminology, but for lack of a better and obvious alternative, it was adopted for Python. After all, it was the choice of the now anonymous contributor, and at the time big changes required much less discussion than nowadays, <a href="http://www.python.org/dev/peps/pep-0001/">for better</a> and <a href="http://yellow.bikeshed.com/">for worse</a>.<br />
+<br />
+Lambda was really only intended to be a syntactic tool for defining anonymous functions.  However, the choice of terminology had many unintended consequences.  For instance, users familiar with functional languages expected the semantics of lambda to match that of other languages.   As a result, they found Python’s implementation to be sorely lacking in advanced features. For example, a subtle problem with lambda is that the expression supplied couldn't refer to variables in the surrounding scope.  For example, if you had this code, the map() function would break because the lambda function would run with an undefined reference to the variable 'a'.<br />
+<blockquote>
+<pre>def spam(s):
+    a = 4
+    r = map(lambda x: a*x, s)</pre>
+</blockquote>
+<br />
+There were workarounds to this problem, but they counter-intuitively involved setting default arguments and passing hidden arguments into the lambda expression.  For example:<br />
+<blockquote>
+<pre>def spam(s):
+    a = 4
+    r = map(lambda x, a=a: a*x, s)</pre>
+</blockquote>
+<br />
+The "correct" solution to this problem was for inner functions to implicitly carry references to all of the local variables in the surrounding scope that are referenced by the function.   This is known as a "closure" and is an essential aspect of functional languages.    However, this capability was not introduced in Python until the release of version 2.2 (though it could be imported "from the future" in Python 2.1).<br />
+<br />
+Curiously, the map, filter, and reduce functions that originally motivated the introduction of lambda and other functional features have to a large extent been superseded by list comprehensions and generator expressions.   In fact, the reduce function was removed from list of builtin functions in Python 3.0. (However, it's not necessary to send in complaints about the removal of lambda, map or filter: they are staying. :-)<br />
+<br />
+It is also worth nothing that even though I didn't envision Python as a functional language, the introduction of closures has been useful in the development of many other advanced programming features.  For example, certain aspects of new-style classes, decorators, and other modern features rely upon this capability.<br />
+<br />
+Lastly, even though a number of functional programming features have been introduced over the years, Python still lacks certain features found in “real” functional programming languages.  For instance, Python does not perform certain kinds of optimizations (e.g., tail recursion). In general, because Python's extremely dynamic nature, it is impossible to do the kind of compile-time optimization known from functional languages like Haskell or ML. And <a href="http://hugunin.net/story_of_jython.html">that's fine</a>.
+
+<h3>Comments (21)</h3>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Ceyhun</b> &mdash; <i>April 21, 2009</i></p>
+back to python now. miss its functions :D
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>April 21, 2009</i></p>
+Really, Python is so dynamic that it can't tell when 'return' is returning a function call and thus can't do tail-call optimization?<br /><br />Or is it unneeded/undesirable for some particular philosophical reason? (I am not familiar with all the stackless vs. core Python issues, so maybe that could make a future post, how the philosophies involved are incompatible)...<br /><br />Thank you for writing all of this down, it is a lot more important than it might seem at the time...<br /><br />-Doug
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>wescpy</b> &mdash; <i>April 21, 2009</i></p>
+it's a shame that blogspot (at the time of this writing) does not preserve the whitespace indentation that's necessary for Python code. :P
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>April 21, 2009</i></p>
+Argh. Fixed the whitespace.<br /><br />Regarding tail optimization: that's a long topic, maybe I'll get to it in a future post on my other blog.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>April 21, 2009</i></p>
+You could fix the whitespaces in CSS:<br /><br />blockquote {<br />  white-space: pre;<br />}
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Juhan</b> &mdash; <i>April 21, 2009</i></p>
+but? missing indentation in examples?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Alex</b> &mdash; <i>April 21, 2009</i></p>
+You think Python could detect tail recusion, until you find out someone monkey patched your function into something else in a different thread my eval'ing an opaque string.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Fred Blasdel</b> &mdash; <i>April 21, 2009</i></p>
+I hate that Python doesn't have Tail-Call Optimization, though it does have the best stack traces of any language I've seen, which mostly makes up for it.<br /><br />Not being able to cleverly recurse isn't so bad when you never have to deal with anonymous "you tried to get the head of an empty list" exceptions!
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>April 21, 2009</i></p>
+Lua manages to have Tail-Call Optimization in a dynamic language, though I honestly don't know how much I'd use it.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>April 22, 2009</i></p>
+Seems like this is the TCO week for Python. Two blog posts that discussed this topic were published independently about the same time on Monday. This is now the third one.<br /><br />http://www.teamrubber.com/blog/python-tail-optimisation-using-byteplay/<br />http://fiber-space.de/wordpress/?p=349
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>April 22, 2009</i></p>
+you article is very interesting for me
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Robert Virding</b> &mdash; <i>April 22, 2009</i></p>
+I don't see why Python's dynamic nature would make it impossible to do TCO, after all Erlang can do it and it is just as dynamic.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>April 22, 2009</i></p>
+@Alex could you be a bit more specific. Evaling a 'def ...' or a 'module.thing = lambda ...' won't change a function definition, it will provide a new function definition that might be bound to the same name. I don't know enough Python internals to know how much the actual byte code of a function can be changed (I had been assuming those are immutable, same as string contents).
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>April 22, 2009</i></p>
+New blog post in response to the tail recursion discussion: http://neopythonic.blogspot.com/2009/04/tail-recursion-elimination.html
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>April 26, 2009</i></p>
+How appropriate that the anonymous function patch is itself anonymous.
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>May 19, 2009</i></p>
+Perhaps it's worth pointing out that Algol 68 has anonymous functions (but no closures).
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>May 19, 2009</i></p>
+@reinierpost: really? No closures in Algol 68? What's your definition of closures? I'm pretty sure functions can reference variables in outer scopes, and functon objects can be passed around. What's missing for "closures"?
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>NevilleDNZ</b> &mdash; <i>May 24, 2009</i></p>
+re: Closures - Compare Python to Algol 68...<br /># Python #<br />from math import *<br />root = lambda x: lambda y: exp(log(y)/x);<br />square_root = root(2); cube_root = root(3);<br />print square_root(64), cube_root(64)<br /># Algol 68 #<br />MODE F = PROC(REAL)REAL;<br />PROC root = (REAL x)F: (REAL y)REAL: exp(ln(y)/x);<br />F square root = root(2), cube root = root(3);<br />print((square root(64), cube root(64), new line))<br />Output: 8.0 4.0<br /><br />The key point about scoping is that with Algol 68 each argument "x" exists only on the LOC stack.  Hence when "root" returns "x" becomes out of scope (off the stack).  In python each "x" is in HEAP, then "follows" square_root and cube_root until these functions are no longer referenced.<br /><br />Quick fix for Algol 68 could be to put x on the HEAP eg.<br />PROC root = (HEAP REAL x)F: (REAL y)REAL: exp(ln(y)/x);<br />And let the garbage collector sort out x's closure.<br /><br />Minor other differences: Algol 68 is "IMPLICIT NONE", (useful for picking up bugs prior to runtime).
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Guido van Rossum</b> &mdash; <i>May 24, 2009</i></p>
+Neville, this probably doesn't belong in this comment thread any more, but I'm not sure I understand.  Are you saying that the Algol68 example doesn't work?  Can you mail guido@python.org so we can sort this out a bit more efficiently than in a comment thread?  (I don't have an a68 compiler handy to experiment, sorry. :-)
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Anonymous</b> &mdash; <i>July 06, 2009</i></p>
+Guido: one thing that blew up for me was returning functions.  This is confirmed at <br /><br />  http://enthusiasm.cozy.org/archives/2005/04/original-closures
+</div>
+<div style="border-left: 3px solid #ccc; padding: 0.5rem 1rem; margin: 1rem 0;">
+<p><b>Unknown</b> &mdash; <i>December 01, 2013</i></p>
+Hi, Guido :-)  Misc/HISTORY records that lambda et alia were introduced in  Python release 1.0.0 (26 January 1994), and that the code was contributed my Amrit Prem.
+</div>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="and-the-snake-attacks.html">&larr; Newer</a> &middot; <a href="the-great-or-grand-renaming.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>

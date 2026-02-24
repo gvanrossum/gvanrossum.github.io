@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Union syntax - Neopythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="about-spammers-and-comments.html">&larr; Newer</a> &middot; <a href="adding-type-annotations-for-fspath.html">Older &rarr;</a></p>
+
+<h1>Union syntax</h1>
+<p><i>May 18, 2016 &mdash; originally posted on
+<a href="https://neopythonic.blogspot.com/2016/05/union-syntax.html">Neopythonic</a></i></p>
+
+<hr>
+
+<h2>
+Union syntax</h2>
+<blockquote class="tr_bq">
+<i>(I'm trying to do this as a quick post in response to some questions I received on this topic. I realize this will probably reopen the whole discussion about the best syntax for types, but sorry folks, PEP 484 was accepted nearly a year ago, after many months of discussions and hundreds of messages. It's unlikely that any idea you can think of here would be new. This post just explains the rationale of one particular decision and tries to put it in some context.)</i></blockquote>
+I've heard some grumbling about the union syntax in <a href="https://www.python.org/dev/peps/pep-0484/">PEP 484</a>: Union[X, Y, Z] (where X, Y and Z are arbitrary type expressions). In the past people have suggested X|Y|Z for this, or (X, Y, Z) or {X, Y, Z}. Why did we go with the admittedly clunkier Union[X, Y, Z]?<br />
+<br />
+First of all, despite all the attention drawn to it, unions are actually a pretty minor feature, and you shouldn't be using them much. So you also shouldn't care that much.<br />
+<h3>
+Why not X|Y|Z?</h3>
+This won't fly because we want compatibility with versions of Python 3 that were already frozen (see below). We want to be able to express e.g. a union of int and str, which under this notation would be written as int|str. But for that to fly we'd have to modify the builtin 'type' class to implement __or__ -- and that wouldn't fly on already-frozen Python versions. Supporting X|Y only for types (like List) imported from the typing module and some other notation for builtin types would only sow confusion. So X|Y|Z is out.<br />
+<h3>
+Why not {X, Y, Z}?</h3>
+That's the set with elements X, Y and Z, using the builtin set notation. We can usefully consider types to be sets of values, and this makes a union a set of values too (that's why it's called union :-).<br />
+<br />
+However, {X, Y, Z} confuses the set of <i>types</i> with the set of <i>values</i>, which I consider a mortal sin. This would just cause endless confusion.<br />
+<br />
+This notation would also confuse things when taking the union of several classes that overlap, e.g. if we have classes B and C, where C inherits from B, then the union of B and C is just B. But the builtin set doesn't see it that way. In contrast, the X|Y notation could actually solve this (since in principle we could overload __or__ to do whatever we want), and the Union[] operator ("functor"?) from PEP 484 indeed solves this -- in this example Union[B, C] returns the (non-union) type B, both in the type checker and at runtime.<br />
+<h3>
+Why not (X, Y, Z)?</h3>
+That's the tuple (X, Y, Z). It has the same disadvantages as {X, Y, Z}, but at least it has the advantage of being similar to how unions are expressed as arguments to isinstance(), for example isinstance(x, (int, str, list)) or isinstance(x, (Sequence, Mapping)). (Similarly the except clause: try: ... / except (KeyError, IndexError): ...)<br />
+<br />
+Another problem with tuples is that the tuple syntax is already overloaded in so many ways that it would be confused with other uses even more easily. One particular confusion would be other generic types, for which we'd still want to use square brackets. (You can't really beat Iterable[int] for clarity if you have an iterable of integers. :-) Suppose you have a sequence of values that could be integers or strings. In PEP 484 notation we write this as Sequence[Union[int, str]]. Using the tuple notation we'd want to write this as Sequence[(int, str)]. But it turns out that the __getitem__ overload on the metaclass can't tell the difference between Sequence[(int, str)] and Sequence[int, str] -- and we would like to reject the latter as a mistake since Sequence[] is a generic class over a single parameter. (An example of a generic class over two parameters would be Mapping[K, V].) Disambiguating all this would place us on very thin ice indeed.<br />
+<br />
+The nail in this idea's coffin is the competing idea of using (X, Y, Z) to indicate a tuple with three items, with respective types, X, Y and Z. At first sight this seems an even better use of the tuple syntax than unions would be, and tuples are way more common than unions. But it runs afoul of the same problems with Foo[(X, Y)] vs. Foo[X, Y]. (Also, there would be no easy way to describe what PEP 484 calls Tuple[X, ...], i.e. a variable-length tuple with uniform item type X.)<br />
+<h3>
+PS. Why support old Python 3 versions?</h3>
+The reason for supporting older versions is adoption. Only a relatively small crowd of early adopters can upgrade to the latest Python version as soon as it's out; the rest of us are stuck on older versions (even Python 2.7!). <br />
+<br />
+So for PEP 484 and the typing module, we wanted to support 3.2 and up -- we chose 3.2 because it's the newest Python 3 supported by some older but still popular Ubuntu and Debian distributions. (Also, 3.0 and 3.1 were too immature at their time of release to ever have a large following.)<br />
+<br />
+There's a typing package that you can install easily using pip, and this defines all sorts of useful things for typing, from Any and Union to generic versions of List and Sequence. But such a package can't modify existing builtins like int or list.<br />
+<br />
+(Eventually we also added Python 2.7 support, using type comments for function signatures.)
+
+
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="about-spammers-and-comments.html">&larr; Newer</a> &middot; <a href="adding-type-annotations-for-fspath.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>
