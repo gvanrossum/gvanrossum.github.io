@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adding actions to a PEG grammar - Guido van Rossum on Medium</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+article img { max-width: 100%; height: auto; }
+article pre { background: #f4f4f4; padding: 1rem; overflow-x: auto; white-space: pre; font-size: 0.9em; }
+article code { background: #f4f4f4; padding: 0.1em 0.3em; font-size: 0.9em; }
+article pre code { background: none; padding: 0; }
+article blockquote { border-left: 3px solid #ccc; padding-left: 1rem; margin-left: 0; color: #555; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="peg-parsing-series.html">&larr; Newer</a> &middot; <a href="left-recursive-peg-grammars.html">Older &rarr;</a></p>
+
+<h1>Adding actions to a PEG grammar</h1>
+<p><i>August 31, 2019 &mdash; originally posted on
+<a href="https://medium.com/@gvanrossum_83706/adding-actions-to-a-peg-grammar-d5e00fa1092f">Medium</a></i></p>
+
+<hr>
+
+<article>
+<h3>Adding Actions to a PEG Grammar</h3><p>Grammars are better if you also can add (some) semantics inline with the grammar rules. In particular, for the Python parser I’m building I need to control the AST node returned by each alternative, since the AST format is given.</p><p>[This is part 6 of my PEG series. See the <a href="peg-parsing-series.html">Series Overview</a> for the rest.]</p><p>Many grammars use the convention of allowing <em>actions</em> to be added to rules, usually a block of code inside {curly braces}. More precisely, actions are attached to alternatives. The code in an action block is usually written in the language that the rest of the compiler is written in, like C, augmented with some facility for referring to items in the alternative. In Python’s original <em>pgen</em> I did not add this feature, but for the new project I’d like to have it.</p><p>Here’s how we do it for the simplified parser generator I’m developing for this series of blog posts.</p><p>The syntax for actions is usually like this:</p><pre>rule: item item item { action 1 } | item item { action 2 }</pre><p>Because this makes the grammar more verbose, parser generators typically allow splitting rules across lines, e.g.</p><pre>rule: item item item { action 1 }<br>    | item item { action 2}</pre><p>It makes the grammar parser a tad more complicated, but it’s important for readability, so I’ll use it.</p><p>An eternal question is when to execute the action block. In Yacc/Bison this is done once the rule is recognized by the parser, since there’s no backtracking. Executing each action exactly once means that it’s safe for actions to have global side effects (such as updating a symbol table or other compiler data structure).</p><p>In PEG parsers, with their unlimited backtracking, we have some choices:</p><ul><li>Delay all actions until all is parsed. This would not be useful for my purpose, since I want to build up an AST during the parse.</li><li>Execute an action whenever its alternative is recognized, and require the action code to be idempotent (i.e. having the same effect no matter how many times it’s executed). This means an action may be executed but its result ultimately discarded.</li><li>Cache the action result, so each action is only executed the first time its alternative is recognized at a given position.</li></ul><p>I’m going with the third option — we’re caching anyway using the packrat algorithm, so we might as well cache action results too.</p><p>Regarding what goes inside the {curlies}, tradition is to use C code with a $-based convention for referencing items in the recognized alternative (e.g. $1 to refer to the first item), and assignment to $$ to indicate the result of the action. This sounds awfully old-fashioned to me (I have memories of using assignment to the function name in Algol-60 to specify a return value) so I’ll go with something more Pythonic: inside the brackets you’ll need to place a single expression, whose value is the action value, and references to items are simple names giving the text of the item. As an example, here’s a simple calculator that can add and subtract numbers:</p><pre>start: expr NEWLINE { expr }<br>expr: expr &#39;+&#39; term { expr + term }<br>    | expr &#39;-&#39; term { expr - term }<br>    | term { term }<br>term: NUMBER { float(number.string) }</pre><p>When we run this with an input like 100 + 50 — 38 — 70, it will compute the answer as it is recognizing the pieces, calculating ((100 + 50) — 38) — 70, which of course comes out to 42.</p><p>One little detail: in the action for term, the variable number holds a TokenInfo object, so the action must use its .string attribute to get the token in string form.</p><p>What do we do when an alternative has multiple occurrences of the same rule name? The parser generator gives each occurrence a unique name adding 1, 2, etc. to subsequent occurrences within the same alternative. For example:</p><pre>factor: atom &#39;**&#39; atom { atom ** atom1 }<br>      | atom { atom }</pre><p>The implementation is boring, so I invite you to check out the repo and play with the <a href="https://github.com/gvanrossum/pegen/tree/master/story5">code</a>. Try this:</p><pre>python3.8 -m story5.driver story5/calc.txt -g story5.calc.CalcParser</pre><p>The visualization now allows you to go back and forth using the left and right arrow keys!</p><p>License for this article and the code shown: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p>
+</article>
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="peg-parsing-series.html">&larr; Newer</a> &middot; <a href="left-recursive-peg-grammars.html">Older &rarr;</a></p>
+
+</div>
+</body>
+</html>
