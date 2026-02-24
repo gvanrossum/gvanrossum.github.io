@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Too Much Fun with Python on Nokia Phone - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="marketing-python-an-idea-whose-time-has-come.html">&larr; Previous</a> &middot; <a href="language-design-is-not-just-solving-puzzles.html">Next &rarr;</a></p>
+
+<h1>Too Much Fun with Python on Nokia Phone</h1>
+<p><i>February 17, 2006 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=148064">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p>Full disclaimer: Every once in a while I get a boondoggle out of being Python's BDFL.   The most recent is a <a class="reference" href="http://www.europe.nokia.com/nokia/0,,58708,00.html">model 6630</a> phone that Nokia gave me as an early Valentine.  So my review cannot be considered objective -- be warned!</p>
+<p>I don't quite know where to start.  The phone itself, even without Python, is incredibly cool; I spent much of the weekend using it as a camera, and it worked remarkably well considering that it doesn't have an optical zoom or a flash, and is "only" 1.3 megapixels.</p>
+<p>The phone came with a cable to connect it to USB port, and a CD full of software - Windows only.  I guess this means I can sync it to Outlook or so.  But I don't use that any more.  On my Mac, plugging in the USB cable doesn't seem to do anything, and there's no Mac software on the CD, but guess what: iSync supports this phone over Bluetooth (with the right icon and all!).  And they don't even sell this model in the US.  Great job, Apple!</p>
+<p>Next, Python.  I still haven't written any significant Python code for the phone, but I've explored <a class="reference" href="http://mobilenin.com/pys60/resources/pys60_v_1_2/Examples.zip">Nokia's examples</a> a bit and walked through most of the <a class="reference" href="http://mobilenin.com/pys60/menu.htm">MobiLenin.com</a> tutorial (see <a class="reference" href="http://www.artima.com/weblogs/viewpost.jsp?thread=146708">previous blog</a>).</p>
+<p>When writing Python code for a phone, of course the first obstacle is, how to write code?  You don't really want to edit your code on the phone's numeric keyboard!  Fortunately there's a way to connect a PC or Mac to the phone over Bluetooth, and the Python application on the phone supports interactive sessions this way (as well as an interactive session on the phone's own screen -- with 11 lines of about 20 characters each not very attractive beyond "print 2*2", but essential for mini-demos in Google's hallways).  Thanks to <a class="reference" href="http://www.eriksmartt.com/blog/archives/55">Eric Smartt's blog</a> for giving me the hint I needed to get this working on the Mac.</p>
+<p>So on to the vast array of APIs available.  Nokia has really done an outstanding job here.  There are extension modules that handle all of the phone's devices: dial a call, snap a picture, send/receive SMS, Bluetooth, and Internet (if your service provider offers it of course); as well as the key applications (calendar and address book, and probably more that I haven't even discovered).  You can also play sounds, view images, draw into a canvas, or open any file that the phone understands natively.  And of course the GUI library -- menus, dialogs, a low-level event loop, etc.  Stuff for which standard Python libraries exist generally uses those -- the filesystem (ROM, RAM, memory card, flash) of course, but also the Internet -- urllib "Just Works" (TM), and you can even write a server if you want to (your service provider will probably love it: I signed up with Cingular which charges a penny per kilobyte -- what a rip-off).</p>
+<p>Anyway, gotta run (sleep, more like it :-).  I just had to put this out.  Oh, there are lots of resource pointers on the <a class="reference" href="http://mobilenin.com/pys60/menu.htm">MobiLenin.com</a> intro and resources pages.  Thanks Jürgen Scheible!!!</p>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="marketing-python-an-idea-whose-time-has-come.html">&larr; Previous</a> &middot; <a href="language-design-is-not-just-solving-puzzles.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

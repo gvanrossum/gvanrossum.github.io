@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python 3000 Plea for Help - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="python-3000-sprint-google.html">&larr; Previous</a> &middot; <a href="more-questions-about-python-3000-answered.html">Next &rarr;</a></p>
+
+<h1>Python 3000 Plea for Help</h1>
+<p><i>August 7, 2007 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=211842">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p>We're down to 11 failing test in the py3k-struni branch. I'd like to get
+this down to zero ASAP so that we can retire the old p3yk branch (yes, with
+typo!) and rename py3k-struni to <a class="reference" href="http://svn.python.org/view/python/branches/py3k">py3k</a>.
+<em>(Update: thanks everybody who helped! We're down to zero now.)</em></p>
+<p>Please help! Here's the list of failing tests:</p>
+<blockquote>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">test_ctypes</span></tt>:
+Recently one test started failing again, after Martin changed
+PyUnicode_FromStringAndSize() to use UTF8 instead of Latin1.
+(Update: fixed)</li>
+<li><tt class="docutils literal"><span class="pre">test_email</span></tt>, <tt class="docutils literal"><span class="pre">test_email_codecs</span></tt>, <tt class="docutils literal"><span class="pre">test_email_renamed</span></tt>:
+Can someone contact the email-sig and ask for help with these?</li>
+<li><tt class="docutils literal"><span class="pre">test_minidom</span></tt>:
+Recently started failing again; probably shallow.
+(Update: fixed)</li>
+<li><tt class="docutils literal"><span class="pre">test_sqlite</span></tt>:
+Virgin territory, probably best done by whoever wrote the code or at
+least someone with time to spare.
+(Update: someone promised to do it)</li>
+<li><tt class="docutils literal"><span class="pre">test_tarfile</span></tt>:
+Virgin territory again (but different owner :-).
+(Update: fixed)</li>
+<li><tt class="docutils literal"><span class="pre">test_urllib2_localnet</span></tt>, <tt class="docutils literal"><span class="pre">test_urllib2net</span></tt>:
+I think Jeremy Hylton may be close to fixing these, he's done a lot of
+work on urllib and httplib.
+(Update: one got fixed)</li>
+<li><tt class="docutils literal"><span class="pre">test_xml_etree_c</span></tt>:
+Virgin territory again.
+(Update: fixed)</li>
+</ul>
+</blockquote>
+<p>There are also a few tests that only fail on CYGWIN or OSX; I won't
+bother listing these.</p>
+<p>If you want to help, please refer to this wiki page:
+<a class="reference" href="http://wiki.python.org/moin/Py3kStrUniTests">http://wiki.python.org/moin/Py3kStrUniTests</a></p>
+<p>There are also other tasks; see <a class="reference" href="http://wiki.python.org/moin/Py3kToDo">http://wiki.python.org/moin/Py3kToDo</a></p>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="python-3000-sprint-google.html">&larr; Previous</a> &middot; <a href="more-questions-about-python-3000-answered.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

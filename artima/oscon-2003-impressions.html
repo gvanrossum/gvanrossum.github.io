@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OSCON 2003 Impressions - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="bob-martins-agile-programming-book.html">&larr; Previous</a> &middot; <a href="python-main-functions.html">Next &rarr;</a></p>
+
+<h1>OSCON 2003 Impressions</h1>
+<p><i>July 15, 2003 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=7589">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p>So my move to <a href="http://www.elementalsecurity.com">Elemental
+Security</a> in San Mateo made <a href="http://slashdot.org/articles/03/07/09/1549236.shtml?tid=126&amp;tid=156&amp;tid=172">
+Slashdot</a>.  Big deal! :-)
+
+<p>Right after my keynote, Fredrik Lundh was awarded the
+<b>Frank Willison Award</b> for his many contributions
+to Python and the PYthon community, not just through his
+code (e.g. PIL, SRE, xmlrpc, Tkinter and Unicode) but also through his
+standard library book and his <a href="http://www.pythonware.com/daily/">Daily Python-URL</a>.
+
+<p>Tim O'Reilly's keynote pointed out a new class of "desktop
+applications" that run as well on Linux as on Windows: Google, Amazon,
+Ebay.  Think about it. What these have in common is not just that they
+are websites that use open source and dynamic languages to access a
+huge database: As Tim points out, their success in a large part comes
+from how they track what *people* do. Google's pagerank algorithm
+takes into account who links to your website; Amazon and Ebay of
+course take direct input, but also reflect indirectly how people use
+them (e.g. Amazon's "other books bought together with this book"
+feature).
+
+<p>I'd like to connect that directly with Steve Holden's lightning talk
+in the Python track: he proposes to build a database of how Python
+packages are used together by individual users, with an option to
+upload e.g. test results.  Something like this could transform the
+Python Package Index (PyPI), which currently is a passive list of
+packages, but which after augmentation with such information could be
+showing things like on which platforms a package builds and installs
+successfully, with which Python version and which other packages (and
+versions).  (Of course a button for users to vote on a package
+would be good too, but we can do more than that.)
+
+<p>On the last morning of the conference, Steve also interviewed me,
+nicely avoiding the most obvious questions ("what's in Python 2.3?").
+I hope he sells the interview to a fancy paper publication like the
+New York Times; otherwise, it may end up here on Artima.
+
+<p>Another cool lightning talk was by Chris Mueller of a biochemistry
+startup whose name currently escapes me: he demoed a user interface an
+analytical chemistry application; this allows chemists to review
+results of chemical analyses built on wxPython.  The demo was
+remarkably responsive, recalculating graphs in real time as the
+zooming controls were manipulated, but the killer comment came at the
+end: it took two months to create, while a similar app in Java had
+taken a year!
+
+<p>And let's not forget the opening lightning talk, which I presented
+together with Dan Sugalski: the Great Python Parrot Challenge.  Dan
+believes that at OSCON 2004, Parrot will be able to execute Python
+bytecode faster than CPython can.  I don't give him a chance.  Dan
+bets me ten bucks, a round of drinks, and a pie at ten paces.
+
+<p>My two favorite Python talks at OSCON this year were Adele Goldberg's
+and Dennis Allison's "2002: A Zope Odyssey" and Kirby Urner's "Python
+in Education". Kirby impressed and entertained by showing how simple
+it is for example to introduce polynomials and operations on them in
+Python (thanks to operator overloading and polymorphism) and how to
+make this into a highly useful and motivating math lesson by adding a
+touch of 3D graphics.  Adele (yes, her of Smalltalk fame) and Dennis
+tackled the other end of education by combining Python, Zope, Flash,
+and some Smalltalk (of course :-) to build a system for creating and
+running high quality on-line instruction in topics such algebra and
+calculus.  The whole system was programmed in 4-6 months by Adele and
+Dennis (and a part-time Flash programmer) without any prior knowledge
+of Python or Zope.  Pretty impressive, especially since the resulting
+system caters to three different groups of users: a team consisting of
+master teachers and animators who create the class, the teachers who
+teach the class, and the students who take it.
+
+<p>I had hoped to take at least the morning of "Ruby in a day" taught by
+Dave Thomas, but thunderstorms on the east coast messed up my
+flight schedule and I didn't make it to bed until 3AM -- really 6AM
+according to my east coast body clock.  But at least I downloaded
+the Ruby interpreter and started reading the on-line help (which is
+most of the Addison-Wesley Ruby book, minus a few graphs and with
+a few bugs due to the conversion to Windows Help).  Ruby is cute,
+but too Perlish for my taste.
+
+<p>Later that night I got to ask Ruby's creator, Mats, whether Ruby
+was more like Python or more like Perl, while Larry Wall was standing
+next to us.  Mats responded that it was more like Perl, adding that
+Larry was his hero.  Yet from what I've grasped so far by skimming the
+tutorial, much of Ruby, especially its runtime, is much closer to
+Python's (with the exception of Ruby's mutable strings, which I find
+an abomination). This was at a dinner organized by (surprise!)
+Microsoft, with the purpose of bringing together the creators of
+dynamic open languages (and a few other key open source technologies)
+and the .NET developers.  I got the impression though that Microsoft
+hadn't sent real developers but rather a set of evangelists, who were
+no match for the open source delegation.  It was nice enough to
+compare the yield statements in Python and C# (they are very similar,
+even though C# quotes CLU as the origin rather than Python :-), but
+for me the high point of the evening was Miguel de Icaza's excitement
+over Python's feature which makes text files iterators yielding the
+lines of the file in succession, so that you can write
+
+<pre>
+  for line in open(filename):
+      ...process line...
+</pre>
+<p>Miguel is on the ECMA standardization committee for C# and IL (as a
+guest of IBM), so if you see something like this in the next revision
+of C# attributed to, say, COBOL, you know where it really came from!
+
+<p>Miguel doesn't think I have to worry about Dan Sugalski's pie; in
+his opinion, Parrot is based on religion rather than facts. Maybe we
+can up the ante a bit?
+
+<p>Another cool keynote was the Eclipse presentation.  It's high time
+that Jython finds its way into Eclipse as a scripting extension.  Kevin
+Altis, who coined this idea, says that everyone on the Eclipse team he
+spoke thought it was a good idea (or at least nobody said they thought
+was a <i>bad</i> idea :-), but what's lacking is somebody to take the
+lead.  Any volunteers?
+
+<p>Some other talks that I enjoyed: Anna Ravenscroft's review of a
+number of Python tutorials from the perspective of a professional
+trainer who taught herself programming in Python recently (I saw this
+at EuroPython); her fiancee Alex Martelli's presentation of the
+Template Design Pattern (horrible name, great pattern, he says); Laura
+Creighton's review of the <a href="http://codespeak.net/pypy/">PyPy</a> project, brought with her
+usual enthousiasm; and Steven Knight's presentation (at a BOF, where
+he had to pay $250 for video projection!) of <a href="http://www.scons.org/">SCons</a>, a build system written in
+Python (based upon his earlier attempt, Cons, which was written in
+Perl).  I couldn't get much in to A-A-P, the competing project by
+vim's creator, Bram Molenaar, also implemented in Python. Apart from
+the name, which is meaningless except if you're Dutch, the Perlish
+syntax of Bram's Makefile equivalents bugs me.  SCons' use of pure
+Python for the same purpose makes more sense IMO.  An interesting
+twist was somebody's suggestion to add SCons (or perhaps a subset) to
+distutils, so that Python setup.py scripts can describe a much richer
+set of files, actions and dependencies.
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="bob-martins-agile-programming-book.html">&larr; Previous</a> &middot; <a href="python-main-functions.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

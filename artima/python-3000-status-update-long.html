@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python 3000 Status Update (Long!) - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="tim-oreilly-in-china.html">&larr; Previous</a> &middot; <a href="pycon-2007-review.html">Next &rarr;</a></p>
+
+<h1>Python 3000 Status Update (Long!)</h1>
+<p><i>June 19, 2007 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=208549">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<div class="section">
+<h1><a id="project-overview" name="project-overview">Project Overview</a></h1>
+<div class="section">
+<h2><a id="early-history" name="early-history">Early History</a></h2>
+<p>The first time I came up with the idea of Python 3000 was probably at
+a Python conference in the year 2000.  The name was a take on Windows
+2000.  For a long time there wasn't much more than a list of regrets
+and flaws that were impossible to fix without breaking backwards
+compatibility.  The idea was that Python 3000 would be the first
+Python release to give up backwards compatibility in favor of making
+it the best language going forward.</p>
+</div>
+<div class="section">
+<h2><a id="recent-history" name="recent-history">Recent History</a></h2>
+<p>Maybe a year and a half ago (not coincidentally around the time I
+started working for Google, which gave me more time for work on Python
+than I had had in a long time) I decided it was time to start
+designing and planning Python 3000 for real.  Together with the Python
+developer and user community I came up with a Plan.  We created a new
+series of <a class="reference" href="http://python.org/dev/peps/">PEPs</a> (Python Enhancement Proposals) whose numbers started
+with 3000.  There was a PEP 3000 already, maintained by others in the
+community, which was mostly a laundry list of ideas that had been
+brought up as suitable for implementation in Python 3000.  This was
+renamed to <a class="reference" href="http://python.org/dev/peps/pep-3100/">PEP 3100</a>; <a class="reference" href="http://python.org/dev/peps/pep-3000/">PEP 3000</a> became the document describing the
+philosophy and schedule of the project.</p>
+<p>Since then, we have, well, perhaps not moved mountains, but certainly
+a lot of water has flowed under the bridge of the <a class="reference" href="http://mail.python.org/pipermail/python-dev/">python-dev</a> mailing
+list, and later the separate <a class="reference" href="http://mail.python.org/pipermail/python-3000/">python-3000</a> mailing list.</p>
+</div>
+<div class="section">
+<h2><a id="tentative-schedule" name="tentative-schedule">Tentative Schedule</a></h2>
+<p>A schedule was first published around a year ago; we were aiming for a
+first 3.0 alpha release by the end of the first half of 2007, with a
+final 3.0 release a year later.  (Python 3.0 will be the version when
+it is released; "Python 3000" or "Py3k" is the project's code name.)</p>
+<p>This schedule has slipped a bit; we're now looking at a first alpha by
+the end of August, and the final release is moved up by the same
+amount.  (The schedule slip is largely due to the amount of work
+resulting from the transition to all-Unicode text strings and mutable
+raw bytes arrays.  Perhaps I also haven't delegated enough of the work
+to other developers; a mistake I am frantically trying to correct.)</p>
+</div>
+<div class="section">
+<h2><a id="python-2-6" name="python-2-6">Python 2.6</a></h2>
+<p>There will be a "companion" release of Python 2.6, scheduled to be
+released a few months before 3.0, with an alpha release about 4 months
+before then (i.e., well after the first 3.0 alpha).  The next two
+sections explain its role.  If you're not interested in living on the
+bleeding edge, 2.6 is going to be next version of Python you'll be
+using, and it will not be very different from 2.5.</p>
+</div>
+</div>
+<div class="section">
+<h1><a id="compatibility-and-transition" name="compatibility-and-transition">Compatibility and Transition</a></h1>
+<div class="section">
+<h2><a id="compatibility" name="compatibility">Compatibility</a></h2>
+<p>Python 3.0 will break backwards compatibility.  Totally.  We're not
+even aiming for a specific common subset.  (Of course there will be a
+common subset, probably quite large, but we're not aiming to make it
+convenient or even possible to write significant programs in this
+subset.  It is merely the set of features that happen to be unchanged
+from 2.6 to 3.0.)</p>
+<p>Python 2.6, on the other hand, will maintain full backwards
+compatibility with Python 2.5 (and previous versions to the extent
+possible), but it will also support forward compatibility, in the
+following ways:</p>
+<ul class="simple">
+<li>Python 2.6 will support a "Py3k warnings mode" which will warn
+dynamically (i.e. at runtime) about features that will stop working
+in Python 3.0, e.g. assuming that range() returns a list.</li>
+<li>Python 2.6 will contain backported versions of many Py3k features,
+either enabled through __future__ statements or simply by allowing
+old and new syntax to be used side-by-side (if the new syntax would
+be a syntax error in 2.5).</li>
+<li>Complementary to the forward compatibility features in 2.6, there
+will be a separate <a class="reference" href="http://svn.python.org/view/sandbox/trunk/2to3/">source code conversion tool</a>.  This tool can do
+a context-free source-to-source translation.  As a (very simply)
+example, it can translate <tt class="docutils literal"><span class="pre">apply(f,</span> <span class="pre">args)</span></tt> into <tt class="docutils literal"><span class="pre">f(*args)</span></tt>.
+However, the tool cannot do data flow analysis or type inferencing,
+so it simply assumes that <tt class="docutils literal"><span class="pre">apply</span></tt> in this example refers to the
+old built-in function.</li>
+</ul>
+</div>
+<div class="section">
+<h2><a id="transitional-development" name="transitional-development">Transitional Development</a></h2>
+<p>The recommended development model for a project that needs to support
+Python 2.6 and 3.0 simultaneously is as follows:</p>
+<ol class="arabic simple" start="0">
+<li>Start with excellent unit tests, ideally close to full coverage.</li>
+<li>Port the project to Python 2.6.</li>
+<li>Turn on the Py3k warnings mode.</li>
+<li>Test and edit until no warnings remain.</li>
+<li>Use the 2to3 tool to convert this source code to 3.0 syntax.
+<strong>Do not manually edit the output!</strong></li>
+<li>Test the converted source code under 3.0.</li>
+<li>If problems are found, make corrections to the <strong>2.6</strong> version
+of the source code and go back to step 3.</li>
+<li>When it's time to release, release separate 2.6 and 3.0 tarballs
+(or whatever archive form you use for releases).</li>
+</ol>
+<p>The conversion tool produces high-quality source code, that in many
+cases is indistinguishable from manually converted code.  Still, it is
+<strong>strongly</strong> recommended not to start editing the 3.0 source code
+until you are ready to reduce 2.6 support to pure maintenance
+(i.e. the moment when you would normally move the 2.6 code to a
+maintenance branch anyway).</p>
+<p>Step (1) is expected to take the usual amount of effort of porting any
+project to a new Python version.  We're trying to make the transition
+from 2.5 to 2.6 as smooth as possible.</p>
+<p>If the conversion tool and the forward compatibility features in
+Python 2.6 work out as expected, steps (2) through (6) should not take
+much more effort than the typical transition from Python 2.x to
+2.(x+1).</p>
+</div>
+</div>
+<div class="section">
+<h1><a id="status-of-individual-features" name="status-of-individual-features">Status of Individual Features</a></h1>
+<p>There are too many changes to list them all here; instead, I will
+refer to the PEPs.  However, I'd like to highlight a number of
+features that I find to be significant or expect to be of particular
+interest or controversial.</p>
+<div class="section">
+<h2><a id="unicode-codecs-and-i-o" name="unicode-codecs-and-i-o">Unicode, Codecs and I/O</a></h2>
+<p>We're switching to a model known from Java: (immutable) text strings
+are Unicode, and binary data is represented by a separate mutable
+"bytes" data type.  In addition, the parser will be more
+Unicode-friendly: the default source encoding will be UTF-8, and
+non-ASCII letters can be used in identifiers.  There is some debate
+still about normalization, specific alphabets, and whether we can
+reasonably support right-to-left scripts.  However, the standard
+library will continue to use ASCII only for identifiers, and limit the
+use of non-ASCII in comments and string literals to unit tests for
+some of the Unicode features, and author names.</p>
+<p>We will use <tt class="docutils literal"><span class="pre">"..."</span></tt> or <tt class="docutils literal"><span class="pre">'...'</span></tt> interchangeably for Unicode
+literals, and <tt class="docutils literal"><span class="pre">b"..."</span></tt> or <tt class="docutils literal"><span class="pre">b'...'</span></tt> for bytes literals.  For
+example, <tt class="docutils literal"><span class="pre">b'abc'</span></tt> is equivalent to creating a bytes object using
+the expression <tt class="docutils literal"><span class="pre">bytes([97,</span> <span class="pre">98,</span> <span class="pre">99])</span></tt>.</p>
+<p>We are adopting a slightly different approach to codecs: while in
+Python 2, codecs can accept either Unicode or 8-bits as input and
+produce either as output, in Py3k, encoding is always a translation
+from a Unicode (text) string to an array of bytes, and decoding always
+goes the opposite direction.  This means that we had to drop a few
+codecs that don't fit in this model, for example rot13, base64 and bz2
+(those conversions are still supported, just not through the
+encode/decode API).</p>
+<div class="section">
+<h3><a id="new-i-o-library" name="new-i-o-library">New I/O Library</a></h3>
+<p>The I/O library is also changing in response to these changes.  I
+wanted to rewrite it anyway, to remove the dependency on the C stdio
+library.  The new distinction between bytes and text strings required
+a (subtle) change in API, and the two projects were undertaken hand in
+hand.  In the new library, there is a clear distinction between binary
+streams (opened with a mode like "rb" or "wb") and text streams
+(opened with a mode not containing "b").  Text streams have a new
+attribute, the encoding, which can be set explicitly when the stream
+is opened; if no encoding is specified, a system-specific default is
+used (which might use guessing when an existing file is being opened).</p>
+<p>Read operations on binary streams return bytes arrays, while read
+operations on text streams return (Unicode) text strings; and similar
+for write operations.  Writing a text string to a binary stream or a
+bytes array to a text stream will raise an exception.</p>
+<p>Otherwise, the API is kept pretty compatible.  While there is still a
+built-in <tt class="docutils literal"><span class="pre">open()</span></tt> function, the full definition of the new I/O
+library is available from the new <tt class="docutils literal"><span class="pre">io</span></tt> module.  This module also
+contains abstract base classes (see below) for the various stream
+types, a new implementation of StringIO, and a new, similar class
+BytesIO, which is like StringIO but implements a binary stream, hence
+reading and writing bytes arrays.</p>
+</div>
+<div class="section">
+<h3><a id="printing-and-formatting" name="printing-and-formatting">Printing and Formatting</a></h3>
+<p>Two more I/O-related features: the venerable <tt class="docutils literal"><span class="pre">print</span></tt> statement now
+becomes a <tt class="docutils literal"><span class="pre">print()</span></tt> function, and the quirky <tt class="docutils literal"><span class="pre">%</span></tt> string formatting
+operator will be replaced with a new <tt class="docutils literal"><span class="pre">format()</span></tt> method on string
+objects.</p>
+<p>Turning <tt class="docutils literal"><span class="pre">print</span></tt> into a function usually makes some eyes roll.
+However, there are several advantages: it's a lot easier to refactor
+code using <tt class="docutils literal"><span class="pre">print()</span></tt> functions to use e.g. the logging package
+instead; and the <tt class="docutils literal"><span class="pre">print</span></tt> syntax was always a bit controversial, with
+its <tt class="docutils literal"><span class="pre">&gt;&gt;file</span></tt> and unique semantics for a trailing comma.  Keyword
+arguments take over these roles, and all is well.</p>
+<p>Similarly, the new <tt class="docutils literal"><span class="pre">format()</span></tt> method avoids some of the pitfalls of
+the old <tt class="docutils literal"><span class="pre">%</span></tt> operator, especially the surprising behavior of <tt class="docutils literal"><span class="pre">"%s"</span> <span class="pre">%</span>
+<span class="pre">x</span></tt> when x is a tuple, and the oft-lamented common mistake of
+accidentally leaving off the final 's' in <tt class="docutils literal"><span class="pre">%(name)s</span></tt>.  The new
+format strings use <tt class="docutils literal"><span class="pre">{0},</span> <span class="pre">{1},</span> <span class="pre">{2},</span> <span class="pre">...</span></tt> to reference positional
+arguments to the <tt class="docutils literal"><span class="pre">format()</span></tt> method, and <tt class="docutils literal"><span class="pre">{a},</span> <span class="pre">{b},</span> <span class="pre">...</span></tt> to
+reference keyword arguments.  Other features include {a.b.c} for
+attribute references and even {a[b]} for mapping or sequence access.
+Field lengths can be specified like this: <tt class="docutils literal"><span class="pre">{a:8}</span></tt>; this notation
+also supports passing on other formatting options.</p>
+<p>The format() method is extensible in a variety of dimensions: by
+defining a <tt class="docutils literal"><span class="pre">__format__()</span></tt> special method, data types can override
+how they are formatted, and how the formatting parameters are
+interpreted; you can also create custom formatting classes, which can
+be used e.g. to automatically provide local variables as parameters
+to the formatting operations.</p>
+</div>
+</div>
+<div class="section">
+<h2><a id="changes-to-the-class-and-type-system" name="changes-to-the-class-and-type-system">Changes to the Class and Type System</a></h2>
+<p>You might have guessed that "classic classes" finally bite the dust.
+The built-in class <tt class="docutils literal"><span class="pre">object</span></tt> is the default base class for new
+classes.  This makes room for a variety of new features.</p>
+<ul>
+<li><p class="first">Class decorators.  These work just like function decorators:</p>
+<pre class="literal-block">
+@art_deco
+class C:
+    ...
+</pre>
+</li>
+<li><p class="first">Function and method signatures may now be "annotated".  The core
+language assigns no meaning to these annotations (other than making
+them available for introspection), but some standard library modules
+may do so; for example, generic functions (see below) can use these.
+The syntax is easy to read:</p>
+<pre class="literal-block">
+def foobar(a: Integer, b: Sequence) -&gt; String:
+    ...
+</pre>
+</li>
+<li><p class="first">New metaclass syntax.  Instead of setting a variable
+<tt class="docutils literal"><span class="pre">__metaclass__</span></tt> in the body of a class, you must now specify the
+metaclass using a keyword parameter in the class heading, e.g.:</p>
+<pre class="literal-block">
+class C(bases, metaclass=MyMeta):
+    ...
+</pre>
+</li>
+<li><p class="first">Custom class dictionaries.  if the metaclass defines a
+<tt class="docutils literal"><span class="pre">__prepare__()</span></tt> method, it will be called before entering the
+class body, and whatever it returns will be used instead of a
+standard dictionary as the namespace in which the class body is
+executed.  This can be used, amongst others, to implement a "struct"
+type where the order in which elements are defined is significant.</p>
+</li>
+<li><p class="first">You can specify the bases dynamically, e.g.:</p>
+<pre class="literal-block">
+bases = (B1, B2)
+
+class C(*bases):
+    ...
+</pre>
+</li>
+<li><p class="first">Other keyword parameters are also allowed in the class heading;
+these are passed to the metaclass' <tt class="docutils literal"><span class="pre">__new__</span></tt> method.</p>
+</li>
+<li><p class="first">You can override the <tt class="docutils literal"><span class="pre">isinstance()</span></tt> and <tt class="docutils literal"><span class="pre">issubclass()</span></tt> tests, by
+defining class methods named <tt class="docutils literal"><span class="pre">__instancecheck__()</span></tt> or
+<tt class="docutils literal"><span class="pre">__subclasscheck__()</span></tt>, respectively.  When these are defined,
+<tt class="docutils literal"><span class="pre">isinstance(x,</span> <span class="pre">C)</span></tt> is equivalent to <tt class="docutils literal"><span class="pre">C.__instancecheck__(x)</span></tt>,
+and <tt class="docutils literal"><span class="pre">issubclass(D,</span> <span class="pre">C)</span></tt> to <tt class="docutils literal"><span class="pre">C.__subclasscheck__(D)</span></tt>.</p>
+</li>
+<li><p class="first">Voluntary Abstract Base Classes (ABCs).  If you want to define a
+class whose instances behaves like a mapping (for example), you can
+<em>voluntarily</em> inherit from the class <tt class="docutils literal"><span class="pre">abc.Mapping</span></tt>.  On the one
+hand, this class provides useful mix-in behavior, replacing most of
+the functionality of the old <tt class="docutils literal"><span class="pre">UserDict</span></tt> and <tt class="docutils literal"><span class="pre">DictMixin</span></tt> classes.
+On the other hand, systematic use of such ABCs can help large
+frameworks do the right thing with less guesswork: in Python 2, it's
+not always easy to tell whether an object is supposed to be a
+sequence or a mapping when it defines a <tt class="docutils literal"><span class="pre">__getitem__()</span></tt> method.
+The following standard ABCs are provided: Hashable, Iterable,
+Iterator, Sized, Container, Callable; Set, MutableSet; Mapping,
+MutableMapping; Sequence, MutableSequence; Number, Complex, Real,
+Rational, Integer.  The <tt class="docutils literal"><span class="pre">io</span></tt> module also defines a number of ABCs,
+so for the first time in Python's history we will have a
+specification for the previously nebulous concept <tt class="docutils literal"><span class="pre">file-like</span></tt>.
+The power of the ABC framework lies in the ability (borrowed from
+Zope interfaces) to "register" a concrete class X as "virtually
+inheriting from" an ABC Y, where X and Y are written by different
+authors and appear in different packages.  (To clarify, when virtual
+inheritance is used, the mix-in behavior of class Y is not made
+available to class X; the only effect is that <tt class="docutils literal"><span class="pre">issubclass(X,</span> <span class="pre">Y)</span></tt>
+will return True.)</p>
+</li>
+<li><p class="first">To support the definition of ABCs which requires that concrete
+classes actually implement the full interface, the decorator
+<tt class="docutils literal"><span class="pre">@abc.abstractmethod</span></tt> can be used to declare abstract methods
+(only in classes whose metaclass is or derives from
+<tt class="docutils literal"><span class="pre">abc.ABCMeta</span></tt>).</p>
+</li>
+<li><p class="first">Generic Functions.  The inclusion of this feature, described in PEP
+3124, is somewhat uncertain, as work on the PEP seems to have slowed
+down to a standstill.  Hopefully the pace will pick up again.  It
+supports function dispatch based on the type of all the arguments,
+rather than the more conventional dispatch based on the class of the
+target object (<tt class="docutils literal"><span class="pre">self</span></tt>) only.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h2><a id="other-significant-changes" name="other-significant-changes">Other Significant Changes</a></h2>
+<p>Just the highlights.</p>
+<div class="section">
+<h3><a id="exception-reform" name="exception-reform">Exception Reform</a></h3>
+<ul class="simple">
+<li>String exceptions are gone (of course).</li>
+<li>All exceptions must derive from <tt class="docutils literal"><span class="pre">BaseException</span></tt> and preferably
+from <tt class="docutils literal"><span class="pre">Exception</span></tt>.</li>
+<li>We're dropping <tt class="docutils literal"><span class="pre">StandardError</span></tt>.</li>
+<li>Exceptions no longer act as sequences.  Instead, they have an
+attribute <tt class="docutils literal"><span class="pre">args</span></tt> which is the sequence of arguments passed to the
+constructor.</li>
+<li>The <tt class="docutils literal"><span class="pre">except</span> <span class="pre">E,</span> <span class="pre">e:</span></tt> syntax changes to <tt class="docutils literal"><span class="pre">except</span> <span class="pre">E</span> <span class="pre">as</span> <span class="pre">e</span></tt>; this
+avoids the occasional confusion by <tt class="docutils literal"><span class="pre">except</span> <span class="pre">E1,</span> <span class="pre">E2:</span></tt>.</li>
+<li>The variable named after <tt class="docutils literal"><span class="pre">as</span></tt> in the <tt class="docutils literal"><span class="pre">except</span></tt> clause is
+forcefully deleted upon exit from the <tt class="docutils literal"><span class="pre">except</span></tt> clause.</li>
+<li><tt class="docutils literal"><span class="pre">sys.exc_info()</span></tt> becomes redundant (or may disappear): instead,
+<tt class="docutils literal"><span class="pre">e.__class__</span></tt> is the exception type, and <tt class="docutils literal"><span class="pre">e.__traceback__</span></tt> is
+the traceback.</li>
+<li>Additional optional attributes <tt class="docutils literal"><span class="pre">__context__</span></tt> is set to the
+"previous" exception when an exception occurs in an <tt class="docutils literal"><span class="pre">except</span></tt> or
+<tt class="docutils literal"><span class="pre">finally</span></tt> clause; <tt class="docutils literal"><span class="pre">__cause__</span></tt> can be set explicitly when re-raising
+an exception, using <tt class="docutils literal"><span class="pre">raise</span> <span class="pre">E1</span> <span class="pre">from</span> <span class="pre">E2</span></tt>.</li>
+<li>The old <tt class="docutils literal"><span class="pre">raise</span></tt> syntax variants <tt class="docutils literal"><span class="pre">raise</span> <span class="pre">E,</span> <span class="pre">e</span></tt> and <tt class="docutils literal"><span class="pre">raise</span> <span class="pre">E,</span> <span class="pre">e,</span> <span class="pre">tb</span></tt>
+are gone.</li>
+</ul>
+</div>
+<div class="section">
+<h3><a id="integer-reform" name="integer-reform">Integer Reform</a></h3>
+<ul class="simple">
+<li>There will be only one built-in integer type, named 'int', whose
+behavior is that of 'long' in Python 2.  The 'L' literal suffix
+disappears.</li>
+<li><tt class="docutils literal"><span class="pre">1/2</span></tt> will return <tt class="docutils literal"><span class="pre">0.5</span></tt>, not <tt class="docutils literal"><span class="pre">0</span></tt>.  (Use <tt class="docutils literal"><span class="pre">1//2</span></tt> for that.)</li>
+<li>Octal literal syntax changes to <tt class="docutils literal"><span class="pre">0o777</span></tt>, to avoid confusing
+younger developers.</li>
+<li>Binary literals: <tt class="docutils literal"><span class="pre">0b101</span> <span class="pre">==</span> <span class="pre">5</span></tt>, <tt class="docutils literal"><span class="pre">bin(5)</span> <span class="pre">==</span> <span class="pre">'0b101'</span></tt>.</li>
+</ul>
+</div>
+<div class="section">
+<h3><a id="iterators-or-iterables-instead-of-lists" name="iterators-or-iterables-instead-of-lists">Iterators or Iterables instead of Lists</a></h3>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">dict.keys()</span></tt> and <tt class="docutils literal"><span class="pre">dict.items()</span></tt> return sets (views, really);
+<tt class="docutils literal"><span class="pre">dict.values()</span></tt> returns an iterable container view.  The
+<tt class="docutils literal"><span class="pre">iter*()</span></tt> variants disappear.</li>
+<li><tt class="docutils literal"><span class="pre">range()</span></tt> returns the kind of object that <tt class="docutils literal"><span class="pre">xrange()</span></tt> used to
+return; <tt class="docutils literal"><span class="pre">xrange()</span></tt> disappears.</li>
+<li><tt class="docutils literal"><span class="pre">zip()</span></tt>, <tt class="docutils literal"><span class="pre">map()</span></tt>, <tt class="docutils literal"><span class="pre">filter()</span></tt> return iterables (like their
+counterparts in <tt class="docutils literal"><span class="pre">itertools</span></tt> already do).</li>
+</ul>
+</div>
+<div class="section">
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="tim-oreilly-in-china.html">&larr; Previous</a> &middot; <a href="pycon-2007-review.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Please Teach me Web Frameworks for Python! - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="web-framework-redux.html">&larr; Previous</a> &middot; <a href="python-status-update.html">Next &rarr;</a></p>
+
+<h1>Please Teach me Web Frameworks for Python!</h1>
+<p><i>January 27, 2006 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=146149">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p>This is a plea for help.  Please educate me!</p>
+<p>After years of resistance, I'm finally finding myself building a web application again.  I think the last time I did that was the "faq wizard" which still lives in Python's Tools directory.  It was a CGI script using nearly standard Python string interpolation as a templating language, environment variables (plus cgi.py) and print statements to talk to the server, and the file system plus RCS for persistency.  It was used for years to maintain the Python FAQ on python.org, but was eventually retired.  (Is anybody still using it?!?)</p>
+<p>My new project (my so-called "starter project" at Google) is an internal tool for Google developers.  It will never be used outside Google.  I don't want to have to explain what it does, but I'll hint that it is a fairly standard database-backed dynamic application with authenticated users.  About the only slightly unusual characteristic is that it talks to another internal tool in addition to the database.  It will eventually be used by thousands of developers (millions if Google's exponential growth doesn't stop soon :-), so there are some performance needs, but nothing serious compared to the typical xyzzy.google.com property.  (This is also the reason that there aren't a ton of Google-developed frameworks that I can use -- there's a ton of reusable web server code, but it's mostly geared to the needs for massively parallelized servers where each box handles 1000s of hits per second, and consequently not really good for rapid prototyping.  And of course it's all C++ code.)</p>
+<p>I've got a working prototype that's a gross hack.  Instead of CGI and print it uses BaseHTTPServer.py, which is an adequate web server for development purposes, although I'm finding some strange gaps in its functionality (e.g. it has a time-formatting helper method, but it is hardwired to format the <em>current</em> time, so it's useless for formatting 'Expires' headers).  For templating I am still using standard string interpolation!  This has served me well (several coworkers were surprised I got it working in such a short time) but it's time for a refactoring.  So far, the biggest difference with the FAQ wizard is probably that it uses CSS!  (And even a line or two of Javascript.  No AJAX yet, but that can't be far off -- no Google application can be  without AJAX for very long. :-)</p>
+<p>Knowing myself, I'd happily go off and build my own web framework at this point, based on exactly the requirements of this particular application, but I figure that a framework written to serve the needs of a single target application wouldn't necessarily be better than some of the web frameworks that already exist for Python.  So where to start?</p>
+<p>I took a brief look at Django, and while I like their website (pretty and easily navigable and chockfull of useful information), I'm not keen on the particular tools they provide (it doesn't help that they begin every example with "from mumble.something import *").  For example, Django's templating language is rich and powerful, but it doesn't look very Pythonic to me -- in fact, it's so rich and powerful that it might as well be PHP.  Similarly, I'm not keen on their object-relational mapping approach.  There's too much magic based on name correspondence, and the automatically generated APIs feel a bit unpythonic (e.g. lots of getter and setter methods where a normal Python object would use public attributes and perhaps properties).  I imagine that it works best if you know exactly how it is mapped to SQL.</p>
+<p>One thing in Django that I like: the URL mapping API.  You specify a bunch of regular expressions, and for each regex you specify the function to be called.  Groups in the regex become arguments; named groups become keyword arguments.  Very simple and clean.  I'm not sure that I like having to put quotes around the function (path) names; but I can see how this actually saves typing because you won't have to write an import statement for it, and in rare cases it can save loading stuff you never use.</p>
+<p>Then I decided to have a look at Ruby on Rails, just to see what I could learn from the competition.  I watched two fascinating movies, but they went a bit too fast to really understand what was going on, and there seemed to be a fair amount of sleight of hand in the examples (a lot of default behavior that just happens to do the right thing for the chosen demo).  Again, the templating language seems a weird mixture of HTML and Ruby, and I find Ruby's syntax grating (too many sigils).  I believe I heard Greg Stein say recently that if you are really good in Ruby, CSS, HTML and SQL, you can produce great websites quickly with Rails -- but if you don't, you produce lousy websites quickly (just like with PHP).</p>
+<p>For a bit I pondered Quixote.  I used it to write a prototype application at Elemental two years ago, and I liked it fairly well.  I remember that setting it up was a bit weird (some strange config file that you had to get just right) but I like its approach to templating: instead of inventing a brand new templating language, it makes one tiny modification to Python so that you can use bare string literals (and expressions) instead of print statements to produce HTML.  It also has a really cool trick, due to Neil Schemenauer, that avoids the security issues that are so common in naively written PHP applications (just read BUGTRAQ for a while and you'll know what I'm referring to): by default string expressions are automatically HTML-encoded, <em>except</em> string literals, which are assumed to contain valid HMTL.  This means that you can write '&lt;h1&gt;' + title + '&lt;/h1&gt;' where title is some variable that you just received from the user, and HTML punctuation in title will be encoded, but the &lt;h1&gt; and &lt;/h1&gt; tags will be passed through unchanged.  But (as far as I recall) it doesn't have an interpolation strategy that's much more sophisticated than standard Python.</p>
+<p>Next I took a quick look at Michelle Levesque's PyWebOff blog.  It's nearly a year ago that she last did much about comparing Python web frameworks; I saw the last entries about Nevow (a templating system in Twisted) and it scared the hell out of me.  It takes 8 lines of inscrutable Python code and 12 lines of template HTML to produce a list with text in alternating colors.  The template uses XML namespaces.  I happen to know a lot about those (I was at Zope when we designed Zope's TAL templating language) but it is and will always be my opinion that XML was not intended for humans to be edited (except very occasionally as part of bootstrapping or debugging).  And that goes doubly so for XML with namespaces.  (Here I have to contend that Rails has the right idea -- "no XML sit-ups" is a great slogan!)</p>
+<p>I should probably read Michelle's blog for her experiences with other frameworks; but I got distracted and tried to figure out what the Python web-sig is up to.  There I found fequent mention of something called WSGI -- there's even a PEP, PEP 333!  I should definitely study that.  Although I fear that it's too low-level to really help me much; from the intro it appears to be more of a (very useful!) standard middleware API for Python web frameworks than that it provides much functionality that I could use right away in my application.  And the word middleware (just like much of Phillip Eby's work, alas) scares me.</p>
+<p>Before I post this, let me attempt at a brief classification of the features that every web framework needs.</p>
+<blockquote>
+<ul class="simple">
+<li>Independence from web server technology.
+You should be able to run the same application under Apache, as a CGI script,
+as a stand-alone server (e.g. BaseHTTPServer or Zope's or Twisted's built-in server),
+etc.  (The Java Servlet API does this really well IMO -- I used it at Elemental.)
+This should include logging and basic error handling (an API to generate
+any HTTP error, as well as a try/except around application code that returns
+a 500 error code if the application code fails.</li>
+<li>Templating with reuse.  Every web application needs to mix computed data
+(in which category I include data retrieved from a database) with HTML mark-up,
+and often a lot of the HTML markup is common for many pages (e.g. global navigation).</li>
+<li>Cookie handling.  For authentication, preferences, sessions, etc.</li>
+<li>Query parsing.  The bread and butter of form handling.</li>
+<li>URL dispatch.  You've got to be flexible in how URL paths are mapped to callables.
+Zope's URL-to-object mapping is extremely flexible.  Django's approach is nice too.</li>
+</ul>
+</blockquote>
+<p>I expect everything else is optional.  You can write your own SQL (as we did at Elemental), use an object-relational mapping library (like Django or RorR), or use an object database like Zope.  You can even persist things directly to the filesystem (just make sure it's being backed up :-).  While every dynamic website eventually develops authentication needs, there are many different existing approaches to authentication, and I suspect that it's not particularly hard to do this as part of the application.  Some frameworks go wild on predefined CSS and HTML templates.  (I believe Plone does this -- if you see a site with frequent use of 1-pixel rectangular borders and a calendar widget in the margin, you can bet it's somebody's first Plone project.)</p>
+<p>Please set me straight.  What did I miss?  Where is the WSGI standard implementation?</p>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="web-framework-redux.html">&larr; Previous</a> &middot; <a href="python-status-update.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

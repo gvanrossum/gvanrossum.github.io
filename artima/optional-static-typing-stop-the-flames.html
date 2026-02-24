@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Optional Static Typing -- Stop the Flames! - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="python-optional-typechecking-redux.html">&larr; Previous</a> &middot; <a href="adding-optional-static-typing-to-python-part-ii.html">Next &rarr;</a></p>
+
+<h1>Optional Static Typing -- Stop the Flames!</h1>
+<p><i>January 7, 2005 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=87182">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<div class="section" id="in-a-nutshell">
+<h1><a name="in-a-nutshell">In a Nutshell</a></h1>
+<ul class="simple">
+<li>Argument and return type declarations</li>
+<li>Attribute declarations (maybe)</li>
+<li>Interface declarations</li>
+<li>Design by contract (maybe)</li>
+</ul>
+</div>
+<div class="section" id="argument-and-return-type-declarations">
+<h1><a name="argument-and-return-type-declarations">Argument and Return Type Declarations</a></h1>
+<p>Let's go back to the basics.  A function is defined like this:</p>
+<pre class="literal-block">
+def foo(x: t1, y: t2) -&gt; t3:
+    ...body...
+</pre>
+<p>is more or less equivalent to this:</p>
+<pre class="literal-block">
+def foo__(x, y):  # original function
+    ...body...
+
+def foo(x, y):    # wrapper function
+    x = adapt(x, t1)
+    y = adapt(y, t2)
+    r = foo__(x, y)
+    return adapt(r, t3)
+</pre>
+<p>Here t1, t2 and t3 are expressions that are evaluated once, at function definition time (i.e. at the same time as argument default values).  Also, the wrapper doesn't really access the original by name; more likely it is an object that has a reference to the original function somehow.</p>
+<p>The types are standard Python expressions, there's no separate syntax for type expressions.  A type can be combined with a default value:</p>
+<pre class="literal-block">
+def foo(x: int = 42):
+    pass
+</pre>
+<p>The default value gets adapted to the given type at function declaration time.</p>
+<p>A function has a __signature__ attribute from which the names, types, and default values of the arguments can be introspected, as well as the return type (and the types for *args and **kwds, if specified).</p>
+<p>Until the parser has been modified to accept this syntax, we can experiment with decorators like this:</p>
+<pre class="literal-block">
+@arguments(t1, t2)
+@returns(t3)
+def foo(x, y):
+    ...body...
+</pre>
+<p>but that notation has little to recommend it in the long run.</p>
+</div>
+<div class="section" id="attribute-declarations-maybe">
+<h1><a name="attribute-declarations-maybe">Attribute Declarations (Maybe)</a></h1>
+<p>It makes some sense to allow attribute declarations like this:</p>
+<pre class="literal-block">
+class C:
+    x: t1
+</pre>
+<p>which would create a property x that calls adapt(value, t1) upon assignment.</p>
+<p>This is syntactic sugar for something we can write today:</p>
+<pre class="literal-block">
+x = typedAttribute(t1)
+</pre>
+<p>The syntax can be combined with a default value:</p>
+<pre class="literal-block">
+x : t1 = default
+</pre>
+<p>meaning:</p>
+<pre class="literal-block">
+x = typedAttribute(t1, default)
+</pre>
+<p>The implementation of typedAttribute() is left as an exercise to the reader.  This is only for classes, and only defines instance variables.  (A mutable default will suck just like it always did.)</p>
+</div>
+<div class="section" id="interfaces">
+<h1><a name="interfaces">Interfaces</a></h1>
+<p>This is the only other place where I still think that new syntax is needed.  My syntax proposal is still:</p>
+<pre class="literal-block">
+interface I1(I2, I3):
+    def foo(a: t1, b: t2) -&gt; t3:
+        "docstring"
+
+class C(I1):    # implements I1
+    def foo(a, b):
+        return a+b
+</pre>
+<p>The metaclass gives C.foo the __signature__ attribute and adaptation wrappers gleaned from the interface at run time.  You don't <em>have</em> to specify argument and return types in the interface declaration; if the type is absent adapt() is not called.</p>
+<p>The interfaces don't show up in the __bases__ attribute of the class; rather, they show up in a new __implements__ attribute (the metaclass can tell the difference between an interface and a class).</p>
+<p>This proposal is even simpler than PEP 245 (Python Interface Syntax); I don't think the "implements" keyword proposed there is needed.</p>
+</div>
+<div class="section" id="design-by-contract-maybe">
+<h1><a name="design-by-contract-maybe">Design by Contract (Maybe)</a></h1>
+<p>This has received an inordinate amount of attention in the discussion forum, but I'm not very impressed with the resulting designs.  There are basically two styles of proposals: statement-based and expression-based.</p>
+<p>I think the expression-based proposals are too limited: they don't handle guards involving multiple arguments very well, and the proposed overloading of type expressions and boolean guards feels error-prone (what if I make my guard 'True' while awaiting inspiration for something better?).  Also, there are clear use cases for guards that (in Python) can only be expressed using multiple statements.</p>
+<p>But the statement-based designs are pretty cumbersome too, and I expect that in practice these will be used only in large projects.  At the moment I am leaning towards not defining any new syntax for these, but instead use a decorator until we've got more usage experience.  Here's a strawman proposal:</p>
+<pre class="literal-block">
+def _pre_foo(self, a, b):  # The pre-condition has the same signature as the function
+    assert a &gt; 0
+    assert b &gt; a
+
+def _post_foo(self, rv, a, b):  # The signature inserts the return value in front!
+    assert rv &gt; b
+
+@dbc(_pre_foo, _post_foo)   # design-by-contract decorator
+def foo(self, a, b):
+    return a+b
+</pre>
+<p>In this example, _pre_foo and _post_foo are just names I picked; they are associated with the foo method by the @dbc decorator.</p>
+<p>An alternative proposal could use an implicit binding based on naming conventions; then pre- and post-conditions could automatically be inherited, but the metaclass has to do more work.</p>
+<p>But if you really want my opinion, I think these should not become a part of standard Python just yet -- I'd rather see others experiment with the ideas sketched here, write a PEP, and then we can talk about standardization.</p>
+</div>
+<div class="section" id="that-s-it">
+<h1><a name="that-s-it">That's It!</a></h1>
+<p>I'm dropping the advanced and untried ideas for now, such as overloaded methods, parameterized types, variable declarations, and 'where' clauses.  I'm also dropping things like unions and cartesian products, and explicit references to duck typing (the adapt() function can default to duck typing).  Most of these (except for 'where' clauses) can be added back later without introducing new syntax when people feel the need, but right now they just act as red flags for the NIMPY (Not In My PYthon) crowd.</p>
+<p>Most importantly, I'm dropping any direct connection to compile-time type checking or generating more efficient code.  The adaptation wrappers will slow things down -- a price some people will gladly pay for the flexibility offered by adaptation and better run-time error checking.  I expect that interface declarations will be helpful to PyChecker-like static bug finders and to optimizers using type inferencing, but these will have to deal with pretty much the entire range of dynamic usage that's possible in Python, or they will have to explicitly say that certain programming styles are not supported.</p>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="python-optional-typechecking-redux.html">&larr; Previous</a> &middot; <a href="adding-optional-static-typing-to-python-part-ii.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

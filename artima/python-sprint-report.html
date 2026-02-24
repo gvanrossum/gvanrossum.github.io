@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python Sprint Report - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="come-join-me-at-pycon-2007.html">&larr; Previous</a> &middot; <a href="python-in-google-code-jam.html">Next &rarr;</a></p>
+
+<h1>Python Sprint Report</h1>
+<p><i>August 25, 2006 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=173453">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p>For reference, here are the URLs for the sprint's <a class="reference" href="http://wiki.python.org/moin/GoogleSprint">wiki page</a> and the <a class="reference" href="http://wiki.python.org/moin/GoogleSprintPy3k">py3k wiki page</a>.</p>
+<div class="section">
+<h1><a id="python-3000-sprint-results" name="python-3000-sprint-results">Python 3000 Sprint Results</a></h1>
+<p>I'll start with the results of the Py3k part of the sprint, since I was most directly involved in it.</p>
+<div class="section">
+<h2><a id="warming-up" name="warming-up">Warming Up</a></h2>
+<p>In the weeks before the sprint, I had made a number of pervasive changes to the interpreter, such as completely removing classic classes, and mostly removing has_key().  This had some fall-out; a half dozen or so unit tests were failing as the sprint started.  Three of these failures were attacked by several sprinters and quickly fixed.</p>
+<p>As another warm-up exercise, Alex Martelli and I tackled the problem of __hash__ overloading.  The issue is too subtle to explain here in much detail.  The problem is that object.__hash__ exists while e.g. list.__hash__ should ideally not exist; the solution is to set __hash__ to None in the metaclass whenever a class overrides comparison without also defining __hash__.  We were quickly victorious; we probably spent more time reading the old code trying to understand it, and discussing the various alternative ways to fix the problem, than we spent actually implementing it.</p>
+<p>At this point (late the first day) all unit tests were passing in the py3k branch.  This was an important milestone: we could now trust that any new test failures were introduced by recent changes, and insist that developers make all tests pass before checking in changes.</p>
+<p>Anna Ravenscroft went through the standard library looking for places where file() is called to construct a file object -- the most future-proof, and hence recommended, practice is to call open(), not file().  After getting through the modules starting with 'a' through 'g' without finding a single occurrence of file(), she asked me if I was playing a cruel joke on her.  But no, it just turned out that all the offending calls occurred much later in the alphabet!  (I wonder if someone else did the same for the 2.5 library and gave up after fixing the first half of the alphabet?)</p>
+</div>
+<div class="section">
+<h2><a id="int-long-unification" name="int-long-unification">Int/Long Unification</a></h2>
+<p>Martin von Löwis decided to tackle the unification of int and long.  He did this in a separate <a class="reference" href="http://svn.python.org/view/python/branches/int_unification/">branch</a>, which was probably a good idea from a software development point of view, but got him a bit of unnecessary attention from core developers who aren't on the Python 3000 mailing list but <em>are</em> on the python checkins list, and started criticizing Martin's unfinished work without understanding the plan or its context.</p>
+<p>As of this writing, Martin's  work is not yet completed.  Allocating of a unified int object (which at this point is essentially a Python 2.5 long, i.e. an arbitrary precision integer) takes about 2 times as long as allocating a Python 2.5 "short" int (which can only hold a C long, i.e. 32 or 64 bits depending on the platform).  Martin isn't sure how to speed things up further.  Pystone dropped by about 10%, which isn't so bad.  See also <a class="reference" href="http://mail.python.org/pipermail/python-3000/2006-August/003185.html">Martin's complete report</a>.</p>
+</div>
+<div class="section">
+<h2><a id="reinventing-comparison" name="reinventing-comparison">Reinventing Comparison</a></h2>
+<p>Neal Norwitz continued for a while on a project on which he had embarked before the sprint started: ripping out the last remains of coerce().  He nearly completed this, and then ran into a snag: a call to PyNumber_CoerceEx() deep down in the implementation of comparisons which caused everything to fall down if removed.  So he checked in his work up to that point (leaving that one crucial call in) and passed the baton to me.  Looking at the issue, I realized that the only way to fix this would be to implement the revision of comparisons that I had been planning for Py3k.</p>
+<p>So I ended up spending at least two days, with Alex helping on and off, reworking the guts of comparisons, making them comply with my vision for comparisons in Python 3000.  This turned out to be a real can of worms!  The plan has two parts: (a) no default mixed-type orderings, so e.g. 'a'&lt;1 would raise a TypeError (but 'a'==1 should return False); and (b) don't use __cmp__ as a fallback for rich comparisons.</p>
+<p>I started by implementing a super-strict interpretation of these rules, which also removed falling back on rich comparisons when __cmp__ was requested.  Once it compiled, it wouldn't even start up, because some code in site.py was broken as a result.  It turned out that ints and longs didn't implement rich comparisons!  That was quickly fixed, and now we could at least start the interpreter.  But running the test suite would always eventually end with a segfault.  Much later, I discovered that this was due to a failing error check on a dict lookup call in the bytecode compiler (quickly fixed the next day by Jeremy) which was triggered by code objects not having a proper comparison any more.  Removing all comparison code from the code object made it default to the default comparison (and hash) implementation, which was good enough to stop the compiler from malfunctioning.</p>
+<p>At this point we had about 70 failing unit tests.  I spent about a day fixing these, one by one.  Fairly early during this process I realized that if neither object knows how to compare itself to the other, for == and !=, we shouldn't fail, but return the default (pointer) comparison instead.  A bit later I decided that there were too many uses of cmp() in the library and the test suite to rip out, so I had to compromise: when cmp doesn't find a tp_compare implementation, it falls back to using the tp_richcompare implementation.  But (and this is still a big departure from 2.5) not the other way around!</p>
+<p>Slowly but surely more and more unit tests got fixed.  I checked in a checkpoint with only four failing tests.  Two of these expected to compare code objects by value, and I eventually implemented this again (but no ordering on code objects!).  The last two failing tests required a consultation with Tim Peters: datetime had some extrelemy convoluted code to avoid hitting the default ordering, which no longer is a problem in Py3k, and so got ripped out; and the last hold-out was test_mutants.py.  After Tim explained why it was there and how to fix it, it discovered a reference counting bug!  That is its job, but the interesting part was that the same reference counting bug also exists in 2.5 and wasn't found there, because in 2.5 test_mutants only exercises three-way comparison but not rich comparison (and 2.5 dictionaries implement both separately!).</p>
+<p>This was fun (in some extreme geek way :) but meant I didn't get to the project I had really wanted to do: the new I/O library.  A few people (especially Charles Merriam and Hasan Diwan) looked into the design issues there but not all that much concrete work was done.</p>
+</div>
+<div class="section">
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="come-join-me-at-pycon-2007.html">&larr; Previous</a> &middot; <a href="python-in-google-code-jam.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

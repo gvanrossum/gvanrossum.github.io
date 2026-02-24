@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python main() functions - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="oscon-2003-impressions.html">&larr; Previous</a> &middot; <a href="the-humane-interface.html">Next &rarr;</a></p>
+
+<h1>Python main() functions</h1>
+<p><i>May 16, 2003 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=4829">artima.com</a></i></p>
+
+<hr>
+
+<p>
+I've written a few main() functions in my time. They usually have a
+structure roughly like this:
+
+<pre>
+"""Module docstring.
+
+This serves as a long usage message.
+"""
+import sys
+import getopt
+
+def main():
+    # parse command line options
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "h", ["help"])
+    except getopt.error, msg:
+        print msg
+        print "for help use --help"
+        sys.exit(2)
+    # process options
+    for o, a in opts:
+        if o in ("-h", "--help"):
+            print __doc__
+            sys.exit(0)
+    # process arguments
+    for arg in args:
+        process(arg) # process() is defined elsewhere
+
+if __name__ == "__main__":
+    main()
+</pre>
+
+I'm sure many people write similar main() functions. I've got a few
+suggestions that make main() a little more flexible, especially as
+option parsing becomes more complex.
+
+<p>First, we change main() to take an optional 'argv' argument, which
+allows us to call it from the interactive Python prompt:
+
+<pre>
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv
+    # etc., replacing sys.argv with argv in the getopt() call.
+</pre>
+
+Note that we fill in the default for argv dynamically. This is more
+flexible than writing
+
+<pre>
+def main(argv=sys.argv):
+    # etc.
+</pre>
+
+because sys.argv might have been changed by the time the call is made;
+the default argument is calculated at the time the main() function is
+<i>defined</i>, for all times.
+
+<p>Now the <code>sys.exit()</code> calls are annoying: when main()
+calls <code>sys.exit()</code>, your interactive Python interpreter
+will exit! The remedy is to let main()'s return value specify the exit
+status. Thus, the code at the very end becomes
+
+<pre>
+if __name__ == "__main__":
+    sys.exit(main())
+</pre>
+
+and the calls to sys.exit(n) inside main() all become
+<code>return n</code>.
+
+<p>Another refinement is to define a Usage() exception, which we catch
+in an except clause at the end of main():
+
+<pre>
+import sys
+import getopt
+
+class Usage(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv
+    try:
+        try:
+            opts, args = getopt.getopt(argv[1:], "h", ["help"])
+        except getopt.error, msg:
+             raise Usage(msg)
+        # more code, unchanged
+    except Usage, err:
+        print &gt;&gt;sys.stderr, err.msg
+        print &gt;&gt;sys.stderr, "for help use --help"
+        return 2
+
+if __name__ == "__main__":
+    sys.exit(main())
+</pre>
+
+This gives the main() function a single exit point, which is
+preferable over multiple <code>return 2</code> statements. This also
+makes it easier to refactor the argument parsing: <code>raise
+Usage</code> works just fine from inside a helper function, but
+<code>return 2</code> would require careful passing on of the return
+values.
+
+<p>You might think that taking this to the extreme would move the
+try/except clause out of the main() function, into the code at the end
+of the module (<code>if __name__ == "__main__": ...</code>.  But that
+would mean that when you call main() interactively, you'd get a
+traceback for command line syntax errors, which isn't very helpful.
+
+<p>However, another generalization <i>can</i> be helpful: define
+another exception, perhaps called <code>Error</code>, which is treated
+just like <code>Usage</code> but returns 1.  This can then be used for
+expected errors like failure to open necessary files, which are not
+command line syntax errors, but yet expected, and where again a
+traceback doesn't feel very friendly.
+
+<p>What's <i>your</i> favorite convention for writing main()?
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="oscon-2003-impressions.html">&larr; Previous</a> &middot; <a href="the-humane-interface.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The fate of reduce() in Python 3000 - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="five-minute-multimethods-in-python.html">&larr; Previous</a> &middot; <a href="are-confirmation-dialogs-harmful.html">Next &rarr;</a></p>
+
+<h1>The fate of reduce() in Python 3000</h1>
+<p><i>March 10, 2005 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=98196">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p>About 12 years ago, Python aquired lambda, reduce(), filter() and map(), courtesy of (I believe) a Lisp hacker who missed them and submitted working patches.  But, despite of the PR value, I think these features should be cut from Python 3000.
+
+<p><b>Update: lambda, filter and map will stay (the latter two with small changes, returning iterators instead of lists). Only reduce will be removed from the 3.0 standard library.  You can import it from functools.</b>
+<p>I think dropping filter() and map() is pretty uncontroversial; filter(P, S) is almost always written clearer as [x for x in S if P(x)], and this has the huge advantage that the most common usages involve predicates that are comparisons, e.g. x==42, and defining a lambda for that just requires much more effort for the reader (plus the lambda is slower than the list comprehension).  Even more so for map(F, S) which becomes [F(x) for x in S].  Of course, in many cases you'd be able to use generator expressions instead.
+
+<p>Why drop lambda?  Most Python users are unfamiliar with Lisp or Scheme, so the name is confusing; also, there is a widespread misunderstanding that lambda can do things that a nested function can't -- I still recall Laura Creighton's Aha!-erlebnis after I showed her there was no difference!  Even with a better name, I think having the two choices side-by-side just requires programmers to think about making a choice that's irrelevant for their program; not having the choice streamlines the thought process.  Also, once map(), filter() and reduce() are gone, there aren't a whole lot of places where you really need to write very short local functions; Tkinter callbacks come to mind, but I find that more often than not the callbacks should be methods of some state-carrying object anyway (the exception being toy programs).
+
+<p>So now reduce().  This is actually the one I've always hated most, because, apart from a few examples involving + or *, almost every time I see a reduce() call with a non-trivial function argument, I need to grab pen and paper to diagram what's actually being fed into that function before I understand what the reduce() is supposed to do.  So in my mind, the applicability of reduce() is pretty much limited to associative operators, and in all other cases it's better to write out the accumulation loop explicitly.
+
+<p>There aren't a whole lot of associative operators.  (Those are operators X for which (a X b) X c equals a X (b X c).)  I think it's just about limited to +, *, &amp;, |, ^, and shortcut and/or.  We already have sum(); I'd happily trade reduce() for product(), so that takes care of the two most common uses.  The bitwise operators are rather specialized and we can put fast versions in a library module if there's demand; for shortcut booleans I have the following proposal.
+
+<p>Let's add any() and all() to the standard builtins, defined as follows (but implemented more efficiently):
+
+<pre>
+    def any(S):
+        for x in S:
+            if x:
+               return True
+        return False
+
+    def all(S):
+        for x in S:
+            if not x:
+               return False
+        return True
+</pre>
+<p>Combine these with generator expressions, and you can write things like these::
+
+<pre>
+    any(x &gt; 42 for x in S)     # True if any elements of S are &gt; 42
+    all(x != 0 for x in S)     # True if all elements if S are nonzero
+</pre>
+<p>This will mostly give us back the quantifiers from <a href="http://homepages.cwi.nl/~steven/abc/">ABC</a>: ABC's <code>IF EACH x IN s HAS p(x):</code> becomes <code>if all(p(x) for x in s):</code>, its <code>IF SOME x IN s HAS p(x):</code> becomes <code>if any(p(x) for x in s):</code>, and <code>IF NO x IN s HAS p(x):</code> becomes <code>if not any(p(x) for x in s):</code>.  (Except that in ABC, the variables would be bound and usable inside the IF block; if you need that in Python you'll have to write an explicit for loop and use a break statement.)
+
+<p>I expect that even if you disagree with dropping reduce(), you will agree that adding any() and all() is a good idea -- maybe even for Python 2.5!
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="five-minute-multimethods-in-python.html">&larr; Previous</a> &middot; <a href="are-confirmation-dialogs-harmful.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

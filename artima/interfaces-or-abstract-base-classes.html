@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interfaces or Abstract Base Classes? - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="m-clock-20.html">&larr; Previous</a> &middot; <a href="stricter-whitespace-enforcement.html">Next &rarr;</a></p>
+
+<h1>Interfaces or Abstract Base Classes?</h1>
+<p><i>August 5, 2005 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=92662">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<div class="section" id="abcs-vs-interfaces">
+<h1><a name="abcs-vs-interfaces">ABCs vs. Interfaces</a></h1>
+<p>I can't for the life of me remember why I would prefer ABCs over
+interfaces!  And even if I did remember, I believe I have changed my
+mind since then.</p>
+<p>The only argument that comes to mind is that ABCs don't require more
+syntax.  That's usually a strong argument in Python.  But it seems
+that at least two of the largest 3rd party projects in Python (Zope
+and Twisted) have already decided that they can't live without
+interfaces, and have created their own implementation.  From this I
+conclude that there's a real need.</p>
+<p>But if they can do it themselves (albeit with some heavy-duty
+metaclass magic), doesn't that prove we don't have to add them to the
+language?  Not at all.  The mechanisms used are ideosyncratic,
+fragile, and cumbersome.  For example, you have to use __xxx__ words
+to declare conformance to an interface.  Plus, there's duplicate work
+and interoperability.  IMO this is language infrastructure that should
+be provided by the language implementation.</p>
+<p>Many followups to my blogs about adding optional type checking to
+Python (given the latest design I'm leaving off the word "static" :-)
+said that interfaces were more important than type checking.
+Personally, I think they're interconnected: interfaces make much more
+sense if you can also declare the argument types of the methods, and
+argument type declarations in Python are unthinkable without a way to
+spell duck types -- for which interfaces are an excellent approach.
+Phillip Eby's Monkey Typing proposal is an interface-free alternative,
+but I find it way too complex to be adopted as a standard Python
+mechanism.</p>
+<p>A few more arguments against ABCs: they seem the antithesis of duck
+typing.  Using ABCs for type declarations suggests that isinstance()
+is used for type checking, and even if reality is not quite that
+rigid, this suggestion would be leading people into the wrong
+direction.</p>
+<p>ABCs also allow, nay, encourage, "partially abstract" classes --
+classes that have some abstract methods and some concrete ones.  Of
+course, such a class as a whole is still abstract, but the resulting
+mixture of implementation and interface complexifies the semantics.</p>
+<p>It has been suggested, especially by Ping, that there is a need to
+specify some semantics in interfaces.  A typical example involves a
+file, where various operations such as readline() and readlines(), can
+be implemented by default in terms of a more primitive operation -- in
+this case read().  Unfortunately, I believe that this approach is not
+very practical, since those default implementations are usually
+inefficient, and the choice of the "most primitive" operation is often
+dependent on the situation.  I also suspect that outside some common
+standard types there aren't all that many uses for this pattern.  But
+if you have to do this, a mix-in class for the "default" functionality
+separate from the interface would work just as well as combining the
+two.</p>
+<p>Specifically because they are not classes, interfaces allow for clear,
+distinct semantics.  (That is, the semantics of interface objects; I
+intend for interfaces to be neutral on the issue of the semantics of
+the objects they describe.)  For example, (not that I necessarily
+propose this, but this is one way that we could decide to go), in a
+class claiming to implement a particular method declared in an
+interface, it could be flagged as an error if the actual
+implementation required more arguments than declared in the interface,
+or (assuming we can have type declarations in interfaces as well as in
+classes) if the argument types didn't match.</p>
+<p>Python has a strong tradition that subclasses may redefine methods
+with a different signature, and making that an error goes against the
+grain of the language.  But the explicit use of an interface changes
+things and there is seems appropriate that a class should not be
+allowed to violate an interface it claims to implement.</p>
+<p>So, while I haven't decided that Python 3.0 will have interfaces (or
+type declarations), I'd like to go ahead and hypothesize about such a
+future, and look at some of the standard interfaces the language would
+provide for various common protocols like sequence, mapping and file.</p>
+</div>
+<div class="section" id="the-file-interface">
+<h1><a name="the-file-interface">The File Interface</a></h1>
+<p>Let's start with files, because they don't require genericity to fully
+specify the interface.  Here's my first attempt.  Note that I'm
+simplifying a few things; I'd like to drop the optional argument to
+readline() and readlines(), and I'm dropping the obsolete API
+xreadlines():</p>
+<pre class="literal-block">
+interface file:
+
+    def readline() -&gt; str:
+        "Returns the next line; returns '' on EOF"
+
+    def next() -&gt; str:
+        """Returns the next line; raises StopIteration on EOF.
+
+        next() has one special property: due to internal buffering,
+        mixing it with other operations is not guaranteed to work
+        properly unless seek() is called first.
+
+        """
+
+    def __iter__() -&gt; file:
+        "Returns self"
+
+    def read(n: int = -1) -&gt; str:
+        """Reads n bytes; if n &lt; 0, reads until EOF.
+
+        This blocks rather than returning a short read unless EOF is
+        reached; however not all implementations honor this
+        property.
+
+        (Did you know the default argument was -1?)
+
+        """
+
+    def readlines() -&gt; list[str]:
+        "Returns a list containing the remaining lines"
+
+    def seek(pos: int, how: int = 0) -&gt; None:
+        """Sets the position for the next read/write.
+
+        The 'how' argument should be 0 for positioning relative to
+        the start of the file, 1 for positioning relative to the
+        current position, and 2 for positioning relative to the end
+        of the file.
+
+        """
+
+    def tell() -&gt; int:
+        "Returns the current read/write position"
+
+    def write(s: str) -&gt; None:
+        "Writes a string"
+
+    def writelines(s: list[str]) -&gt; None:
+        """Writes a list of strings.
+
+        Note: this does not add newlines; the strings in the list
+        are supposed to end in a newline.
+
+        """
+
+    def truncate(size: int = ...) -&gt; None:
+        """Truncates the file to the given size.
+
+        Default is the current position.
+
+        """
+
+    def flush() -&gt; None:
+        "Flushes buffered data to the operating system."
+
+    def close():
+        "Closes the file, rendering subsequent use invalid"
+
+    def fileno() -&gt; int:
+        """Returns the underlying 'Unix file descriptor'.
+
+        Not all file implementations may support this, and the
+        semantics are not always the same.
+
+        """
+
+    def isatty() -&gt; bool:
+        "Returns whether this is an interactive device"
+
+    # Attributes
+
+    softspace: int # read-write attribute used by 'print'
+
+    # The following are read-only and not always supported
+
+    mode: str # mode given to open
+
+    name: str # file name given to open
+
+    encoding: str|None # file encoding
+
+    closed: bool # whether the file is closed
+
+    newlines: None|str|tuple(str) # observed newline convention
+</pre>
+<p>This brings up a number of interesting issues already:</p>
+<blockquote>
+<ul>
+<li><p class="first">The file interface does <em>not</em> include standard object methods and
+attributes such as __repr__() and __class__.  But it <em>does</em>
+include __iter__() since this is not supported by all objects.</p>
+</li>
+<li><p class="first">Moreover __iter__() is defined different than the "generic"
+definition of __iter__() would be: since we know that a file's
+__iter__ method returns the file itself, we know its type.  This
+is in general the case for standard APIs that are explicitly
+part of a specific interface; we'll see this again for
+__getitem__ later.</p>
+</li>
+<li><p class="first">The argument to writelines() and the return value from
+readlines() are lists of strings.  I really want to be able to
+express that in the interface definition.  Even in Pascal,
+which has such a nice simple type system, you can say this!
+I'm using list[str], following the notation I used in an earlier
+blog where I was brainstorming about generic types.</p>
+</li>
+<li><p class="first">Rather than distinguishing between None and its type, for
+conciseness I'm using the singleton value as its own type.
+While type(None) is not None and never will be, in type
+expressions, None stands for type(None).</p>
+</li>
+<li><p class="first">In a few places, a value may be either a string or None; or
+either an int or None.  I'm using the notation str|None
+respectively int|None for this, which also debuted in an earlier
+blog.</p>
+</li>
+<li><p class="first">The argument to truncate() has a dynamic default.  I'm proposing
+the notation ... for this; I don't want to say -1 because
+passing int -1 doesn't have the same effect, unlike for read().
+The semantics of this notation are that an implementation may
+choose its own default but that it must provide one.</p>
+</li>
+<li><p class="first">There's the thorny issue of some APIs that aren't always
+defined.  I'm not going to introduce a notation for this yet;
+rather, I'll just say it in a comment.  The default type
+checking algorithm will accept partial implementations of an
+interface.</p>
+</li>
+<li><p class="first">The file interface has a few attributes, one of which
+(softspace) is writable.  This <em>must</em> be supported or else the
+print statement won't work righty when directed to such a file.
+For now I'm using the notation:</p>
+<pre class="literal-block">
+name: type
+</pre>
+<p>and indicating the read-write-ness in a comment.  The notation
+is less than ideal because it doesn't allow to attach a doc
+string.  I could use this:</p>
+<pre class="literal-block">
+name: type "docstring"
+</pre>
+<p>but I fear that Python's parser isn't smart enough to always
+know where the type expression ends and the docstring begins
+(since 'type' can be an expression, syntactically).</p>
+</li>
+<li><p class="first">Note that softspace is conceptually a bool, but implemented as
+an int, and that's how it's declared here.</p>
+</li>
+<li><p class="first">The return type of close() is problematic.  Usually it is None,
+but for file objects returned by os.popen() is is an int.  I've
+chosen to leave out the '-&gt; None' notation on the close()
+method, leaving its return type unspecified.  I could also have
+written '-&gt; int|None'.  Or we could have a rule that allows
+a method that is declared to return None to return a different
+type, perhaps after subclassing.</p>
+</li>
+<li><p class="first">It would be lovely to be able to declare exceptions, even if we
+don't assign any semantics to this (Java checked exceptions have
+turned out to be a horrible thing in practice).  But I'm leaving
+this to a future brainstorm.</p>
+</li>
+<li><p class="first">What about argument names and keyword parameters?  In the above
+example, I don't intend to allow keyword parameters on any of
+the interfaces.  But what if an interface <em>wants</em> to define
+keyword parameters?  What if you want to <em>require</em> certain
+parameters to be given as keyword parameters (and you still want
+to declare their types)?  Maybe we need a notation to explicitly
+say that an argument can or must be a keyword parameter?  Or
+maybe it would be sufficient to allow leaving out the parameter
+name if it is supposed to be always positional?  Then the
+declaration of read() would become:</p>
+<pre class="literal-block">
+def read(:int = -1) -&gt; str: "reads some bytes [...]"
+</pre>
+</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="the-sequence-interface">
+<h1><a name="the-sequence-interface">The Sequence Interface</a></h1>
+<p>Here's my attempt at defining a generic sequence interface.  Note that
+I'm declaring this as a generic type, with 'T' being the type
+parameter.  This despite my earlier promise not to bother with generic
+types.  I think they are both useful and easy to implement, even if
+there are some thorny issues left: a dynamic check for list[int] is
+very expensive (it has to check every item in the list for int-ness)
+and any mutation of the list might change its type:</p>
+<pre class="literal-block">
+interface iterator[T]:
+
+    def __iter__() -&gt; iterator[T]: "returns self"
+
+    def next() -&gt; T: "returns the next item or raises StopIteration"
+
+interface iterable[T]:
+
+    """An iterable should preferably implement __iter__().
+
+    __getattr__() is a fallback in case __iter__ is not defined.
+
+    Note that an iterator is a perfect candidate for an iterable, by
+    virtue of its __iter__() method.
+
+    """
+
+    def __iter__() -&gt; iterator[T]: "returns an iterator"
+
+    def __getitem__(i: int) -&gt; T: "returns an item"
+
+interface sequence[T]:
+
+    @overloaded
+    def __getitem__(i: int) -&gt; T: "gets an item"
+
+    @overloaded
+    def __setitem__(i: int, x: T) -&gt; None: "sets an item"
+
+    @overloaded
+    def __delitem__(i: int) -&gt; None: "deletes an item"
+
+    def __iter__() -&gt; iterator[T]: "returns iterator"
+
+    def __reversed__() -&gt; iterator[T]: "returns reverse iterator"
+
+    def __len__(): int: "returns number of items"
+
+    def __contains__(x: T): bool: "returns whether x in self"
+
+    def __getslice__(lo: int, hi: int) -&gt; sequence[T]:
+        "gets a slice"
+
+    def __setslice__(lo: int, hi: int, xs: iterable[T]) -&gt; None:
+        "sets a slice"
+
+    @overloaded
+    def __getitem__(x: slice) -&gt; sequence[T]:
+        "gets an extended slice"
+
+    @overloaded
+    def __setitem(x: slice, xs: iterable[T]) -&gt; None:
+        "sets an extended slice"
+
+    @overloaded
+    def __delitem__(x: slice) -&gt; None:
+        "deletes an extended slice"
+
+    def __add__(x: iterable[T]) -&gt; sequence[T]:
+        "concatenation (+)"
+
+    def __radd__(x: iterable[T]) -&gt; sequence[T]:
+        "right-handed concatenation (+)"
+
+    def __iadd__(x: iterable[T]) -&gt; sequence[T]:
+        "in-place concatenation (+=)"
+
+    def __mul__(n: int) -&gt; sequence[T]: "repetition (*)"
+
+    def __rmul__(n: int) -&gt; sequence[T]: "repetition (*)"
+
+    def __imul__(n: int) -&gt; sequence[T]: "in-place repetition (*=)"
+
+    # The rest are all list methods -- should we really define these?
+
+    def append(x: T) -&gt; None: "appends an item"
+
+    def insert(i: int, x: T) -&gt; None: "inserts an item"
+
+    def extend(xs: iterable[T]) -&gt; None: "appends several items"
+
+    def pop(i: int = -1) -&gt; T: "removes and return an item"
+
+    def remove(x: T) -&gt; None:
+        "removes an item by value; may raise ValueError"
+
+    def index(x: T) -&gt; int:
+        "returns first index where item is found; may raise ValueError"
+
+    def count(x: T) -&gt; int: "returns number of occurrences"
+
+    def reverse() -&gt; None: "in-place reversal"
+
+    # But not sort() -- that's really only a list method
+</pre>
+<p>Some additional issues with this:</p>
+<blockquote>
+<ul class="simple">
+<li>The syntax for declaring a generic interface (interface X[T])
+requires a bit of a leap of faith.  But without parameterization
+we can say so much less about a sequence than what is common
+knowledge (and what a type inferencer should know) that I find
+it nearly useless to bother defining a sequence type without
+this notation.  Possibly an implementation that ignores the type
+parameter T would be acceptable; use of T would be purely for
+the benefit of the human reader.</li>
+<li>I had to introduce two auxiliary interfaces:<ul>
+<li>iterator, something with primarily a next() method</li>
+<li>iterable: something with primarily an __iter__() method,
+although something implementing __getitem__() will also work.
+That makes its declaration a bit awkward (with both methods
+being optional but at least one being required).</li>
+</ul>
+</li>
+<li>I struggled a bit with the two possible signatures for
+__getitem__ and friends: it is normally called with an int
+argument, returning a single item, but the extended slice
+notation (e.g. seq[1:2:3]) calls it with an argument that is a
+slice object, and then it returns a sequence.  Declaring the
+argument and return types as unions feels unsatisfactory because
+it throws away information.  I decided to use the @overloaded
+decorator, which can be implemented using a small amount of
+namespace hacking.</li>
+<li>Should we have separate interfaces for immutable and mutable
+sequences?  For now I'd rather only have one; the notion that an
+implementation may leave out methods naturally allows for
+immutable sequences.</li>
+<li>Should the sequence interface mention virtually everything that
+a list can do, or should it be minimal?</li>
+<li>Even if the sequence interface is inclusive (containing most
+list methods), I'd like to leave sort() out of it; sort() is
+really unique to the list type, and even if some user type
+defines a sort() method, it's unlikely to have the same
+signature as list.sort() (especially after what we did to this
+signature in Python 2.4).  Feel free to prove me wrong.</li>
+<li>In current Python, the + operator on standard sequence types
+only accepts a right operand of the same type (list, tuple or
+str).  But the += operator on a list accepts any iterable!  I
+think + on any two sequences, or even a sequence and an
+iterable, in either order, should be allowed, and should return
+a new sequence.  However, iterable + iterable should be left
+undefined; this is because iterator + iterator is not defined,
+and I think it should not be.</li>
+</ul>
+</blockquote>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="m-clock-20.html">&larr; Previous</a> &middot; <a href="stricter-whitespace-enforcement.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bob Martin&#x27;s Agile Programming book - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="adding-optional-static-typing-to-python.html">&larr; Previous</a> &middot; <a href="oscon-2003-impressions.html">Next &rarr;</a></p>
+
+<h1>Bob Martin&#x27;s Agile Programming book</h1>
+<p><i>February 3, 2004 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=32026">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p>I wrote this half a year ago, planning to go back to the book for
+some fact checking before posting it.  Then I accepted a new job,
+the book got packed, and I was too busy to blog.  
+
+<p>I'm accepting the status quo: I'm still too busy, the book is in
+a box that I still haven't unpacked, so I'm just posting this unfinished.
+I'm sure commenters will correct my facts if they need correcting. ;-)
+
+<p> 
+
+<p>I enjoyed reading Bob Martin's "Agile Programming".  I haven't
+quite finished it, but I'm confident I can start writing this review
+now, while I have a few moments to myself.  There's no Internet above
+the Atlantic Ocean yet to distract me with email, and my family is
+sadly remaining at home.  And I'm procrastinating writing my keynote
+for EuroPython :).  (The second pass of this text was done on a plane
+from Portland to San Francisco, returning from OSCON 2003 -- see my
+previous blog entry.)
+
+<p>I really liked the book, although it was very different from what I
+had expected.  Well, what <i>had</i> I expected?  Maybe more formal
+writing; Bob's writing (this may come as no surprise to his fans) is
+incredibly informal, despite the many footnotes (half of which contain
+jokes) and references (mostly to the "Gang Of Four" patterns book and
+Bob's own previous work).  Maybe I had expected the code samples to be
+more sophisticated.  Maybe I had expected fewer typos; I expect Bob's
+enough of a control freak to produce camera-ready copy, which must
+limit the effectiveness of a publisher's editors and proofreaders
+against slippery fingers.
+
+<p>But the typos didn't distract from the book's message. It starts
+with a clear manifesto, proclaiming (amongst others) that programmers
+aren't to be treated like exchangeable production workers. While
+touting various "agile" development methods, Bob is clearly partial to
+Extreme Programming, probably the most outgoing of the agile methods.
+(I would call it my favorite except I'm pretty ignorant of the others,
+so that endorsement wouldn't mean much.)
+
+<p>There is a lot of code in the book.  I haven't read all of it, but
+I've skimmed it all and read much of it.  I'd say two-third is Java
+code, the rest is C++.  Python gets a mention or two, together with
+Smalltalk and Ruby (apparently Bob's current favorite) as examples of
+"more dynamic languages" where some things are different or easier.
+
+<p>Seeing all that Java and C++ reminded me of how verbose these
+languages often are!  After reading Bob's very entertaining chapter of
+how he and another Bob wrote a scoring program for bowling, I wrote a
+similar program in Python in 75 minutes and 85 lines, plus 150 lines
+of unit testing code. [XXX insert comparison in #lines.] My program
+used a much simpler data structure (a list of lists, each sublist
+representing a frame) and didn't follow the flow of Bob's program; I
+simply did what I thought was the best way to solve the problem in
+Python.  I don't think that reading Bob's program did much to
+influence my version, except that I used it to learn the scoring rules
+for bowling (not being a native American, I had only the vaguest idea
+of the difference between a strike and a spare before reading this
+chapter).
+
+<p>But in a sense, the verbosity of Java and C++ help the book; the
+method of test-driven design practiced throughout the book doesn't
+work for very small programs, and the bowling scoring program in
+Python would perhaps have been too small to make a good example
+(although the quirkiness of the rules of bowling definitely help).
+
+<p>The large volume of code in the book is important for Bob's story:
+there's a lot of it, often shown in various stages of development,
+from the first skeleton version, that barely passes the most trivial
+unit test, to the final, complete version, with full unit tests. This
+is an exellent illustration of test-driven design, although I still
+find it hard to believe that it really works like that in real life,
+when practiced in the extreme form shown in the book.
+
+<p>I am a firm believer in writing unit tests; in a recent mid-size
+programming project, adding a fairly elaborate new feature to Zope 3,
+I found time after time that the remaining bugs in the code coincided
+with places where I had cut corners in the unit tests.  But the unit
+tests played only a small role in the <i>design</i> of my code.  There
+was a solid high-level design on paper, done months before I got the
+project, and this design for the most part worked well.  It wasn't
+grand enough to call it "big design up front"  (which has a bad rep in
+the XP world); most programming details weren't fixed by the design
+and in fact I wrote large parts of the code twice, first to get a feel
+for the "lay of the land", and then another time to "get it right".
+Only the second version of the code had solid unit tests, which were
+essential to get all the code details right -- but they didn't
+influence the design much, which was formed by thinking over the
+problem after writing the first prototype.  To be honest, there was
+an even earlier prototype by someone else, which I ended up mostly
+throwing away, but which probably informed the design with which I
+started.
+
+<p>Besides writing about XP and test-driven design, Bob writes about a
+number of programming patterns.  Most of these are repeats of
+Gang-of-Four patterns, some come from Bob's own patterns book.  I find
+Bob's approach refreshing: while I own the GoF book, I haven't read it
+cover-to-cover, and only occasionally used it as a reference.  Bob's
+treatment is lighter, but more importantly, he repeatedly warns for
+mindless use of patterns.  He explains how some patterns can easily
+lead to overengineered code, and shows examples of lighter
+alternatives (usually different patterns from the same sources).
+
+<p>But more than test-driven design or patterns, for me the
+centerpiece of the book are the various principles of agile
+development.  There is the Liskov Substitution Principle, a reminder
+about the intent of subclassing; the Single Responsibility Principle,
+which can be used to decide when it's better to split a class into
+two; the Open-Closed Principle, stating that a class should be open to
+extension but closed to change (since every change to a class requires
+relinking all code that depends on it; not quite true in Python, but
+still a useful principle).
+
+<p>Finally there's the Dependency Inversion Principle, which reminds
+us that rather than having the higher-level classes depend on the
+lower-level classes, like we used to do it, we should have the
+higher-level classes define interfaces upon which the lower-level
+classes depend.  This principle, like several of the others, is
+designed to decouple different parts of a program, so there's less
+need for relinking.  Again, this is less important for Python.  In C++
+or Java this change usually means that you have to create an interface
+describing the concrete low-level class, rewrite the higher-level
+class to take an instance implementing that interface, and rewrite the
+lower-level class to implement the interface.
+
+<p>Once this is done, the low-level class can change without affecting
+the higher-level class (which only depends on the interface), as
+opposed to before the change, when every change in the lower-level
+class required relinking the higher-level class.  Why is this bad?
+The higher-level class doesn't change that much, but the lower-level
+class is where most of the action is, and hence much of the churn
+during development.  Surely reducing the dependencies on a high-churn
+class must be a worthy goal!
+
+<p>But in Python, the implementation of this cunning plan is almost
+too simple to deserve a Principle with a capital P.  Since in Python,
+interfaces (we tend to call them protocols) are usually only in the
+programmer's head, all we have to do is to make sure that the
+higher-level class doesn't directly instantiate the lower-level class,
+but gets an instance (or instances, as the case may be; or perhaps a
+factory function) passed in. Then we can change the lower-level class
+as long as the signatures of the methods used by the higher-level
+class don't change (this is Python's equivalent of keeping the
+interface fixed); and we can even substituting an entirely different
+class as long as it has the same set of methods.
+
+<p> 
+
+<p>PS. (back to today, February 2004): does anybody else think that
+Ant is a poor excuse for a build tool?  Some of my top complaints:
+
+<ul>
+<li>XML wasn't designed to be edited by humans on a regular basis.
+<li>Ant is extremele verbose.
+    The external command "cp A B" becomes a four-line construct.
+<li>Ant is not Unix-friendly.  The &lt;copy&gt; command doesn't copy
+    the permission bits of Unix files; the &lt;exec&gt; command doesn't
+    consider an exit status of "2" to be an error.
+<li>Why do I have to say vmlauncher="false" everywhere?
+</li></li></li></li></ul>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="adding-optional-static-typing-to-python.html">&larr; Previous</a> &middot; <a href="oscon-2003-impressions.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Language Design Is Not Just Solving Puzzles - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="too-much-fun-with-python-on-nokia-phone.html">&larr; Previous</a> &middot; <a href="open-source-python-for-nokia-s60.html">Next &rarr;</a></p>
+
+<h1>Language Design Is Not Just Solving Puzzles</h1>
+<p><i>February 10, 2006 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=147358">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p>Some people seem to think that language design is just like solving a puzzle.  Given a set of requirements they systematically search the solution space for a match, and when they find one, they claim to have the perfect language feature, as if they've solved a Sudoku puzzle.  For example, today someone claimed to have <a class="reference" href="http://mail.python.org/pipermail/python-dev/2006-February/060654.html">solved the problem of the multi-statement lambda</a>.</p>
+<p>But such solutions often lack "Pythonicity" -- that elusive trait of a good Python feature.  It's impossible to express Pythonicity as a hard constraint.  Even the <a class="reference" href="http://www.python.org/peps/pep-0020.html">Zen of Python</a> doesn't translate into a simple test of Pythonicity.</p>
+<p>In the example above, it's easy to find the Achilles heel of the proposed solution: the double colon, while indeed syntactically unambiguous (one of the "puzzle constraints"), is completely arbitrary and doesn't resemble anything else in Python.  A double colon occurs in one other place, but there it's part of the slice syntax, where a[::] is simply a degenerate case of the extended slice notation a[start:stop:step] with start, stop and step  all omitted.  But that's not analogous at all to the proposal's lambda &lt;args&gt;::&lt;suite&gt;.  There's also no analogy to the use of :: in other languages -- in C++ (and Perl) it's a scoping operator.</p>
+<p>And still that's not why I rejected this proposal.  If the double colon is unpythonic, perhaps a solution could be found that uses a single colon and is still backwards compatible (the other big constraint looming big for Pythonic Puzzle solvers).  I actually have one in mind: if there's text after the colon, it's a backwards-compatible expression lambda; if there's a newline, it's a multi-line lambda; the rest of the proposal can remain unchanged.  Presto, QED, voila, etcetera.</p>
+<p>But I'm rejecting that too, because in the end (and this is where I admit to unintentionally misleading the submitter) I find <em>any</em> solution unacceptable that embeds an indentation-based block in the middle of an expression.  Since I find alternative syntax for statement grouping (e.g. braces or begin/end keywords) equally unacceptable, this pretty much makes a multi-line lambda an unsolvable puzzle.</p>
+<p><strong>And I like it that way!</strong>  In a sense, the reason I went to considerable length describing the problems of embedding an indented block in an expression (thereby accidentally laying the bait) was that I wanted to convey the sense that the problem was unsolvable.  I should have known my geek audience better and expected someone to solve it. :-)</p>
+<p>The unspoken, <a class="reference" href="http://en.wikipedia.org/wiki/Right_brain">right brain</a> constraint here is that the complexity introduced by a solution to a design problem must be somehow proportional to the problem's importance.  In my mind, the inability of lambda to contain a print statement or a while-loop etc. is only a minor flaw; after all instead of a lambda you can just use a named function nested in the current scope.</p>
+<p>But the complexity of any proposed solution for this puzzle is immense, to me: it requires the parser (or more precisely, the lexer) to be able to switch back and forth between indent-sensitive and indent-insensitive modes, keeping a stack of previous modes and indentation level.  Technically that can all be solved (there's already a stack of indentation levels that could be generalized).  But none of that takes away my gut feeling that it is all an elaborate <a class="reference" href="http://www.rube-goldberg.com/html/gallery.htm">Rube Goldberg contraption</a>.</p>
+<p>Mathematicians don't mind these -- a proof is a proof is a proof, no matter whether it contains 2 or 2000 steps, or requires an infinite-dimensional space to prove something about integers.  Sometimes, the software equivalent is acceptable as well, based on the theory that the end justifies the means.  Some of Google's <a class="reference" href="http://www.google.com/help/features.html#calculator">amazing accomplishments</a> have this nature inside, even though we do our very best to make it appear simple.</p>
+<p>And there's the rub: there's no way to make a Rube Goldberg language feature appear simple.  Features of a programming language, whether syntactic or semantic, are all part of the language's <em>user interface</em>.  And a user interface can handle only so much complexity or it becomes unusable.  This is also the reason why Python will never have continuations, and even why I'm uninterested in optimizing tail recursion.  But that's for another installment.</p>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="too-much-fun-with-python-on-nokia-phone.html">&larr; Previous</a> &middot; <a href="open-source-python-for-nokia-s60.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

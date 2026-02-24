@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>It isn&#x27;t Easy to Remove the GIL - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="a-response-to-bruce-eckel.html">&larr; Previous</a> &middot; <a href="syncing-motorola-razr-v3xx-with-mac-isync-24.html">Next &rarr;</a></p>
+
+<h1>It isn&#x27;t Easy to Remove the GIL</h1>
+<p><i>September 10, 2007 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=214235">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p>yesterday, Juergen Brendel <a class="reference" href="http://blog.snaplogic.org/?p=94">blogs at length</a> about the disadvantages of the <a class="reference" href="http://docs.python.org/api/threads.html">GIL</a>.  He claims it is an architectural decision I'm making that limits his productivity.</p>
+<p>I don't expect that this or any response will stop the requests for the GIL's removal, despite a well-reasoned <a class="reference" href="http://www.python.org/doc/faq/library/#can-t-we-get-rid-of-the-global-interpreter-lock">FAQ entry</a> about the issue.  But I also don't expect it to go away until someone <em>other than me</em> goes through the effort of removing it, and showing that its removal doesn't slow down single-threaded Python code.</p>
+<p>This has been tried before, with disappointing results, which is why I'm reluctant to put much effort into it myself.  In 1999 Greg Stein (with Mark Hammond?) produced a fork of Python (1.5 I believe) that removed the GIL, replacing it with fine-grained locks on all mutable data structures.  He also submitted patches that removed many of the reliances on global mutable data structures, which I accepted.  However, after benchmarking, it was shown that even on the platform with the fastest locking primitive (Windows at the time) it slowed down single-threaded execution nearly two-fold, meaning that on two CPUs, you could get just a little more work done without the GIL than on a single CPU with the GIL.  This wasn't enough, and Greg's patch disappeared into oblivion.  (See Greg's <a class="reference" href="http://mail.python.org/pipermail/python-dev/2001-August/017099.html">writeup</a> on the performance.)</p>
+<p>I'd welcome it if someone did another experiment along the lines of Greg's patch (which I haven't found online), and I'd welcome a set of patches into Py3k <em>only if</em> the performance for a single-threaded program (and for a multi-threaded but I/O-bound program) <em>does not decrease.</em></p>
+<p>I would also be happy if someone volunteered to maintain a GIL-free fork of Python, in case that the single-threaded performance goal can't be met but there is significant value for multi-threaded CPU-bound applications.  We might even end up with all the changes permanently part of the code base, but enabled only on request at compile time.</p>
+<p>However, I want to warn that there are many downsides to removing the GIL.  It complicates life for extension modules, who can no longer expect that they are invoked in a "safe zone" protected by the GIL -- as soon as an extension has any global mutable data, will have to be prepared with concurrent calls from multiple threads.  There might also be changes in the Python/C API necessitated by the need to lock certain objects for the duration of a sequence of calls.</p>
+<p>While it is my personal opinion, based upon the above considerations, that there isn't enough value in removing the GIL to warrant the effort, I will welcome and support attempts to show that times have changed.  However, there is no point in pleading alone -- Python is open source and I have my hands full dealing with the efforts to produce a quality 3.0 language definition and implementation on time.  I want to point out one more time that the <em>language</em> doesn't require the GIL -- it's only the CPython virtual machine that has historically been unable to shed it.</p>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="a-response-to-bruce-eckel.html">&larr; Previous</a> &middot; <a href="syncing-motorola-razr-v3xx-with-mac-isync-24.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

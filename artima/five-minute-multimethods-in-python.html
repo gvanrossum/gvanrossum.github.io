@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Five-minute Multimethods in Python - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="stricter-whitespace-enforcement.html">&larr; Previous</a> &middot; <a href="the-fate-of-reduce-in-python-3000.html">Next &rarr;</a></p>
+
+<h1>Five-minute Multimethods in Python</h1>
+<p><i>March 30, 2005 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=101605">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p>So what are multimethods?  I'll give you my own definition, as I've come to understand them: a function that has multiple versions, distinguished by the type of the arguments.  (Some people go beyond this and also allow versions distinguished by the <i>value</i> of the arguments; I'm not addressing this here.)
+
+<p>As a very simple example, let's suppose we have a function that we want to define for two ints, two floats, or two strings.  Of course, we could define it as follows:
+
+<pre>
+def foo(a, b):
+    if isinstance(a, int) and isinstance(b, int):
+        ...code for two ints...
+    elif isinstance(a, float) and isinstance(b, float):
+        ...code for two floats...
+    elif isinstance(a, str) and isinstance(b, str):
+        ...code for two strings...
+    else:
+        raise TypeError("unsupported argument types (%s, %s)" % (type(a), type(b)))
+</pre>
+<p>But this pattern gets tedious.  (It also isn't very OO, but then, neither are multimethods, despite the name, IMO.)  So what could this look like using multimethod dispatch?  Decorators are a good match:
+
+<pre>
+from mm import multimethod
+
+@multimethod(int, int)
+def foo(a, b):
+    ...code for two ints...
+
+@multimethod(float, float):
+def foo(a, b):
+    ...code for two floats...
+
+@multimethod(str, str):
+def foo(a, b):
+    ...code for two strings...
+</pre>
+<p>The rest of this article will show how we can define the multimethod decorator.
+It's really pretty simple: there's a global registry indexed by function name ('foo' in this case), pointing to a registry indexed by tuples of type objects corresponding to the arguments passed to the decorator.  Like this:
+
+<pre>
+# This is in the 'mm' module
+
+registry = {}
+
+class MultiMethod(object):
+    def __init__(self, name):
+        self.name = name
+        self.typemap = {}
+    def __call__(self, *args):
+        types = tuple(arg.__class__ for arg in args) # a generator expression!
+        function = self.typemap.get(types)
+        if function is None:
+            raise TypeError("no match")
+        return function(*args)
+    def register(self, types, function):
+        if types in self.typemap:
+            raise TypeError("duplicate registration")
+        self.typemap[types] = function
+</pre>
+<p>I hope that wasn't too much code at once; it's really very simple so far (please indulge me in using the words 'class' and 'type' interchangeably here):
+
+<ul>
+<li>The __init__() constructor creates a MultiMethod object with a given name and an empty typemap.  (The name argument is only used for diagnostics; I'm leaving these out for brevity.)
+
+<li>The __call__() method makes the MultiMethod object itself callable.  It looks up the actual function to call in the typemap based on the types of the arguments passed in; if there's no corresponding entry it raises TypeError.  The biggest simplification here is that we don't try to find an inexact match using subclass relationships; a real multimethod implementation should attempt to find the best match such that the actual argument types are subclasses of the types found in the typemap.  This is left as an exercise for the reader (or maybe I'll blog about it next week, if there's demand; there are a few subtleties when there's more than one near miss).
+
+<li>The register() method adds a new function to the typemap; it should be called with a tuple of type objects (== classes) and a function.
+
+</li></li></li></ul>
+<p>I hope it's clear from this that the @multimethod decorator should return a MultiMethod object and somehow call its register() method.  Let's see how to do that:
+
+<pre>
+def multimethod(*types):
+    def register(function):
+        name = function.__name__
+        mm = registry.get(name)
+        if mm is None:
+            mm = registry[name] = MultiMethod(name)
+        mm.register(types, function)
+        return mm
+    return register
+</pre>
+<p>That's it!  Sparse but it works.  Note that only positional parameters are supported; it gets pretty murky if you want to support keyword parameters as well.  Default parameter values are somewhat against the nature of multimethods: instead of
+
+<pre>
+@multimethod(int, int)
+def foo(a, b=10):
+    ...
+</pre>
+
+you'd have to write
+
+<pre>
+@multimethod(int, int)
+def foo(a, b):
+    ...
+@multimethod(int)
+def foo(a):
+    return foo(a, 10) # This calls the previous foo()!
+</pre>
+<p>I've got one improvement to make: I imagine that somtimes you'd want to write a single implementation that applies to multiple types.  It would be convenient if the @multimethod decorators could be stacked, like this:
+
+<pre>
+@multimethod(int, int)
+@multimethod(int)
+def foo(a, b=10):
+    ...
+</pre>
+<p>This can be done by changing the decorator slightly (this is not thread-safe, but I don't think that matters much, since all this is typically happening at import time):
+
+<pre>
+def multimethod(*types):
+    def register(function):
+        function = getattr(function, "__lastreg__", function)
+        name = function.__name__
+        mm = registry.get(name)
+        if mm is None:
+            mm = registry[name] = MultiMethod(name)
+        mm.register(types, function)
+        mm.__lastreg__ = function
+        return mm
+    return register
+</pre>
+<p>Note the three-argument getattr() call, which you may not be familiar with: getattr(x, "y", z) returns x.y if it exists, and z otherwise.  So that line is equivalent to
+
+<pre>
+if hasattr(function, "__lastreg__"):
+    function = function.__lastreg__
+</pre>
+<p>You could try to put the assignment to mm.__lastreg__ inside the register() method, but that would just add more distance between the code that sets it and the code that uses it, so I like it better this way.  In a more static language, of course, there would have to be a declaration of the __lastreg__ attribute; Python doesn't need this.  It's important that this isn't a "normal" attribute name, so that other uses of function attributes aren't preempted.  (Hm...  There are almost no "normal" uses of function attributes; they are mostly used for various "secret" purposes so name conflicts in the __xxx__ namespace are not inconceivable.  Oh well, maybe we should use something really long like multimethod_last_registered or even put the whole thing inside the MultiMethod class so we can use a private variable name like __lastreg.)
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="stricter-whitespace-enforcement.html">&larr; Previous</a> &middot; <a href="the-fate-of-reduce-in-python-3000.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

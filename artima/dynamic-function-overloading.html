@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dynamic Function Overloading - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="shuttleworth-foundation-workshop-on-analytical-skills-development.html">&larr; Previous</a> &middot; <a href="python-3000-adaptation-or-generic-functions.html">Next &rarr;</a></p>
+
+<h1>Dynamic Function Overloading</h1>
+<p><i>April 7, 2006 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=155514">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p>I'm going to stick to the term "(dynamically, or run-time) overloaded functions" for now, despite criticism of this term; the alternatives "generic functions", "multi-methods" and "dispatch" have been (rightly) criticized as well.</p>
+<p>A slightly optimized implementation is here: <a class="reference" href="http://svn.python.org/view/sandbox/trunk/overload/">http://svn.python.org/view/sandbox/trunk/overload/</a></p>
+<p>Phillip Eby has suggested that my implementation is too slow; but I recommend that you run test_overloading.py and see for yourself.  (This requires the Python 2.5a1 release that was just released from python.org.)</p>
+<p>Phillip also suggested that I use issubclass() instead of relying on the MRO (method resolution order); he believes the MRO approach can cause false precision.  I'm not sure I believe that, since for single dispatch my approach actually matches the class method lookup approach exactly.</p>
+<p>There are tons of additional features or potential requirements.  For example, should there be a mechanism to invoke the "next" applicable method?  But the algorithm doesn't clearly produce a next method.  Also, in the case of ambiguity, should an exception be raised or the default method be invoked?  (Or perhaps the "next" method, if we can agree on what it is?)</p>
+<p>In terms of optimization, I believe that a little bit of code generation could make overloaded functions nearly as fast as hand-coded functions; see 'accelerated' in test_overloading.py.</p>
+<p>And no, this isn't for Python 2.5; it's a highly contagious but also highly controversial thing that should be tried out in Python 3000 (or perhaps as a 3rd party add-on for 2.5) first.</p>
+<p>I totally forgot that I blogged about this earlier, over a year ago.  My implementation then was pathetic compared to today's!  Phillip's ideas have helped a lot.</p>
+<p>My hope is to eventually drive PyProtocols out of the market.  Phillip should be so proud of me. :-)</p>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="shuttleworth-foundation-workshop-on-analytical-skills-development.html">&larr; Previous</a> &middot; <a href="python-3000-adaptation-or-generic-functions.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

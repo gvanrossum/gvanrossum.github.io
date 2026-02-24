@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>M2Crypto woes - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="are-confirmation-dialogs-harmful.html">&larr; Previous</a> &middot; <a href="python-optional-typechecking-redux.html">Next &rarr;</a></p>
+
+<h1>M2Crypto woes</h1>
+<p><i>February 23, 2005 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=95863">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p>This is my first rant here.  I just spent several entire days trying to figure out why a long-running multi-threaded program that is making lots of SSL connections using M2Crypto is leaking memory.  <strong>Unsuccesful!</strong></p>
+<p>I found numerous problems in M2Crypto.  If you use the default parameters for the HTTPSConnection class, it creates an SSL Context object which is artificially kept alive in a global map of all SSL Context objects; you have to close the Context object explicitly to remove it from that map, but closing the HTTPSConnection doesn't close the context it created.</p>
+<p>After fixing that, it still leaked pretty severely.  Despite valiant attempts with valgrind (a useful enough tool, but unfinished) I still wasn't able to track down the leak; the stack trace shown by valgrind was missing several crucial entries (apparently calls through function pointers confuse it?).</p>
+<p>But even if I find the cause of the leak, I may not be able to plug it.  M2Crypto is written using SWIG, which contains lots of obfuscated code and doesn't exactly give me a warm fuzzy feeling that it's always doing the reference counting correctly.  And of course, OpenSSL itself is pretty much entirely opaque.  (Where the heck is d2i_X509 defined?  It's got its own man page, and is used in numerous place, but I can't find a single definition of it -- no macro, no function!  They must be defining it implicitly via some meta-macro...)</p>
+<p>M2Crypto has other problems too: a month ago, I was trying to create a multi-threaded <em>server</em> handling SSL and HTTP connections.  While it was not leaking, it was crashing as soon as I had multiple clients connect to it simultaneously.  M2Crypto's author tried to help me but could not reproduce the problem.  Then, later, I could not either.  So what was going on?  My suspicion is that the bug isn't fixed but an unrelated change in my code happens to stop triggering it -- meaning it could come back any time.</p>
+<p>M2Crypto hasn't been updated in a year.  It contains (in SSL/httpslib.py) various versions of an HTTPSConnection class which try to adjust to different Python versions, but due to a lack of imagination it reverts to the pre-2.2 code when Python 2.4 or higher is used!  There's a patch purporting to upgrade it to version 0.13.1 but the patch looks bogus to me (it uses an unbound method to override a bound one, which can't possibly work).  The HTTPSConnection.close() method does nothing, allowing for even more potential leaks.  The SSLServer class defines an error handler with an incorrect number of arguments.</p>
+<p>I could go on, but I think I've ranted enough, except for one thing.  I've yet to see an extension module using SWIG that doesn't make me think it was a mistake to use SWIG instead of manually written wrappers.  The extra time paid upfront to create hand-crafted wrappers is gained back hundredfold by time saved debugging the SWIG-generated code later.</p>
+<p>OK, now I've got it off my chest.  Is there an alternative?  Bill Janssen recommended PyOpenSSL.  Anyone concur?</p>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="are-confirmation-dialogs-harmful.html">&larr; Previous</a> &middot; <a href="python-optional-typechecking-redux.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

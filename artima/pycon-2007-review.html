@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PyCon 2007 Review - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="python-3000-status-update-long.html">&larr; Previous</a> &middot; <a href="new-python-3000-video-and-slides.html">Next &rarr;</a></p>
+
+<h1>PyCon 2007 Review</h1>
+<p><i>February 28, 2007 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=197203">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p>I'm writing this on the plane back home from Pycon.  I'm exhausted,
+but it's been a great week.  The conference exceeded all my (and
+everybody else's) expectations, with a 40% attendance increase,
+excellent keynotes, and an incredible "buzz".</p>
+<p>Apart from the keynotes I didn't see many presentations, but I heard
+that there were many great ones.  Pretty much the only talk I attended
+was Jim Hugunin's talk where he showed the progress of the IronPython
+project.  (Ironpython is Jim's Python implementation for Microsoft's
+CLR platform, which he created as an open source project before he
+joined Microsoft, and is now developing with a small team as one of
+the few open source projects at Microsoft.)  The wizard Merlin was
+thankfully absent; his place was taken by a much more interesting
+demo, where Jim controlled a Lego robot via a Python script.
+IronPython 1.1 beta has been released; it features Python 2.4
+compatibility, plus partial 2.5 compatibility enabled by a
+command-line switch.</p>
+<p>Friday morning's keynote speaker Ivan Krstic gave an overview of the
+non-profit One Laptop Per Child project, which aims to produce a
+hundred million laptops at a cost of $100 a piece, to be distributed
+to children ages 6 and up in poor countries (with the cooperation and
+at the expense of participating countries).  The first laptops (for
+relatively small trial projects in places like Brazil and I believe
+Thailand) are expected to ship this August.  The project, started at
+MIT and with many industry partners (including Google), combines
+existing and custom hardware and software components into an
+educational platform, dubbed the XO.  While some of the XO's hardware
+is proprietary, all the software is open source -- the basis is formed
+by a stripped down version of Linux (based on Red Hat's Fedora), on
+top of which they are developing a new GUI and window manager written
+in Python, and educational applications also written in Python.  The
+XO's hardware design focuses on extreme ruggedness, reliability, and
+low power consumption; the expectation is that there will be no
+realistic way to service the laptops in the field, and the environment
+will often be harsh: temperatures up to 50 degrees Celcius, and
+irregular (and often absent) power sources.</p>
+<p>Krstic gave away a few computers (the result of an early production
+test run), and I was one of the lucky recipients.  I'll probably frame
+it and hang it on the wall; a bug in the mouse pad firmware causing it
+to omit some "up" packets makes it pretty hard to use (this will be
+fixed in the next production run of course).  It's definitely no
+competition for today's commercially available laptops (which are 10x
+the price).  Almost everything about it is small: the keys (just right
+for children's little fingers), the screen (plenty of resolution
+though, and dual-mode for viewing in bright daylight), the memory (120
+MB on my copy, half that for the final product), and the flash disk
+(500 MB).  The processor runs at less than 400 MHz.  On the plus side,
+it runs a full Linux kernel with many utilities available, has
+self-configuring WiFi wireless, three USB slots, a camera, microphone,
+stereo speakers, audio in/out ports, and (once they tune the power
+management) it is expected to run for 22 hours on one battery charge.
+It weights less than a kilo!</p>
+<p>The software is far from finished.  An early version of the GUI and
+window manager are available, and a few small demo applications: chat,
+video, two games, and a web browser, and that's about it!  The plan is
+to write all applications in Python (except for the web browser), and
+a "view source" button should show the Python source for the currently
+running application.  In the tradition of Smalltalk (Alan Kay is on
+the OLPC board, and has endorsed the project's use of Python) the user
+should be able to edit any part of a "live" aplication and see the
+effects of the change immediately in the application's behavior.  (A
+versioned document store will make it possible to roll back disastrous
+changes.)  This is where Krstic wants my help: he hopes I can work
+magic and implement this feature for Python.  I got started right away
+during the conference, with a reimplementation of python's reload()
+function that can patch classes and functions in place.  Even this
+small component still has a long way to go; a checkpoint of the work
+in progress is checked into subversion as part of the Py3k standard
+library.  That's not where the rest of my OLPC work will show up; they
+use GIT for source control, so I will get to learn that.</p>
+<p>The keynotes had a strong educational theme: on Saturday morning Adele
+Goldberg gave a passionate plea for improvements to the USA's
+educational system.  40 years ago, US education was #1 in the world;
+today it is #19.  The public school system is stuck in a complete
+political gridlock; changes are nearly impossible to make due to the
+many constraints imposed on schools by federal regulations, fearful
+and litigious parents, bullying, lack of funds, and many other
+depressing factors.  It also seems that most uses of computers in the
+classroom have turned into disasters: the well-meaning geeks behind
+many school computer experiments don't understand the situation in the
+average classroom.  For example, computers show up without sufficient
+power, are likely to be stolen, or locked up in a safe rather than
+being used!  Schools are in total fear of the internet, which is seen
+as a source of pornography and influences of the devil.  I hope Adele
+will put her slides on line, there was much interesting data.</p>
+<p>On Sunday morning Robert Lefkowitz entertained us with a literate
+history of literacy throughout the ages, and (as is his habit) more
+questions than answers.</p>
+<p>For me personally, this conference signified the coming together of the
+Python 3000 project (a.k.a. Py3k or Python 3.0).  While in last year's
+keynote about this topic I mostly presented proposals, process, and
+plans, this year I could reveal many finished (as well as some
+unfinished or controversial) features, a concrete timeline with an
+alpha and a final release date (June 2007 and 2008, respectively),
+and, most importantly, a well-defined migration strategy.  Migration
+was also the topic of several heated discussions I had at the
+conference, for example with a group of Twisted developers (lead by
+Glyph Lefkowitz and moderated by Steve Holden) about the best way to
+approach the transition for a project like Twisted, which is bound to
+support several different Python releases (currently 2.3, 2.4 and
+2.5).  The best strategy will be to start by adding 2.6 to the list of
+supported versions when it comes out, and then gradually drop support
+for older releases and add support for 3.0.  Using 2.6 (to be release
+around April 2008, i.e. <em>before</em> 3.0) will be key for this strategy.</p>
+<p>Python 2.6 will contain various compatibility features, such as
+optional run-time warnings when a feature is used that will be dropped
+or changed in 3.0, as well as the ability to import certain 3.0
+features from the future (e.g. from __future__ import dict_views,
+which Thomas Wouters has already implemented in a branch).  Once a
+program is warning-free in 2.6, a source-to-source translator that
+recognizes syntactic constructs but doesn't do type inferencing or
+data flow analysis can be used to translate it to 3.0 syntax, and
+there will be a good chance that it runs correctly under 3.0, although
+still not quite as good as when moving code unchanged between 2.x and
+2.(x+1).  The recommended development mode is then to develop under
+2.6, and on a regular basis do the automatic conversion to 3.0 syntax
+and test under 3.0.  When problems are found under 3.0, it should be
+possible to change the <em>input</em> to the conversion tool in order to help
+it make the correct tranlation.</p>
+<p>I'll blog more about this in future episodes.</p>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="python-3000-status-update-long.html">&larr; Previous</a> &middot; <a href="new-python-3000-video-and-slides.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

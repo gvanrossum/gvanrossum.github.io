@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python 3000 and You - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="origin-of-bdfl.html">&larr; Previous</a> &middot; <a href="python-30-alpha-2-released.html">Next &rarr;</a></p>
+
+<h1>Python 3000 and You</h1>
+<p><i>March 18, 2008 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=227041">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p>The slides of my <a class="reference" href="http://www.python.org/doc/essays/ppt/">keynote</a> are now up on python.org.  There's both a <a class="reference" href="http://www.python.org/doc/essays/ppt/pycon2008/Py3kAndYou.ppt">PowerPoint</a> and a <a class="reference" href="http://www.python.org/doc/essays/ppt/pycon2008/Py3kAndYou.pdf">PDF</a> file.</p>
+<p>I'd like to take this opportunity to remind you of a really important issue that I neglected to mention in the talk: <strong>Don't change your APIs incompatibly when porting to Py3k.</strong></p>
+<p>Yes, you heard that right: even though Python 3.0 is changing incompatibly, I implore you (especially if you're maintaining a library that's used by others) <em>not</em> to make incompatible changes to your API.  If you <em>have</em> make API changes, do them <em>before</em> you port to 3.0 -- release a version with the new API for Python 2.5, or 2.6 if you must.  (Or do it later, <em>after</em> you've released a port to 3.0 without adding new features.)</p>
+<p>Why?  Think of your users.  Suppose Ima Lumberjack has implemented a web 2.0 app for managing his sawmill.  Ima is a happy user of your most excellent web 2.0 framework.  Now Ima wants to upgrade his app to Py3k.  He waits until you have ported your framework to Py3k.  He does everything by the books, runs his source code through the 2to3 tool, and starts testing.  Imagine his despair when the tests fail: how is he going to tell whether the breakage is due to your API changes or due to his own code not being Py3k-ready?</p>
+<p>On the other hand, if port your web 2.0 framework to Py3k <em>without</em> making API changes, Ima's task is much more focused: the bugs he is left with after running 2to3 are definitely in his own code, which (presumably :-) he knows how to debug and fix.</p>
+<p>The same recommendation applies even more strongly if your library is a dependency for other libraries -- due to the fan-out the pain caused to others multiplies.  If one of those packages gives up (even temporarily) its Py3k porting effort, this may prevent many other libraries and apps from being ported at all!</p>
+<p>So, once more for emphasis: <strong>Don't change your APIs at the same time as porting to Py3k!</strong></p>
+<p><em>Update:</em> Martijn Faassen borrowed the time machine and wrote <a class="reference" href="http://faassen.n--tree.net/blog/view/weblog/2008/03/05/0">the same blog entry</a> two weeks ago.</p>
+<p><em>PS.</em> The 3.0final release is now scheduled for September 3, 2008.  See <a class="reference" href="http://python.org/dev/peps/pep-0361/">PEP 361</a>.</p>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="origin-of-bdfl.html">&larr; Previous</a> &middot; <a href="python-30-alpha-2-released.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

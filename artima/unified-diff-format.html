@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unified Diff Format - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="upcoming-appearances.html">&larr; Previous</a> &middot; <a href="looking-for-memories-of-python-old-timers.html">Next &rarr;</a></p>
+
+<h1>Unified Diff Format</h1>
+<p><i>June 14, 2006 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=164293">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p>I haven't found a satisfactory specification of the unified diff
+format (the one on the GNU website is hopelessly incomplete).
+Here's what I've discovered by experimenting with diff(1) on Red Hat
+Linux; this identifies itself as 'diff (GNU diffutils) 2.8.1'.
+Hopefully this is useful for someone who needs to generate unified
+diffs or who needs to parse them.  (I had both needs recently. :-)</p>
+<p>The header lines look like this:</p>
+<pre class="literal-block">
+indicator ' ' filename '\t' date ' ' time ' ' timezone
+</pre>
+<p>where:</p>
+<blockquote>
+<ul class="simple">
+<li>indicator is '---' for the old file and '+++' for the new</li>
+<li>date has the form YYYY-MM-DD</li>
+<li>time has the form hh:mm:ss.nnnnnnnnn on a 24-hour clock</li>
+<li>timezone is has the form ('+'|'-') hhmm where hhmm is hours and
+minutes east (if the sign is +) or west (if the sign is -) of
+GMT/UTC</li>
+</ul>
+</blockquote>
+<p>Each chunk starts with a line that looks like this:</p>
+<pre class="literal-block">
+'@@ -' range ' +' range ' @@'
+</pre>
+<p>where range is either one unsigned decimal number or two separated
+by a comma.  The first number is the start line of the chunk in the
+old or new file.  The second number is chunk size in that file; it
+and the comma are omitted if the chunk size is 1.
+(Email from a reader suggests that this omission is optional
+and may be phased out.)  If the chunk size is
+0, the first number is one lower than one would expect (it is the
+line number after which the chunk should be inserted or deleted; in
+all other cases it gives the first line number or the replaced range
+of lines).</p>
+<p>A chunk then continues with lines starting with ' ' (common line),
+'-' (only in old file), or '+' (only in new file).  If the last line
+of a file doesn't end in a newline character, it is displayed with a
+newline characer, and the following line in the chunk has the
+literal text (starting in the first column):</p>
+<pre class="literal-block">
+'\ No newline at end of file'
+</pre>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="upcoming-appearances.html">&larr; Previous</a> &middot; <a href="looking-for-memories-of-python-old-timers.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

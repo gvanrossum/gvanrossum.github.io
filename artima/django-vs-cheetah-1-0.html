@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Django vs. Cheetah: 1-0 - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="which-part-of-no-xml-dont-you-understand.html">&larr; Previous</a> &middot; <a href="web-framework-redux.html">Next &rarr;</a></p>
+
+<h1>Django vs. Cheetah: 1-0</h1>
+<p><i>January 31, 2006 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=146606">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p>Encouraged by Fredrik Lundh, I took a look at Django templating, separate from the rest of Django.  This works fine, except there's a mysterious environment variable DJANGO_SETTINGS_MODULE that is somehow <em>required</em>.  That may be fine for framework users, but it's a bit harsh if all you want to do is use the templating library.  Setting it to empty didn't help.  I ended up uing this hack:</p>
+<pre class="literal-block">
+import os
+os.environ["DJANGO_SETTINGS_MODULE"] = "__main__"
+
+from django.core.template import Template
+</pre>
+<p>With that out of the way, I managed to run this program:</p>
+<pre class="literal-block">
+t = Template("&lt;h1&gt;Hello {{name}}&lt;/h1&gt;")
+print t.render({"name": "Phillip"})
+print t.render({"name": "Adrian"})
+</pre>
+<p>This is nice!  The output of course is:</p>
+<pre class="literal-block">
+&lt;h1&gt;Hello Phillip&lt;/h1&gt;
+&lt;h1&gt;Hello Adrian&lt;/h1&gt;
+</pre>
+<p>Unfortunately I had trouble installing Django for the Python 2.5 alpha that I've got installed; it uses the fancy new ez_install stuff, which is great when it works, but there's no Python 2.5 download of setuptools on PyPI yet, so it doesn't.</p>
+<p>I tried the same exercise using Cheetah.  Not too different:</p>
+<pre class="literal-block">
+from Cheetah.Template import Template
+names = {"name": "Tavis"}
+t = Template("&lt;h1&gt;Hello $name&lt;/h1&gt;", searchList=[names])
+print t
+names["name"] = "Ian"
+print t
+</pre>
+<p>with the following output:</p>
+<pre class="literal-block">
+&lt;h1&gt;Hello Tavis&lt;/h1&gt;
+&lt;h1&gt;Hello Ian&lt;/h1&gt;
+</pre>
+<p>(Ironically, Cheetah also failed under Python 2.5 -- Python 2.5 inadvertently (I believe) changes the syntax that's allowed before "from __future__ import ..." to disallow assignment to __author__ and __version__.  That was easier to fix though -- commenting out the "from __future__ ..." line was sufficient.)</p>
+<div class="section" id="side-by-side-comparison">
+<h1><a name="side-by-side-comparison">Side-by-side Comparison</a></h1>
+<p>(<strong>BEWARE!</strong> I haven't used either system to build a real website yet.  I'm just looking at the API and templating language designs.)</p>
+<p>Django definitely feels more "modern" than Cheetah.  The templating languages are fairly similar, with Django writing {{foo.bar}} where Cheetah writes $foo.bar or ${foo.bar} for variable interpolation (== substitution).  The biggest difference is that Cheetah allows pretty much arbitrary Python call syntax, e.g. ${foo.bar('hello', $name, 42+42)}.  Yes, you have to prefix variable references in the argument list with another $, and there are confusing rules about when the $ is optional. Django only allows names separated by dots, using the old Zope trick of trying x['y'], x.y and x.y() when the input is {{x.y}}.  When y looks like a number, it'll even try a sequence index, e.g. {{x.4}} means x[4].</p>
+<p>(Aside: something similar is also found in web.py, but there it bothers me, because it's invoked from normal-looking Python code.  E.g. foo["x"] and foo.x are equivalent, when foo is a "Storage" object.  But this leaves me wondering, what does foo.keys mean?  The keys method or the value stored under "keys"?  Zope 2 was similarly confusing with implicit acquisition.)</p>
+<p>A big difference: if Django doesn't find a name, it inserts nothing; but Cheetah raises an exception.  ISTM that Django is more user-friendly here, even if its approach could be considered error-prone (typos are easily missed since they simply suppress a small bit of output).  In my experience, missing variables are very common in substitution data, and Cheetah requires you to provide explicit default values in this case.</p>
+<p>Both templating languages also have a "statement" syntax to complement their "expression" interpolating syntax.  In Django, this is written as {% keyword %} while in Cheetah you use #keyword.  Here I initially found Cheetah a bit more readable, since it resembles C preprocessor syntax:</p>
+<pre class="literal-block">
+#if $name
+&lt;h1&gt;Hello $name&lt;/h1&gt;
+#else
+&lt;h1.Hello there&lt;/h1&gt;
+#end if
+</pre>
+<p>This is written in Django as:</p>
+<pre class="literal-block">
+{%if name%}
+&lt;h1&gt;Hello {{name}}&lt;/h1&gt;
+{%else%}
+&lt;h1&gt;Hello There&lt;/h1&gt;
+{%endif%}
+</pre>
+<p>which is harder on the eyes and prints more unnecessary whitespace.</p>
+<p>But then I stumbled upon Cheeta's inline form, which is pretty unreadable due to the symmetric delimiters:</p>
+<pre class="literal-block">
+# if $name # &lt;h1&gt;Hello $name&lt;/h1&gt; # else # &lt;h1&gt;Hello There&lt;/h1&gt; # end if #
+</pre>
+<p>Both languages have tons of other statement-level constructs, to do loops, set variables, invoke other templates, define blocks that can be used by other templates, and more.  I haven't explored this much yet, but they both seem to cover a similar terrain.  I guess this is what template authors actually need; or perhaps it points to some common ancestor in PHP or JSP?</p>
+<p>If you need your variable interpolations to be HTML-escaped (replacing "&lt;" with "&amp;lt;" and so on), Cheetah lets you specify a default filter in the template (#filter) or when the template is created in Python code.  In Django you must add a pipeline to the interpolation syntax, like this: ${foo.bar|escape}.  Both support various other filters as well, with Django really going wild.  I'm somehow surprised that HTML-escaping isn't the default -- failing to HTML-escape data is the number one vulnerability leading to XSS attacks.  And in theory you should almost never need to provide HTML for interpolation: you're supposed to invoke HTML fragments using #include or {%include%}.  Cheetah at least provides a way to make HTML-escaping the default filter throughout a template.</p>
+<div class="section" id="python-api">
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="which-part-of-no-xml-dont-you-understand.html">&larr; Previous</a> &middot; <a href="web-framework-redux.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

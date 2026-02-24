@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Are Confirmation Dialogs Harmful? - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="the-fate-of-reduce-in-python-3000.html">&larr; Previous</a> &middot; <a href="m2crypto-woes.html">Next &rarr;</a></p>
+
+<h1>Are Confirmation Dialogs Harmful?</h1>
+<p><i>March 4, 2005 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=97581">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p>There's a school of thought in UI design (perhaps led by the late <a href="http://jef.raskincenter.org">Jef Raskin</a>) that confirmation dialogs are a bad idea.
+
+<p>The argument goes roughly as follows: soon, clicking "OK" after an operation that requires confirmation becomes a habit to the point where you don't read the dialog at all, and your fingers/mouse click OK without engaging your brain. So the one time when you should have had second thoughts, the confirmation dialog has already been clicked by the time you get regret.
+
+<p>There are a number of arguments against this POV (especially when applied in the extreme, like Jef was apt to), but we've all encountered annoying confirmation dialogs that serve no purpose except to slow down our train of thought.
+
+<p>Anyway, I just noticed that Gmail is using, in at least one place, an alternative that's clearly better: when you start replying to a message and decide to discard it, you can click a Discard button. Now, the Discard button is right next to the Save button, and a lesser UI designer might have used a popup dialog here to ask if you really wanted to discard the reply. But Gmail's solution is infinitely better: it removes the message editor, displaying in its place a message "Your message has been discarded. _Undo discard_" where the last part is a hyperlink that brings back the reply editor you discarded. So normally you can immediately go on with your work; but if you have regrets or are startled because you didn't mean to discard the message, you can get it back. 
+
+<p>Way to go Gmail team!
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="the-fate-of-reduce-in-python-3000.html">&larr; Previous</a> &middot; <a href="m2crypto-woes.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

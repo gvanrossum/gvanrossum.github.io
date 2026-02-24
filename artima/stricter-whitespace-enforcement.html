@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stricter Whitespace Enforcement - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="interfaces-or-abstract-base-classes.html">&larr; Previous</a> &middot; <a href="five-minute-multimethods-in-python.html">Next &rarr;</a></p>
+
+<h1>Stricter Whitespace Enforcement</h1>
+<p><i>April 1, 2005 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=101968">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p>Python currently gives you a lot of freedom on how to format your code.  For example, instead of this:</p>
+<pre class="literal-block">
+def fool(one, four):
+    year = 2005
+    while year &lt; 10000000:
+        year *= 10
+    return year + four*100 + one
+</pre>
+<p>you could just as well have written this:</p>
+<pre class="literal-block">
+def  fool ( one ,  four ) :
+ year=2005
+ while( year&lt; 10000000 ):
+                   year*=  10
+ return (  year+four * 100+one  )
+</pre>
+<p>This is a clear violation of TOOWTDI and enables poorly written code.</p>
+<p>Therefore, I propose that as soon as practical, Python should enforce the following rules for horizontal whitespace:</p>
+<blockquote>
+<ul class="simple">
+<li>All code indented with four spaces.  This will also get rid of the tabs problem!</li>
+<li>No redundant parentheses allowed (e.g. no "return(1)" where "return 1" would do).</li>
+<li>No whitespace immediately following a left parentheses or immediately before a right parenthesis.</li>
+<li>No whitespace before a left parenthesis that starts an argument list, or before a left square bracket that starts an index expression (e.g. "x[y]").</li>
+<li>No whitespace before a comma or semicolon.</li>
+<li>Exactly one space required after a comma or semicolon (except when at the end of a line).</li>
+<li>No semicolon at the end of a line (it's redundant).</li>
+<li>More than one consecutive space within an expression is never allowed.</li>
+<li>Asignment and comparison operators <em>must</em> be surrounded by spaces.</li>
+<li>The amount of whitespace on both sides of a binary operator should be the same.</li>
+<li>If variable amounts of whitespace are used within an expression, this should correspond to the relative priorities of the operators used.  For example: "1*2 + 3*4" is okay but "1*2 + 3 * 4" is not.  However, "1*2+3*4" is still encouraged.</li>
+<li>No space allowed before a colon.</li>
+<li>In a dictionary display, exactly one space required after a colon.  In a slice, none.</li>
+<li>The short form of a block ("if x: y") is abandoned; you must use the newline-plus-indentation form.</li>
+</ul>
+</blockquote>
+<p>A limited form of vertical whitespace fascism may also be introduced, although this may encounter more resistance, so it may be put off until Python 3.0:</p>
+<blockquote>
+<ul class="simple">
+<li>At least one blank line should separate function or method definitions.</li>
+<li>At least two blank lines should separate classes.</li>
+</ul>
+</blockquote>
+<p>In order to give users sufficient time to adapt their coding style, the new syntax will be optional in Python 2.5, and required in Python 2.6.  In Python 2.5, you can enable the strict whitespace checking for a particular module with a future statement:</p>
+<pre class="literal-block">
+from __future__ import whitespace
+</pre>
+<p>I have hacked up a quick and dirty implementation, which is available at the following SourceForge URL (<em>new</em>, now updated!):
+<a class="reference" href="http://sourceforge.net/tracker/index.php?func=detail&amp;aid=1175070&amp;group_id=5470&amp;atid=305470">http://sourceforge.net/tracker/index.php?func=detail&amp;aid=1175070&amp;group_id=5470&amp;atid=305470</a></p>
+<p>Feedback, as always, is welcome!</p>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="interfaces-or-abstract-base-classes.html">&larr; Previous</a> &middot; <a href="five-minute-multimethods-in-python.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

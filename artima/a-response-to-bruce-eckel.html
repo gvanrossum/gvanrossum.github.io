@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Response to Bruce Eckel - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="myths-about-indentation-in-python.html">&larr; Previous</a> &middot; <a href="it-isnt-easy-to-remove-the-gil.html">Next &rarr;</a></p>
+
+<h1>A Response to Bruce Eckel</h1>
+<p><i>September 11, 2007 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=214325">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p>I'll address each section of Bruce Eckel's blog entry <a class="reference" href="http://www.artima.com/forums/flat.jsp?forum=106&amp;thread=214112">Python 3K or Python 2.9?</a> briefly.</p>
+<p><strong>Concurrency:</strong>
+It seems we're now happily out <a class="reference" href="http://www.artima.com/forums/flat.jsp?forum=106&amp;thread=214303">exploring</a> here.  I'm looking forward to benchmarks showing that PP or similar (or dissimilar!) solutions actually provide a performance gain.  Another route I'd like to see explored is integrating one such solution into an existing web framework (or perhaps as WSGI middleware) so that web applications have an easy way out without redesigning their architecture.</p>
+<p><strong>Eggs and Easyinstall standardized:</strong>
+From the response it's pretty clear why these particular solutions aren't standardized yet -- they are at best controversial.  In any case this is a library issue and not tied to 3.0.  I'm hoping someone improves upon Phillip Eby's work.  I'll gladly accept something into the standard library but I don't have the time to write it myself: for several reasons I'm not in the primary audience for such a tool.</p>
+<p><strong>Better application deployment support:</strong>
+Again, a library issue, I cannot do much about -- I don't have time to do it myself and I don't like telling other people what to do (nor do I like to be told what to do myself, as should be obvious by now).</p>
+<p><strong>Get rid of self:</strong>
+I think this has been addressed in the responses; it's not as easy as you'd think, and there are important advantages to the uniform interpretation of methods as "just functions that get called in a funky way".  In Ruby, everything is a method, or an anonymous block, and there are no "free functions".  Python uses the complimentary approach, treating <em>functions</em> as first-class citizens.  Both approaches are complete; they are however incompatible, and you can't easily morph one into the other.  (Personally, I find that the criticm of explicit self has about as much merit as the criticism of Python's use of whitespace.)</p>
+<p><strong>Transparent connections to UI languages:</strong>
+Again, a library issue.  I agree that Tk is antiquated, but it still has a following, and IDLE is actively being supported.  The alternatives that are readily available, like PyQt, PyGTK, or wxPython, all have their specific advantages and disadvantages, making it hard to pick one (plus, the political impact of putting one in the standard library could be damaging both to Python and to the alternatives that weren't picked).  However, it looks like Bruce believes that these are all antiquated, and we should be looking forward to the next generation of solutions.  But which one to pick?  IMO it's way too early to know; these things are about to evolve dramatically, and some are likely to die.</p>
+<p>That requires someone dedicated who is willing to put out a quick series of experimental releases, and a user base who are interested in living on the bleeding edge.  It's not an appropriate project for Python 3000 -- despite the whimsical name, it is primarily a very conservative overhaul of the <em>language</em>, focused on fixing some of the moer tenacious warts that can only be fixed by breaking backwards compatibility.  (Those warts that can be fixed without breaking compatibility are getting fixed in an evolutionary way, but some things just can't be changed that way.)</p>
+<p><strong>Library support ("smart libraries"):</strong>
+This is a pretty rambling section that mostly just leaves me mystified.  Never having to look up documentation again?  That sounds like wishful thinking.  There is no substitute for understanding what you are trying to do, and "smart" here seems to be synonymous with clairvoyance.  However, Bruce guessed one thing right: I am encouraging people who want to explore such things to make the most of argument annotations, which are waiting to be used.</p>
+<p><strong>Component support:</strong>
+I guess this section is referencing a context I'm unfamiliar with (not having used Java much) since the tie with event handling under this heading completely baffled me.  I seem to recall that Java had several misguided attempts at supporting "heavy" components -- but maybe there's a consensus in that world now?  I think it would be a useful experiment to try to create whatever it is you want as an add-on library, which I believe is mostly the status it has in Java.</p>
+<p><strong>Support for DSL creation:</strong>
+This means different things to different people.  Personally, I believe the Ruby folks are abusing the term.  The gentleman who pointed out that Python has DS Libraries instead of DS Languages hit the nail exactly on the head IMO; this is another example of two different ways to solve the same problem that are complementary and won't easily converge.</p>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="myths-about-indentation-in-python.html">&larr; Previous</a> &middot; <a href="it-isnt-easy-to-remove-the-gil.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

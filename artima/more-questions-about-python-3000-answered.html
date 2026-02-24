@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>More Questions About Python 3000 Answered - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="python-3000-plea-for-help.html">&larr; Previous</a> &middot; <a href="python-3000-faq.html">Next &rarr;</a></p>
+
+<h1>More Questions About Python 3000 Answered</h1>
+<p><i>July 31, 2007 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=211430">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p>This is a sequal to <a class="reference" href="http://www.artima.com/forums/threaded.jsp?forum=106&amp;thread=211200">last week's post</a>.
+It's tempting to replace most Q/A pairs below with</p>
+<blockquote>
+<p><strong>Q.</strong> Will Python 3000 have feature X (which has not been
+proposed yet)?</p>
+<p><strong>A.</strong> No.  The deadline for feature proposals (PEPs) was April 30,
+2007.</p>
+</blockquote>
+<p>but I figured it would be better to try to explain why various ideas
+(most of which aren't new) weren't proposed, or why they were rejected.</p>
+<hr class="docutils">
+<p><strong>Q.</strong> Will implicit string concatenation be removed in Python 3000?
+(I.e., instead of <tt class="docutils literal"><span class="pre">("a"</span> <span class="pre">"b")</span></tt> you'd have to write <tt class="docutils literal"><span class="pre">("a"</span> <span class="pre">+</span> <span class="pre">"b")</span></tt>.)</p>
+<p><strong>A.</strong> No.  This was proposed in <a class="reference" href="http://www.python.org/dev/peps/pep-3126/">PEP 3126</a>, but rejected.</p>
+<hr class="docutils"/>
+<p><strong>Q.</strong> Will the binary API for strings be standardized in Python 3000?
+(Depending on a compile-time switch, Unicode strings use either a
+2-byte wide or 4-byte wide representation.)</p>
+<p><strong>A.</strong> No, there are still compelling reasons to support 2 bytes in
+some cases and 4 bytes in others.  Usually this is dealt with by
+compiling from source with the headers corresponding to the installed
+Python binary.  If that doesn't work for you, and you really care
+about this, I recommend that you bring it up on the <a class="reference" href="mailto:python-3000@python.org">python-3000</a>
+mailing list, explaining your use case.</p>
+<hr class="docutils"/>
+<p><strong>Q.</strong> Why isn't the GIL (Global Interpreter Lock) recursive?</p>
+<p><strong>A.</strong> Several reasons.  Recursive locks are more expensive, and the
+GIL is acquired and released <em>a lot</em>.  Python's thread package doesn't
+implement recursive locks in C (they are an add-on written in Python,
+see RLock in threading.py).  Given the different thread APIs on
+different platforms it's important that the C code involved in threads
+is minimal.  But perhaps the most important reason is that the GIL
+often gets <em>released</em> around I/O operations.  Releasing only a single
+level of a recursive lock would not be correct here; one would have to
+release the underlying non-recursive lock and restore the recursion
+level after re-acquiring.  This is all rather involved.  A
+non-recursive lock is much easier to deal with.</p>
+<hr class="docutils"/>
+<p><strong>Q.</strong> Will we be able to use statements in <tt class="docutils literal"><span class="pre">lambda</span></tt> in Python 3000?</p>
+<p><strong>A.</strong> No.  The syntax (turning indentation back on inside an
+expression) would both awkward to implement and hard to read for
+humans.  My recommendation is just to define a <em>local</em> (i.e., nested)
+function -- this has the same semantics as <tt class="docutils literal"><span class="pre">lambda</span></tt> without the
+syntactic restrictions.  After all, this:</p>
+<pre class="literal-block">
+foo = lambda: whatever
+</pre>
+<p>is <em>completely</em> equivalent to this:</p>
+<pre class="literal-block">
+def foo(): return whatever
+</pre>
+<p>(except that the lambda doesn't remember its name).</p>
+<hr class="docutils"/>
+<p><strong>Q.</strong> Will Python 3000 require tail call optimization?</p>
+<p><strong>A.</strong> No.  The argument that this would be a "transparent"
+optimization is incorrect -- it leads to a coding style that
+essentially depends on tail call optimization, at which point the
+transparency is lost.  (Otherwise, why bother asking to <em>require</em> it?
+:-) Also, tracebacks would become harder to read.  Face reality --
+Python is <em>not</em> a functional language.  It works largely by side
+effects on mutable objects, and there is no opportunity for program
+transformation based on equivalent semantics.</p>
+<hr class="docutils"/>
+<p><strong>Q.</strong> Will Python 3000 provide "real" private, protected and public?</p>
+<p><strong>A.</strong> No.  Python will remain an "open kimono" language.</p>
+<hr class="docutils"/>
+<p><strong>Q.</strong> Will Python 3000 support static typing?</p>
+<p><strong>A.</strong> Not as such.  The language would turn into Java-without-braces.
+However, you can use "argument annotations" (<a class="reference" href="http://www.python.org/dev/peps/pep-3107/">PEP 3107</a>) and write
+a decorator or metaclass to enforce argument types at run-time.  I
+suppose it would also be possible to write an extension to
+<a class="reference" href="http://pychecker.sourceforge.net/">pychecker</a> or <a class="reference" href="http://www.logilab.org/857">pylint</a> that used annotations to check call
+signatures.</p>
+<hr class="docutils"/>
+<p><strong>Q.</strong> Why doesn't <tt class="docutils literal"><span class="pre">str(c</span> <span class="pre">for</span> <span class="pre">c</span> <span class="pre">in</span> <span class="pre">X)</span></tt> return the string of
+concatenated <tt class="docutils literal"><span class="pre">c</span></tt> values?</p>
+<p><strong>A.</strong> Then, to be consistent, <tt class="docutils literal"><span class="pre">str(['a',</span> <span class="pre">'b',</span> <span class="pre">'c'])</span></tt> would have to
+return <tt class="docutils literal"><span class="pre">'abc'</span></tt>.  I don't think you want that.  Also, what would
+<tt class="docutils literal"><span class="pre">str([1,</span> <span class="pre">2,</span> <span class="pre">3])</span></tt> do?  It's a grave problem if <tt class="docutils literal"><span class="pre">str()</span></tt> ever raises
+an exception because that means the argument cannot be printed:
+<tt class="docutils literal"><span class="pre">print</span></tt> calls <tt class="docutils literal"><span class="pre">str()</span></tt> on each of its arguments.</p>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="python-3000-plea-for-help.html">&larr; Previous</a> &middot; <a href="python-3000-faq.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

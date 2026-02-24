@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adding wsgiref to the Python 2.5 Standard Library - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="django-gaining-steam.html">&larr; Previous</a> &middot; <a href="python-3000-slides.html">Next &rarr;</a></p>
+
+<h1>Adding wsgiref to the Python 2.5 Standard Library</h1>
+<p><i>April 28, 2006 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=158191">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p><a class="reference" href="http://www.python.org/dev/peps/pep-0333/">PEP 333</a> specifies WSGI, the Python Web Server Gateway Interface v1.0;
+it's written by Phillip Eby who put a lot of effort in it to make it
+acceptable to very diverse web frameworks. The PEP has been well
+received by web framework makers and users.</p>
+<p>As a supplement to the PEP, Phillip has written a reference
+implementation, <a class="reference" href="http://svn.eby-sarna.com/wsgiref/">wsgiref</a>. I don't know how many people have used
+wsgiref; I'm using it myself for an intranet webserver and am very
+happy with it.</p>
+<p>I believe that it would be a good idea to add wsgiref
+to the Python standard library,
+after some minor cleanups such as removing the <a class="reference" href="http://svn.eby-sarna.com/wsgiref/src/wsgiref/handlers.py?view=markup">extra blank lines</a> that
+Phillip puts in his code. Having standard library support will remove
+the last reason web framework developers might have to resist adopting
+WSGI, and the resulting standardization will help web framework users.</p>
+<p>Last time this was brought up there were feature requests and
+discussion on how "industrial strength" the webserver in wsgiref ought
+to be but nothing like the flamefest that setuptools caused (no
+comments please).</p>
+<p>I'm inviting people to discuss the addition of wsgiref to the standard
+library. I'd like the discussion to be finished before Python 2.5a3 goes out;
+technically it can go in up till the 2.5b1 code freeze, but I don't
+really want to push it that close. I'd like the focus of the
+discussion to be "what are the risks of adding wsgiref to the stdlib";
+not "what could we think of that's even better". Achieving a perfect
+decision is not the goal; having general consensus that adding it
+is better than not adding is would be good. Pointing out
+specific bugs in wsgiref and suggesting how they ought to be fixed is
+also welcome.</p>
+<p>PS. To get wsgiref via anonymous SVN: svn://svn.eby-sarna.com/svnroot/wsgiref</p>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="django-gaining-steam.html">&larr; Previous</a> &middot; <a href="python-3000-slides.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

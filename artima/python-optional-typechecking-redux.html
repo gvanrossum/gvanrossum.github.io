@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python Optional Typechecking Redux - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="m2crypto-woes.html">&larr; Previous</a> &middot; <a href="optional-static-typing-stop-the-flames.html">Next &rarr;</a></p>
+
+<h1>Python Optional Typechecking Redux</h1>
+<p><i>January 18, 2005 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=89161">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p>Tony Lownds posted the following in response to my last blog:</p>
+<blockquote><i>There is a property that a typing system for python could have: that removing the type declarations from a program, or ignoring them at run-time, doesn't stop any programs from working.</i></blockquote>
+<p>I like this idea, not so much because it rules out implicit adaptation (the main bone of contention in the python-dev discussions), but because it stresses the <i>optional</i> aspect of the type declarations.  But at the same time I still like the adaptation interpretation.  So here's a possible way out: make the semantics of type checking configurable at run time.</p>
+<p>Specifically, I propose to let module authors set a global variable named __typecheck__. This could be a function defined as follows:</p>
+<pre>
+def __typecheck__(x, T):
+    if "your condition here":
+        raise TypeError("your error message here") # Other errors are okay too
+    return x
+</pre>
+<p>This is to be used as follows.  Consider a function with type declarations:</p>
+<pre>
+def foo(a: t1, b: t2) -&gt; t3:
+    "your code here"
+</pre>
+<p>This would be replaced by something like the following:</p>
+<pre>
+def foo__(a, b): # The original function
+    "your code here"
+
+def foo(a, b): # Typechecking wrapper
+    a = __typecheck__(a, t1)
+    b = __typecheck__(b, t2)
+    r = foo__(a, b)
+    r = __typecheck__(r, t3)
+    return r
+</pre>
+<p>(However, the expressions for t1, t2, t3 and foo__ should be evaluated only once, at function definition time. Probably, __typecheck__ should also be evaluated at this time.)</p>
+<p>There would be a very conservative default __typecheck__ function (a built-in) which would assert isinstance(x, T). The -O option could disable typechecking entirely by not generating wrappers at all, <i>if</i> if the __typecheck__ global is not defined at function definition time.</p>
+<p>If you like implicit adaptation, you can put this in your module:</p>
+<pre>
+from adaptation import adapt as __typecheck__
+</pre>
+<p>You could also define __typecheck__ inside a class, just like for __metaclass__ (although its scope would only be the current class, not its subclasses, unlike for __metaclass__, which is inherited). In either case, -O won't remove the type checking wrapper if __typecheck__ is set.  (This can be done dynamically, e.g. by the metaclass checking for __debug__ if __typecheck__ is not set explicitly.)</p>
+<p>You can also implement duck typing as defined by adapt(), as follows:</p>
+<pre>
+from adaptation import adapt
+def __typecheck__(x, T):
+    if adapt(x, T) is not x:
+        raise TypeError("...")
+    return x
+</pre>
+<p>This accepts all values for x that conform to T according to the adaptation registry.</p>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="m2crypto-woes.html">&larr; Previous</a> &middot; <a href="optional-static-typing-stop-the-flames.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

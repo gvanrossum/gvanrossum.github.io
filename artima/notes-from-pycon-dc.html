@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Notes from PyCon DC - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="news-from-python-uk.html">&larr; Previous</a></p>
+
+<h1>Notes from PyCon DC</h1>
+<p><i>April 9, 2003 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=4396">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p>The Python conference is a vague memory already: right afterwards I
+went to Oxford, England to attend a C/C++ conference run by the
+British Association for C and C++ Users, which since last year has
+sprouted a Python track.  Notes from that (equally exciting) event
+will be a separate blog entry.
+
+<p>PyCon DC 2003 (<a href="http://www.python.org/pycon/">http://www.python.org/pycon/</a>)
+was the first US-based Python community conference in a long time.
+With about 240 people registered I'd call it a smashing success; I
+think those 240 attendees would agree.
+
+<h2>Pre-conference Sprints</h2>
+<p>Before the conference proper, we had a two-day coding sprint.
+What's a coding sprint?  It's an event loosely inspired by extreme
+programming, where a number of developers get together for a few days
+of intense pair programming on a common project.  The first time I
+heard of sprints was from Zope Corporation's Jim Fulton, who's been
+using sprints successfully for the Zope 3 project; maybe he invented
+the word.  Coding sprint certainly sounds better than coding marathon!
+
+<p>On this occasion, there were at least three separate groups
+sprinting in the same space (a classroom at George Washington
+University which we were renting for the conference): Jim Fulton was
+leading a Zope 3 sprint, there were a number of Twisted programmers
+sprinting on Twisted projects, and in the back of the room we were
+having a core Python sprint.
+
+<p>The Python sprint quickly separated out in three groups of two to
+three coders each: one group, lead by Jeremy Hylton, worked on the new
+bytecode compiler which is being developed in a CVS branch; I was
+leading the two other groups, which focused on Python speedups.
+(There were many other ideas for tasks to sprint on, but not enough
+time.)
+
+<p>The first speedup plan, proposed by Ka-Ping Yee and implemented by
+him and Aahz (that's really his whole name!), was a scheme to cache
+the lookup of object attributes.  Python has extremely dynamic rules
+for looking attributes: an instance attribute is first searched in the
+instance dictionary, for instance variables, then in the class, for
+methods and class variables, and finally in the successive base
+classes, for inherited methods and class variables.  In other
+languages, this lookup is usually done at compile time, but Python
+does it at run-time, using a very efficient dictionary (hash table)
+implementation.  Nevertheless, finding a method defined in the third
+base class costs three failing lookups and one successful one.  We've
+got to be able to to better, and this is a very common operation in
+Python, so a speedup here might cause measurable speedup for all
+Python programs.
+
+<p>Ping's plan was to cache the dictionary where the lookup was
+successful, thereby reducing the number of lookups to exactly two: one
+in the cache, and another one in the directory indicated by the cache.
+This seems an obvious optimization, but wasn't done earlier because
+there are situations where the cache must be invalidated because one
+of the base classes is modified.  Part of the project was to do the
+invalidation right, and this could only be done with new
+infrastructure added in Python 2.2.
+
+<p>We implemented the whole scheme successfully, but in the end ran
+into a snag: there were some common cases where the old scheme did
+only one lookup, and there the new scheme was <i>slower</i> than the
+old scheme!  We tried various refinements, but in the end we didn't
+shave off enough to call it an overall win.  The code is checked in on
+a CVS branch, though, and I'm sure we'll be getting back to it later.
+
+<p>The other speedup team, consisting of Thomas Wouters and Brett
+Cannon, was tackling the issue of speeding up method calls.  When
+Python encounters an expression of the form x.meth(args), the bytecode
+compiler first spits out code to construct temporary object
+representing the "bound method" x.meth, after which it produces code
+to load the argument list and call the bound method.  These are very
+powerful semantics: a bound method can also be stored in a variable or
+data structure, and can be used as a callback.  Other languages call
+this "closures".  Python unifies closures, plain functions, and a few
+other things, including class constructors, as "callables".  But
+method calls are very common, and the overhead of creating the bound
+method object which is thrown away immediately after the call is quite
+measurable.
+
+<p>So Thomas and Brett set out to introduce a new opcode which
+implements the method call operation without creating the intermediate
+bound method object.  There were numerous challenges on the way to
+success, such as how to recognize this exact situation in the parser,
+and how to implement an opcode taking three arguments when the
+bytecode interpreter only supports opcodes with zero or one argument.
+
+<p>But the real challenge was how to quickly decide at run-time
+whether this was in fact a method call or not: syntactically,
+instance.method(args) looks the same as module.function(args), and the
+bytecode compiler doesn't know the type of x in x.attr(args), so it
+will generate the new opcode for all expressions of this form,
+regardless of whether x is a class instance.  Therefore, the opcode
+has to deal correctly with method calls as well as with all other
+kinds of calls.  Fortunately, the slight overhead of the required
+generality is offset by the need to decode only one opcode instead of
+two, and in the end we measured a decent speedup (in the order of 5%
+for a certain benchmark, if I recall correctly).
+
+<p>Despite this clear success, we didn't check the code in yet.  There
+are really two cases that need to be sped up: classic classes and
+new-style classes (the new class implementation introduced in Python
+2.2, which will coexist with the original class implementation until
+Python 3.0 is released).  Thomas and Breatt only had time to implement
+their code for classic classes.  The code was parked on the
+SourceForge patch manager until someone has time to complete it.
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="news-from-python-uk.html">&larr; Previous</a></p>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Harry Potter Theory of Programming Language Design - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="mobillenin.html">&larr; Previous</a> &middot; <a href="m-clock-20.html">Next &rarr;</a></p>
+
+<h1>The Harry Potter Theory of Programming Language Design</h1>
+<p><i>August 14, 2005 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=123234">artima.com</a></i></p>
+
+<hr>
+
+<p>
+I love reading the Harry Potter books, and recently came up with an interesting analogy between writing a series of fiction books and designing a programming language.
+
+<p>I'm sure that when J.K. Rowling wrote the first Harry Potter book (planning it as the first of a series of seven) she had developed a fairly good idea of what kind of things might eventually happen in the series, but she didn't have the complete plot lines for the remaining books worked out, nor did she have every detail decided of how magic works in her world.
+
+<p>I'm also assuming that as she wrote successive volumes, she occasionally went back to earlier books, picked out a detail that at the time was given just to add color (or should I say colour :-) to the story, and gave it new significance.  For example, I doubt that when she invented the name Voldemort she had already decided that "I am Lord Voldemort" would be an anagram of "Tom Marvolo Riddle" -- Tom Riddle just isn't a very convincing name for a character to develop into the most evil person in the world, but apparently she couldn't come up with a good anagram of Voldemort by itself.  (And the idea itself of an anagram is a bit lame, just as are the allitterating names of Hogwarts' founders and some of the other students.)  I also don't think that she had thought of Scabbers, Ron's pathetic pet rat, as an animagus in disguise (AFAICT the fact that he's missing a toe doesn't come up in the first two books at all).  Maybe she regrets the emphasis on Quidditch (I know do :-).  And so on -- you get the idea.
+
+<p>In a similar vein, I had never thought of iterators or generators when I came up with Python's for-loop, or using % as a string formatting operator, and as a matter of fact, using 'def' for defining both methods and functions was not part of the initial plan either (although I like it!).
+
+<p>Just like the successive Harry Potter books are required to have "continuity" (we can't have Dumbledore's taste in sweets change drastically in book 3), successive versions of Python are constrained by pretty serious backwards compatibility requirements.
+
+<p>Sometimes it's easy to go back and generalize a feature; for example, the transformation of built-in conversion functions like int(), str() and list() into built-in classes feels like a stroke of genius (if I may say so myself :-).  On the other hand, the recent discussion on python-dev of the exception hierarchy, summarized in PEP 348, shows that early choices sometimes are less than ideal, even if they're not fatally flawed.  The mismatch of naming conventions and API quality in the standard library is another example.
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="mobillenin.html">&larr; Previous</a> &middot; <a href="m-clock-20.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

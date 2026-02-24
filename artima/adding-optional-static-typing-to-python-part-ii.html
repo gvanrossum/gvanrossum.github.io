@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adding Optional Static Typing to Python -- Part II - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="optional-static-typing-stop-the-flames.html">&larr; Previous</a> &middot; <a href="adding-optional-static-typing-to-python.html">Next &rarr;</a></p>
+
+<h1>Adding Optional Static Typing to Python -- Part II</h1>
+<p><i>January 4, 2005 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=86641">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p>** Note: please read my later post (<a class="reference" href="http://www.artima.com/weblogs/viewpost.jsp?thread=87182">http://www.artima.com/weblogs/viewpost.jsp?thread=87182</a>) **</p>
+<p>This blog entry will contain two parts: a response to the most significant feedback feedback, and a more detailed strawman proposal.  (Alas, it's becoming a monster post, and at some point I will just have to stop writing in blog form and instead start writing a PEP.  But I'd like to try the blog thing once a week for a few more weeks first.)</p>
+<div class="section" id="feedback-response">
+<h1><a name="feedback-response">Feedback Response</a></h1>
+<p>A couple of themes were prevalent in the feedback: concern that Python would lose its simplicity; quibbles with the proposed syntax; questions about which problem(s) I'm trying to solve; and the desire for interfaces, and more specifically design by contract.  There were also some suggestions out in left field, and some questions with simple answers ("why can't you do X?"); I'm ignoring these.  If you feel left out, please send me an email.</p>
+<div class="section" id="simplicity">
+<h2><a name="simplicity">Simplicity</a></h2>
+<p>I share this concern. Every feature added causes Python to lose some simplicity; some more so than others. New syntax is particularly prone to this problem, and the proposed syntax (any syntax imaginable for type declarations, really) is relatively heavy. At the same time, this is something that many people, especially folks writing frameworks or large applications, <em>need</em> -- and as long as there's no standard syntax, they are forced to make up their own notation using existing facilities. The same thing happened before bool was a standard Python type -- everybody defined their own Booleans. This duplication of effort is wasteful, and replacing the various home-grown approaches with a standard feature usually ends up making things more readable, and interoperable as well. So, given that there is quite a bit of demand, I think this feature will be a net win.</p>
+</div>
+<div class="section" id="syntax">
+<h2><a name="syntax">Syntax</a></h2>
+<p>We won't be able to all agree on one syntax; this has historically been true for any new feature added to Python. I have reasons for liking the syntax I picked, but for now I don't feel like discussing the merits of various counter-proposals; the underlying functionality deserves our attention first.</p>
+</div>
+<div class="section" id="motivation">
+<h2><a name="motivation">Motivation</a></h2>
+<p>I'm not doing this with code optimization in mind. I like many of the reasons for type declarations that were given by various proponents: they can be useful for documentation, for runtime introspection (including adaptation), to help intelligent IDEs do their magic (name completion, find uses, refactoring, etc.), and to help find certain bugs earlier. Indeed, my original motivation was mostly the latter: I've been thinking about integrating the functionality of PyChecker in the core, and I feel that sometimes the type inferencing used there needs a little help. Someone pointed me to a <a class="reference" href="http://osteele.com/archives/2004/12/type-declaration-compromise">blog entry by Oliver Steele</a> arguing that type declarations are a good tool because they serve several purposes at once reasonably well.</p>
+<p>Indirectly, optimization is also served: the best way to optimize code is probably to use type inference, and type declarations can sometimes help the type inferencing algorithm overcome dark spots. Python is so dynamic that worst-case assumptions often make optimizations nearly impossible; this was brought home to me recently when I saw a preview of Brett Cannon's thesis (sorry, no URL yet). But most programs uses the dynamism sparingly, and that's where type declarations can help the type inferencer.</p>
+</div>
+<div class="section" id="interfaces-and-design-by-contract">
+<h2><a name="interfaces-and-design-by-contract">Interfaces and Design By Contract</a></h2>
+<p>I'm all for interfaces, and I think I will introduce them at the same time as type declarations (all optional, of course). The Python interface framework with which I'm most familiar is Zope's, and it always felt like me that it needed argument type declarations for its methods; the proposed syntax would solve that. But I don't want to lose duck typing; I think that when I declare an argument's type to be some interface, any object that happens to implement the set of methods defined by that interface should be acceptable, whether or not its class explicitly declares conformance to that interface. In general, I think type checking should be structural, so two types are considered equal if they look the same (have the same methods with the same signatures, etc.).</p>
+<p><a class="reference" href="http://archive.eiffel.com/doc/manuals/technology/contract/">Design By Contract</a>, Eiffel's approach to integrating pre- and post-conditions into the type system, was recommended frequently (also in the past) and I would love to do something with this. Thinking aloud, perhaps the body of a method declaration in an interface could be interpreted as code implementing the precondition? I had previously thought that interfaces could use this syntax:</p>
+<pre class="literal-block">
+interface I1:
+    def fumble(name: str, count: int) -&gt; bool:
+        """docstring"""
+</pre>
+<p>Now it seems easy enough to extend this by allowing additional code in the body following the docstring, for example:</p>
+<pre class="literal-block">
+interface I1:
+    def fumble(name: str, count: int) -&gt; bool:
+        """docstring"""
+        assert count &gt; 0
+        assert name in ReferenceTable
+</pre>
+<p>(But what to do for the postcondition? Perhaps we could use a nested function with a designated name, e.g. check_return().)</p>
+</div>
+</div>
+<div class="section" id="strawman-proposal">
+<h1><a name="strawman-proposal">Strawman Proposal</a></h1>
+<p>This is still extremely raw and rambling. Perhaps the most cooked part is the proposed notation for parameterized types, so I'll start with that.</p>
+<div class="section" id="parameterized-types">
+<h2><a name="parameterized-types">Parameterized Types</a></h2>
+<p>In Java 5 (and who knows where else) these are known as generic types; while that is shorter, it's more mysterious (what's so generic about these types?), so I prefer the other term.</p>
+<p>Do we need parameterized types? I think we do; I often write comments explaining to the reader what the element types of lists and dicts are. Python's parameterized types will be primarily a run-time construct; they won't be anything like C++ templates with the accompanying compile-time complexity. (Almost everything in Python happens at runtime rather than at compile time; in fact this is one of the biggest differences between C++ and Python, when you think about it.)</p>
+<p>I'm now proposing to use [square brackets] rather than &lt;pointy ones&gt; for these, because then some of this can be prototyped today using a metaclass that implements a suitable __getitem__ method. I have some working sample code in my /tmp directory that lets me declare a class List (a subclass of list) which can be parameterized by writing List[int], List[str] etc., and the right thing will happen. The List class implements explicit type checks; for example, here is the append() method:</p>
+<pre class="literal-block">
+def append(self, x):
+    assert isinstance(x, self.T)    # self.T references a class variable
+    super(List, self).append(x)
+</pre>
+<p>A syntax change to the class statement should allow declaring the type parameters, so that the List class could start as follows:</p>
+<pre class="literal-block">
+class List(list) [T]:
+    ...etc...
+</pre>
+<p>Without this syntax change, we could fake it as follows:</p>
+<pre class="literal-block">
+class List(list):
+    __metaclass__ = ParameterizedType
+    __typeargs__ = ["T"]    # the metaclass looks for this
+    ...etc...
+</pre>
+<p>The new syntax might translate into this. Of course, once all of this becomes part of the language the built-in list type itself would already be parameterizable like this, but the building blocks would be the same and availale to all.</p>
+<p>Aside: it would be nice if str(List[int]) returned "List[int]"; str(int) should probably return "int" rather than the current "&lt;type 'int'&gt;".</p>
+<p>There are some dark corners here. For example, consider a typed library function declared as taking a list[int] argument. Now we call this from untyped Python code with a plain list argument, where we happen to have ensured that this list only contains ints. This should be accepted of course! But if we pass it a list containing some ints and a float, this ought to fail, preferably with a TypeError at the call site. That means that each list element must be typechecked, which could slow down the call considerably, alas. I can think of various ways to minimize the cost, but it won't completely disappear (we could skip such typechecks when -O is used, which seems reasonable enough).</p>
+<p>Worse, if instead of list[int] an argument is declared as iterator[int] (a hypothetical notation for an iterator yielding ints), we can't typecheck the iterator (since this would exhaust it prematurely); we must typecheck each value returned by the iterator's next() method. So, perhaps the generic approach will have to be that the code generated for a function declared to take a constrained container argument must check the types of individual values as they are retrieved from the container. I can see why some responses indicated that they didn't want to see such type checks at all, but (except for -O) that seems the wrong approach, throwing away one of the benefits of the type declaration. Rather, the compiler should use additional type inferencing to avoid inserting unnecessary typechecks most of the time, and to insert typechecks as early as possible.</p>
+</div>
+<div class="section" id="interface-declarations">
+<h2><a name="interface-declarations">Interface Declarations</a></h2>
+<p>Everybody seems to agree that we should have interface declarations.  Rather than trying to overload the class keyword (which all current interface implementations have done out of necessity), I think we should bite the bullet and create separate syntax, for example:</p>
+<pre class="literal-block">
+# declare an interface named I1, inheriting from interfaces I2 and I3
+interface I1(I2, I3):
+    "docstring"
+
+    # declare a method, with argument and result types and input validation code
+    def method1(arg1: type1, arg2: type2) -&gt; resulttype:
+        "docstring"
+        ...statements to validate input values...
+
+    # declare a read-only attribute, with type and default (== initial) value
+    attrname: attrtype = defaultvalue
+</pre>
+<p>Interfaces can be composed using multiple inheritance just like classes.  An interface should only have interfaces as its bases.  If an interface overrides a method defined in a base interface, it must be an "extension" of the base method.  Examples of extending a method include: adding arguments with default values; adding default values to existing arguments; replacing an argument type with a supertype (this is contravariance, required by Liskov substitutability!); replacing a return type with a subtype (covariance).  There might also be a way to declare and add overloaded methods a la Java.</p>
+<p>An interface declaration ends up creating an object just like a class declaration, and it can be fully inspected.  The body should only contain method and attribute declarations (this is a departure from the class statement, and I haven't researched all the ramifications yet!).</p>
+<p>Methods in interfaces should not declare "self" as an explicit argument.  Interfaces should not declare class methods or static methods (or any other decorators).  The interface only cares about what the signature is in the actual call, so for static methods, all arguments should be declared, and for class methods, the "cls" argument should be omitted from the interface method declaration.</p>
+<p>Method declarations can be inspected to find out their signature.  I propose a __signature__ attribute (also for methods defined in classes!) which might be an object whose attributes make the signature easily inspectable.  This might take the form of a list of argument declaration objects giving the name, type and default (if any) for each argument, and a separate argument for the return type.  For signatures that include *args and/or **kwds, the type of the additional arguments should also be given (so you can write for example a varargs method whose arguments are all strings).</p>
+<p>Non-method declarations can similarly be inspected.  I'd like this mechanism to be available for classes too; it will need an augmentation to allow the declaration of class variables and writable attributes.  (Actually, interfaces should also allow declaring writable attributes, although the default should be that attributes declared by interfaces are only writable by the implementing class, not by outsiders -- IOW, self.foo should always be writable, but x.foo would not be unless explicitly declared as writable).</p>
+<p>It is fine for argument types (etc.) to be omitted; there's a special default type 'any' which means "don't care". This is the type assumed whenever a type is not explicitly given (and cannot deduced reliably at compile time).  Note that 'any' differs from 'object' -- when something is declared as 'object', the type inference must assume it has <em>no</em> methods (except for the few standard ones that every object has, like __repr__); when something is declared as 'any', we assume it may have any methods at all.  This distinction is important for compile-time type checking: 'any' effectively shuts up compile-time errors/warnings about type mismatches, and instead causes run-time typechecks to be emitted where necessary.</p>
+<p>A class can declare that it intends to conform to an interface by including that interface in its list of base classes; bases that are interfaces are treated differently by the default metaclass.  The metaclass should match up the implemented methods and attributes with the methods and attributes declared by the interfaces, make sure they match, and add wrappers to implement on-call type checking.  For example:</p>
+<pre class="literal-block">
+interface I:
+    def foo(x: int) -&gt; str:
+        "The foo method."
+        assert x &gt; 0
+
+class C(I):
+    def foo(self, x):
+        return str(x)
+</pre>
+<p>Here the metaclass would replace C.foo with a wrapper that (1) checks that exactly one argument is passed, (2) checks that it is an int, (3) executes the body of the method declared in the interface (which in this example checks that x is &gt; 0), (4) calls the method implementation; (5) checks that the return value is a string; and (6) returns the return value.  (As I said before, I haven't quite figured out how additional validation of the contract for the return value should be done; perhaps the interface method could contain special syntax for that.)  The wrapper should be inspectable; its __signature__ attribute should match that of the interface method, and it should also be possible to retrieve the original implementation.</p>
+<p>Note that if an argument type is given as a parameterized type (e.g. list[int]), type checking the call arguments may be expensive or impossible; see the "dark corner" described in the subsection on parameterized types above.  When in doubt, the type checking should pass; the dynamic type checking that's "always on" in Python should catch those cases as least as well as they are handled currently.</p>
+<p>Interfaces can be parameterized by adding [T1, T2, ...] just like shown above for classes.  If a class implements a parameterized interface, it can either specify a type parameter, like this:</p>
+<pre class="literal-block">
+interface I[T]:
+    ...
+
+class C(I[int]):
+    ...
+</pre>
+<p>or else it becomes a parameterizable class itself:</p>
+<pre class="literal-block">
+interface I[T]:
+    ...
+
+class C(I)[T]:
+    ...
+</pre>
+<p>(Actually, this is the same for inheritance among interfaces or among classes.)</p>
+</div>
+<div class="section" id="types-vs-classes">
+<h2><a name="types-vs-classes">Types vs. Classes</a></h2>
+<p>The way I think about it (and I believe I'm in good company), a "type" is an abstract set of method signatures; a "class" is an implementation.  A type T2 is a subtype of a type T1 if T2 defines the same methods as T1, plus perhaps some new ones; also if T2 makes certain modifications to the signatures of methods defined by T1, while satisfying the Liskov substitution principle: a T2 instance should be acceptable whenever a T1 instance is acceptable.  Interestingly (and frustratingly), this means that a subtype can changes method argument types to <em>supertypes</em> of the corresponding argument types in T1, but not to <em>subtypes</em>.  This is called contravariance; I don't have time to explain it in more detail, but it's a fundamental theorem of most type systems.  Each class implicitly defines a type, but often a subclass does <em>not</em> define a subtype of its base class's type, since subclasses often violate contravariance: methods taking an argument of the same class are often refined in a subclass to expect an instance of that subclass as argument.</p>
+<p>That's all fine with me; I'm not about to restrict classes to implement a subtype of their base classes' (implied) type.  But for interfaces I'd like to maintain subtyping relationships; hopefully, interfaces will be othing more than concrete representations of abstract types.</p>
+<p>I'll write T2 &lt;= T1 when T2 is a subtype of T1; this matches Python's notation for the subset relationship, and a subtype defines a set of objects that is a subset of the set of objects defined by its supertype.  I think we'll have a use for this when writing restrictions on parameterized types, perhaps like this:</p>
+<pre class="literal-block">
+interface I[T &lt;= sequence]:
+    ...
+</pre>
+<p>which means that the type parameter T should be a sequence; I[list] would be acceptable, but I[int] would be an error.</p>
+<p>I'm thinking that in some cases a method signature requires relationships between argument types that can't be attached to an individual argument; in that case, perhaps we could add a 'where' clause to the signature.  This is a pretty vague design so far; I haven't figured out exactly where 'where' clauses should be allowed, but here's a simple example:</p>
+<pre class="literal-block">
+def foo(a: T1, b: T2) -&gt; T2 where T2 &lt;= T1:
+    ...
+</pre>
+<p>What does it mean when a parameter's type is given as a class name rather than an interface name?  Or, for that matter, what does it mean when an interface name is given?  My proposal is that the default interpretation is that the <em>type</em> of the argument must match the declared type -- the explicit type represented by an interface, or the implicit type represented by a class.  This is closest to Python's practice of duck typing.</p>
+<p>Perhaps the Eiffel notion of conformance can be used here.  I also expect that there will be some built-in or standard interfaces for things like iterators, iterables, sequences, mappings, files, numbers, and the like.</p>
+</div>
+<div class="section" id="unions-and-such">
+<h2><a name="unions-and-such">Unions and Such</a></h2>
+<p>Often it is useful to have an argument that can take one of several types.  This is a union type in other languages; in Python, I'd like to use the '|' operator on types to express this, for example:</p>
+<pre class="literal-block">
+def read(f: file | str) -&gt; str:
+    "read data from a file"
+</pre>
+<p>A common use would be to declare optional values, where None is acceptable in addition to a designated type; it would be nice if we could write "int | None" for this case, rather than having to invent a name for the type of None (currently NoneType; I think I used 'void' in part I).</p>
+<p>The '&amp;' operator can be useful at times as well, to require an argument that should implement several interfaces at once:</p>
+<pre class="literal-block">
+def update(f: readableFile &amp; writableFile):
+    "blah"
+</pre>
+<p>Finally, I'd like to use the '*' operator to represent the cartesian product of two or more types; for example, the type of a tuple containing two strings and a float could be expressed as "str * str * float".  OTOH, tuple[T] would stand for a tuple of arbitrary length whose elements all have type T (analogous to list[T]).</p>
+<p>These operators should construct objects that can be introspected at run-time.</p>
+<p>(Note: I'm not quite sure that I really like this operator syntax; I've toyed with alternatives, like union[T1, T2] instead of "T1 | T2", but I'm not keen on intersection[T1, T2] or cartesian[T1, T2] (both too long) and I can't seem to find shorter words.  For now, the operators will do.)</p>
+</div>
+<div class="section" id="code-generation">
+<h2><a name="code-generation">Code Generation</a></h2>
+<p>One option would be to generate no type checking code, but simply make the types and interfaces available for introspection, e.g. through a __signature__ attribute on all methods.  This would be sufficient for people interested in using type declarations for purposes of adaptation (PEP 246).  But it seems silly to be able to write buggy code like this:</p>
+<pre class="literal-block">
+def foo(x: int) -&gt; str:
+    x.append(42)
+    return x[:]
+
+a = foo([])
+</pre>
+<p>and not get an error at compile time or at run time.  I think that this particular example should generate code that includes a type check on the argument so that the invocation foo([]) will be trapped.  In addition, a decent compiler should be able to do enough type inferencing within the body of foo() to figure out that both lines in the body of foo() contain static type errors: an int has no append() method, nor does it support the __getslice__() operation.  Under certain circumstances the compiler should also be able to figure out that the call foo([]) is a static type error.  The compiler can choose to issue errors or warnings about static type errors detected at compile time; in some cases (like foo()'s body) its case is strong enough to issue an error, while in other cases (like perhaps the foo([]) call) there might be a way that the code would execute without errors, e.g. when the foo variable at runtime is bound to a different function than the one visible to the compiler.  We could choose to report <em>all</em> static type errors as warnings; the standard warnings module could then be used to turn these into errors, to suppress them, and/or to control the way they are reported.</p>
+</div>
+<div class="section" id="extreme-dynamic-behavior">
+<h2><a name="extreme-dynamic-behavior">Extreme Dynamic Behavior</a></h2>
+<p>In order to make type inferencing a little more useful, I'd like to restrict certain forms of extreme dynamic behavior in Python.</p>
+<ul>
+<li><p class="first">When a built-in is referenced and there is no assignment to a global with the same name anywhere in the module, the type inferencer should be allowed to assume that the real built-in is meant, and it should be allowed to generate errors and code based on that assumption.  For example, consider a module A containing this code:</p>
+<pre class="literal-block">
+def foo(a):
+    return len(a)
+</pre>
+<p>Then the compiler should be allowed to assume that there isn't code in some <em>other</em> module that does something like this:</p>
+<pre class="literal-block">
+import A
+A.len = sum
+</pre>
+<p>On the other hand, if method A contains this code:</p>
+<pre class="literal-block">
+def foo(a):
+    return len(a)
+
+def setlen(func):
+    global len
+    len = func
+</pre>
+<p>then the compiler should assume that some other module might call setlen() and it should make sure that the reference to len inside foo() grabs the global variable named len if it is set (i.e. it should use the current, fully dynamic lookup, first in globals, then in builtins).</p>
+<p>The compiler should be allowed to assume that no changes to the __builtin__ module are made (except additions, and except documented cases like __import__).</p>
+</li>
+<li><p class="first">Similarly, when a class defines a method with a certain signature, and the compiler cannot see (in the current module) any assignments to an instance variable overriding the method, then the compiler should be allowed to assume that any call to that method will actually call the method it can see, rather than some other method substituted dynamically.  It should allow for a dynamic substitution of another method with the same signature, but nothing else.  (This may depend on the metaclass used; the compiler should be able to tell which metaclass is used and adjust its assumptions accordingly.  If a non-standard metaclass is used, it should conclude that no assumptions are safe.)</p>
+</li>
+<li><p class="first">Various things should be interpreted by the compiler as hints that extreme dynamicism may be used; for example, using an object's __dict__ attribute, or the globals() function, or setattr() with an argument whose value isn't a string literal.</p>
+</li>
+<li><p class="first">The presence of "from ... import *" poses extra problems.  The compiler should be allowed to assume that this doesn't change the meaning of any previously imported names, and this should be checked at run-time as well.  It should be allowed to do redundant imports this way, e.g. if module A contains "import sys", then "import sys; from A import *" does not constitute an error; but if module A contained instead "sys = 42" then that same import would be a run-time (and possibly compile-time) error.</p>
+</li>
+<li><p class="first">The exec statement (without an 'in' clause) poses similar problems. Today, you can write:</p>
+<pre class="literal-block">
+s = raw_input()
+exec s
+print x
+</pre>
+<p>and assume that s defines x.  I never use this myself (instead, I use "d = {}; exec s in d" and then carefully pick apart what appeared in d).  It's probably okay if the simply turns of most of its type inferencing after seeing an exec without 'in' in a given scope.  (Maybe the presence of exec without 'in' by itself should be worthy of a warning.)</p>
+</li>
+<li><p class="first">Duplicate definitions in a class body should be considered errors, except when guarded by if clauses.</p>
+</li>
+<li><p class="first">This list is open-ended; I expect that PyChecker already implements many heuristics from which we can learn (a) how to recognize extreme dynamic behavior, and (b) which dynamic behavior is likely or (almost) certainly a mistake.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="standard-interfaces">
+<h2><a name="standard-interfaces">Standard Interfaces</a></h2>
+<p>There are a bunch of de-facto interfaces that are used all the time in current Python, for example number, file-like, callable, mapping, sequence, iterable, iterator.  (What about sets?)  I think all of these should become built-in formal interfaces that should be used in preference to the corresponding concrete types.  This would once and for all decide the question of whether something needs to implement writelines() or isatty() before it can be considered file-like, and whether every mapping needs to implement iteritems().  I don't intend to write all these up exactly at this point; I expect that getting all the little details right here is probably worthy of a PEP if not several (I imagine file-like and number could turn into great little mine fields).</p>
+<p>Two special types deserve some attention:</p>
+<ul class="simple">
+<li>'any', already mentioned, is the type that's the union of all possible types; no operation on an object of type 'any' should ever be flagged as a static error by the compiler.  Assignment from 'any' to a more specifically typed object should never be considered a static error but instead cause a run-time typecheck.  (In general, I think narrowing operations shouldn't require explicit casts.)  'any' is the type of any expression whose type is unknown.  In current Python, the implicit type of every variable and expression is 'any'.</li>
+<li>'nothing' is pretty much the opposite of 'any' -- it is the union of no types.  There are no values of type 'nothing'; this sets it apart from NoneType, which has one value, None.  'nothing' is the element type of the empty sequence or mapping.  'nothing' disappears when united with any other type: for any type T, (nothing | T) == (T | nothing) == T.  You can't declare a variable, argument or return type to be nothing, but it is useful as the "zero" of the type algebra.</li>
+</ul>
+</div>
+<div class="section" id="loose-ends">
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="optional-static-typing-stop-the-flames.html">&larr; Previous</a> &middot; <a href="adding-optional-static-typing-to-python.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

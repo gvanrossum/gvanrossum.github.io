@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python 3000 FAQ - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="more-questions-about-python-3000-answered.html">&larr; Previous</a> &middot; <a href="tim-oreilly-in-china.html">Next &rarr;</a></p>
+
+<h1>Python 3000 FAQ</h1>
+<p><i>July 28, 2007 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=211200">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p><strong>Q.</strong> I want to learn Python. Should I learn Python 2.6 or Python 3.0?</p>
+<p><strong>A.</strong> Definitely learn Python 2.x (the latest version out is 2.5).  I expect it'll be two years before you'll need to learn Python 3.0, and the differences aren't that great from a beginner's perspective: most of what you'll learn about 2.x will still hold about 3.0.</p>
+<hr class="docutils">
+<p><strong>Q.</strong> If you're killing <tt class="docutils literal"><span class="pre">reduce()</span></tt>, why are you keeping <tt class="docutils literal"><span class="pre">map()</span></tt> and <tt class="docutils literal"><span class="pre">filter()</span></tt>?</p>
+<p><strong>A.</strong> I'm not killing <tt class="docutils literal"><span class="pre">reduce()</span></tt> because I hate functional programming; I'm killing it because almost all code using <tt class="docutils literal"><span class="pre">reduce()</span></tt> is less readable than the same thing written out using a for loop and an accumulator variable.  On the other hand, <tt class="docutils literal"><span class="pre">map()</span></tt> and <tt class="docutils literal"><span class="pre">filter()</span></tt> are often useful and when used with a pre-existing function (e.g. a built-in) they are clearer than a list comprehension or generator expression.  (Don't use these with a lambda though; then a list comprehension is clearer and faster.)</p>
+<hr class="docutils"/>
+<p><strong>Q.</strong> Multi-core processors will be standard even on laptops in the near future. Is Python 3.0 going to get rid of the GIL (Global Interpreter Lock) in order to be able to benefit from this feature?</p>
+<p><strong>A.</strong> No.  We're not changing the CPython implementation much.  Getting rid of the GIL would be a massive rewrite of the interpreter because all the internal data structures (and the reference counting operations) would have to be made thread-safe.  This was tried once before (in the late '90s by Greg Stein) and the resulting interpreter ran twice as slow.  If you have multiple CPUs and you want to use them all, fork off as many processes as you have CPUs.  (You write your web application to be easily scalable, don't you?  So if you can run several copies on different boxes it should be trivial to run several copies on the same box as well.)  If you really want "true" multi-threading for Python, use Jython or IronPython; the JVM and the CLR do support multi-CPU threads.  Of course, be prepared for deadlocks, live-locks, race conditions, and all the other nuisances that come with multi-threaded code.</p>
+<hr class="docutils"/>
+<p><strong>Q.</strong> I prefer to use the same source code for 2.x and 3.0; I really don't want to have to use the 2to3 source conversion tool.  Why can't you make that work?</p>
+<p><strong>A.</strong> Suit yourself.  The intersection of 2.6 and 3.0 is large, but there are several things you can't do: you can't use Unicode literals (2.6 only), nor bytes literals (3.0 only).  The only <tt class="docutils literal"><span class="pre">print</span></tt> syntax that works the same in both versions is <tt class="docutils literal"><span class="pre">print(x)</span></tt>.  When you catch exceptions you can't inspect their values, because the 2.6 syntax uses <tt class="docutils literal"><span class="pre">,</span></tt> while 3.0 uses <tt class="docutils literal"><span class="pre">as</span></tt>.  You can't use <tt class="docutils literal"><span class="pre">.iterkeys()</span></tt>, but <tt class="docutils literal"><span class="pre">.keys()</span></tt> works differently in 2.6 and 3.0.  You can't use <tt class="docutils literal"><span class="pre">xrange()</span></tt>, but <tt class="docutils literal"><span class="pre">range()</span></tt> works differently.  You can't use metaclasses, as the syntax for specifying a metaclass is completely changed in 3.0.  And so on.  Restricting yourself to the intersection of the two versions is very painful and limited.  We're not introducing backwards compatibility syntax in 3.0, because that would defeat the purpose (we've had backwards compatibility forever in 2.x, and the whole point of 3.0 is to clean up the mess).</p>
+<hr class="docutils"/>
+<p><strong>P.S.</strong> For another batch of Q/A pairs, see the <a class="reference" href="http://www.artima.com/weblogs/viewpost.jsp?thread=211430">sequel post</a>.</p>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="more-questions-about-python-3000-answered.html">&larr; Previous</a> &middot; <a href="tim-oreilly-in-china.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

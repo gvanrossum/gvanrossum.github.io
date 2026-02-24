@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Web Framework Redux - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="django-vs-cheetah-1-0.html">&larr; Previous</a> &middot; <a href="please-teach-me-web-frameworks-for-python.html">Next &rarr;</a></p>
+
+<h1>Web Framework Redux</h1>
+<p><i>January 30, 2006 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=146503">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p>Let me thank everybody for participating in the <a class="reference" href="http://www.artima.com/forums/threaded.jsp?forum=106&amp;thread=146149">web frameworks discussion</a>.  I haven't been able to digest all the comments yet, and I've yet to download a single one of the many recommendations (except for <a class="reference" href="http://webpy.org">web.py</a>, because it was only one file).  But I've skimmed a lot  of the discussion, and tried to follow a few tutorials (many of which are <a class="reference" href="http://www.gosubway.org/docs/">unfinished</a>, leaving me with an unsatisfied cliffhanger feeling).</p>
+<p>So, while I educate myself more (and take care of other duties), here are some thoughts that are bubbling through my head at this point.</p>
+<p>Maybe the current crop of Python web frameworks (as well as Rails BTW) have it all wrong.  Maybe the <a class="reference" href="http://python.org/peps/pep-0333.html">WSGI</a> folks are the only ones who are "getting" it.</p>
+<p>ISTM that, contrary to what Rails and its many imitators seem to think, a framework shouldn't be an all-or-nothing proposition.  For example, in the case of my Google starter project, I need to roll my own solutions for authentication and persistence (since these must hook into internal Google infrastructure), but I really need a better templating approach than <tt class="literal"><span class="pre">%(name)s</span></tt>.  So I should be able to use Django's templates, or Cheetah.  I really want to look into <a class="reference" href="http://www.cheetahtemplate.org/">Cheetah</a> -- the example I saw on web.py looks "right".  (web.py itself OTOH gets an "F", for undocumented code with too much magic behavior.  upvars(), bah.)</p>
+<p>Maybe we need more standardization efforts like WSGI, that let you plug in different animals, or roll your own, for various pieces of useful web functionality: for example URL dispatch, templates, persistence, authentication, sessions, forms, style sheets, i18n, and client-side scripting (AJAX or not).</p>
+<p>Not that I'm particular keen on WSGI -- it reminds me of a trip to East Berlin in the mid '80s.  But its point is to provide a minimal interface between the web server and the typical web application, <em>and</em> to support most existing solutions on both side of the fence.  The former is the real point, of course, but the latter is extremely important for standardization efforts.  (Remember ISO networking? No? See, that proves my point. :-)</p>
+<p>Here's another point.  Or perhaps a set of chaotically related points.  Some frameworks emphasize that the effort of getting started is low.  But this is really only so to the extent that you're trying to do something very similar to something that's been done a 1000 times before, so that all the defaults in the framework and the setup utilities are all doing exactly what's needed.  This (and very fast typing) is what makes the first Rails movie possible.</p>
+<p>But what if you need to into an existing authentication framework?  What if you need to hook into an existing database schema that maps to in-memory objects in a different way than the framework's ORM tool?  Or if your persistence approach is not based on a relational database at all?  What if you want to write an AJAX application like Google Maps or Gmail?  Etc. -- for every framework component there's an alternative that you might want or need to use instead of the default.</p>
+<p>I remember the time, before the web, when GUI apps were new.  We were all learning about event handling, scrolling regions, screen refresh, window placement, text editing, and so on.  Soon enough, frameworks emerged that took care of the repetitive stuff, leaving the application developer free to develop an application.  But IMO it didn't work all that well.  Perhaps it worked well for some apps, that really were very similar to the "ur-application" that the framework designers had in mind.  But usually the framework didn't do exactly what you wanted, and then you had to tell it to do things differently.  Perhaps you didn't want a horizontal scroll bar on that window.  Perhaps you didn't want to automatically change the cursor to an hourglass for certain operations.  Or perhaps you didn't want windows at all!  Let the whole screen be a canvas.  Etc., etc.</p>
+<p>For many applications, the choice was between either using a GUI framework and writing lots of overrides to fight (some would say "extend") the framework; or using a more simplistic, lower-level GUI toolkit and writing more low-level code but being more in control.  Which approach was the quicklest way to success wasn't always clear, but here's my take: personally, I'd rather use a bottom-up approach, where I can start writing simple code that forms the core of my app, without relying on framework services.  Then as I find the need for templates, authentication, sessions, persistence and so on, libraries should be available to do the heavy lifting.</p>
+<p>Perhaps frameworks could fit the role of "profiles" -- a set of libraries that is necessary and sufficient for a particular type of application.  For example, there could be a profile suitable for building social networking sites, one for setting up on-line stores, one for enterprise intranet applications, one for community websites and so on.  These would have different levels of sophistication, and different number of components, but there would be a considerable amount of overlap (e.g. the on-line store profile and the enterprise intranet profile may both provide session management out of the box).</p>
+<p>I'm halfway through <a class="reference" href="http://www.joelonsoftware.com/">Joel Spolski</a>'s book, <a class="reference" href="http://www.joelonsoftware.com/uibook/chapters/fog0000000057.html">User Interface Design for Programmers</a>.  It's a great, light read (and a great companion to Steve Krug's <a class="reference" href="http://www.sensible.com/buythebook.html">Don't Make Me Think</a>).  Joel notices a pendumum swing in UI design paradigms: from classic power-apps that give you an empty window and a loaded menu bar, to auto-content-creation wizards focused on specific likely activities that leave the expert frustrated, and back again to a more reasonable mid point.  Perhaps WSGI represents the "blank slate" approach; Rails/Django represent the wizard approach; I'm still looking for the ideal mix-and-match solution.</p>
+<p>From this perspective, Zope and Twisted are off the scale: they support the mix-and-match approach, offering several alternative solutions for many of the important issues (templating, persistence, authentication, etc.).  But they only work if you drink lavish quantities of their particular flavor of kool-aid, and that's not good enough for me.  I don't want to depend on any particular flavor of interfaces, adaptation, serialization, discovery, etc.  I'm looking for solutions that depend only on the Python standard library, and use accepted Python idioms and patterns.  Any takers?</p>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="django-vs-cheetah-1-0.html">&larr; Previous</a> &middot; <a href="please-teach-me-web-frameworks-for-python.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Humane Interface - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="python-main-functions.html">&larr; Previous</a> &middot; <a href="news-from-python-uk.html">Next &rarr;</a></p>
+
+<h1>The Humane Interface</h1>
+<p><i>May 13, 2003 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=4790">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p>I've just finished Jef Raskin's The Humane Interface.  Jef's
+greatest claim to fame is the invention of the original Machintosh
+(although I'm not sure exactly what role he played, given that the
+Macintosh was surely created by a team).  I found the book a quick
+read, interesting and thought-provoking, although a bit uneven.
+
+<p>This book wants to be on the same shelf as Donald Norman's classic,
+The Psychology of Everyday things.  Like Normal, Raskin revels in
+pointing out examples of bad interface design right under our noses,
+for example the placement of Windows menus, which he claims are hard
+to aim for because they're not at the edge of the screen like Mac
+menus.  I once attended an entertaining talk Jef gave criticizing the
+"iDrive" interface in the BMW 745i, which makes every rookie mistake
+in interface design imaginable: from having too many levels of
+submenus to requiring the driver's attention when his eyes should be
+on the road, and, of course, the mother of all bad interface design,
+modes.
+
+<p>Remember the editor wars, pitting vi and Emacs enthusiasts against
+each other?  One argument often heard against vi is that it has
+<i>modes</i>: sometimes, typing an 'x' inserts the letter 'x' into the
+text, and other times, it acts as a command (erasing a character, as
+it happens).  While vi's successor, vim, does a much better job of
+showing in which mode you are, Jef's point is that the mode indicator
+is not at the user's <i>locus of attention</i>: that is the insert
+point in the text, while the mode indicator (at least when using the
+terminal version) is at the bottom of the screen.  If you are
+distracted for a few seconds and then go back to your editing, you may
+not notice the mode indicator in the corner of your peripheral vision,
+and you will start typing assuming the wrong mode.  Sure enough, that
+has happened to me many times.  (Emacs has modes too though!  For
+example, I often find myself inexplicably in a modal dialog, or
+accidentally typing into a "dired" window.)
+
+<p>In his book, Jef argues that <i>all</i> modes are evil, whether we
+are talking modal dialog boxes, different selection modes in graphical
+editors, or even having different applications that behave
+differently.  Since humans are creatures of habit, we have a hard time
+remembering which mode the computer is, because we want to focus on
+the task at hand; modes divert our attention to keeping track of the
+mode, and hence slow us down.
+
+<p>Jef's alternative is a clever idea that he calls a
+<i>quasimode</i>, which is a mode that only lasts as long as the user
+keeps a key or button depressed.  His key example is LEAP: an
+incremental search that is triggered by depressing a key placed below
+the space bar with your thumb.  The LEAP mode ends as soon as the key
+is released.  It is impossible to forget that you're holding the LEAP
+key down (this has something to do with the part of our nervous system
+that keeps track of which muscles are used), so you can't forget the
+mode you're in.  I've seen Jef give a demo of this using a laptop's
+mouse buttons as LEAP keys, and the idea seems to work well
+-- <i>if</i> you have a keyboard with keys that can be used for this
+purpose.
+
+<p>But for most of us, LEAP and some of Jef's other clever ideas are
+part of a utopian dream which we cannot obtain.  Some other ideas
+discussed in the book are more down-to-earth.  For example, I found
+his explanation of the GOMS analysis of how long it takes to perform a
+particular task very useful: some of the biggest slowdowns are
+switching between mouse and keyboard, aiming the mouse at a tiny
+target, and <i>thinking</i> about what to do next.  Jef's analysis of
+the amount of information conveyed by a user gesture is also
+interesting: for example, clicking in a modal dialog box with only an
+OK button conveys no information, and such informational messages are
+better presented in a way that doesn't require explicit
+acknowledgement.  Jef's suggestion, to make the message transparent,
+is clever and I would like to try this out -- but, heeding one of his
+other points (also made in another favorite book of mine, Steve Krug's
+Don't Make Me Think), it needs more user testing.
+
+<p>Jef makes a point against interface customization which I have long
+observed: customizations act as long-living modes, and can cause great
+pain and confusion when you find yourself using a familiar application
+on someone else's computer, or even on your own computer when you have
+changed a preference that has a farther-reaching effect than expected.
+(An extreme example: four out of five PythonLabs developers use XEmacs
+on Red Hat Linux, and yet none of us dares drive anyone else's
+keyboard, because our personalizations are all totally different.
+When doing pair programming, this can be a serious slow-down!)
+
+<p>Jef also argues convincingly against differentiating between
+beginner and expert modes, and against "learning" interfaces that
+change the contents of the menus based on its observation of your
+behavior.  He is not against menus (menu selection is after all the
+first quasi-mode), and seems to argue for fewer menus containing more
+items: while it's easier to find something in a short list than in a
+long list, if you have hundreds of items, having a small number of
+long lists makes a rarely-used item easier to find than hiding it in
+one of many dozens of short lists (especially submenus).  He also
+sensibly points out that in menus there's no particular gain in
+brevity, and that text can convey more information quicker than icons
+do: never underestimate our brain's text processing ability!
+
+<p>One point that Jef makes seems untenable to me: he wants the
+distinction between all applications to disappear.  I agree with some
+of his observations, e.g. that it's confusing to have a text editor
+containing a simple graphics editor sitting next to a graphics editor
+containing a dumbed-down text editor.  (I've often deplored the
+differences in behavior between Word and Excel, which sometimes seem
+to be from different planets, despite being sold together as a package
+deal!)  But while we can hope that key productivity applications will
+eventually merge (and not in the way of the dreaded OpenOffice), I
+expect that there will always be a lively trade in applications that
+cater to special areas, be they games, instant messaging, or video
+editing.  And, despite bearing a 2000 copyright, the book has
+remarkably little to say about web browsers and the interfaces we
+build using them.  I'm looking forward to Jef's Humane Browser!
+
+<hr/>
+<p>(The next book I'm reading is Bob Martin's Agile Programming book.
+I'm looking forward to reviewing that, too!)
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="python-main-functions.html">&larr; Previous</a> &middot; <a href="news-from-python-uk.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

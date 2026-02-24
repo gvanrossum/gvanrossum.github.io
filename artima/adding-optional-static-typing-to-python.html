@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adding Optional Static Typing to Python - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="adding-optional-static-typing-to-python-part-ii.html">&larr; Previous</a> &middot; <a href="bob-martins-agile-programming-book.html">Next &rarr;</a></p>
+
+<h1>Adding Optional Static Typing to Python</h1>
+<p><i>December 23, 2004 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=85551">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p>An email exchange with Neal Norwitz that started out as an inquiry
+about the opening of a stock account for the PSF (talk about bizarre
+conversation twists) ended up jogging my thoughts about optional
+static typing for Python.</p>
+<p>[As an experiment, I'm going to post this to Artima without mentioning
+it anywhere else.  If RSS works, it should show up on various other
+blogs within days.]</p>
+<div class="section" id="what-is-optional-static-typing">
+<h1><a name="what-is-optional-static-typing">What is Optional Static Typing?</a></h1>
+<p>The Python compiler doesn't know about the types of the objects you
+pass around in a Python program; only the run-time (the Virtual
+Machine) does. This makes Python expressive and flexible, but
+sometimes means that bugs of a rather trivial kind (like typos in
+method names) are found later than the developer would have
+liked. Without losing the benefits of Python's dynamic typing, it
+would be nice if you had the option to add type declarations for your
+method arguments, variables and so on, and then the compiler would
+give you a warning if you did something that wasn't possible given
+what the compiler knows about those types. While there are third-party
+program checkers that find a lot of problems without type
+declarations, e.g. <a class="reference" href="http://pychecker.sourceforge.net/">pychecker</a>, it would be nice if (a) this
+capability was built into the Python compiler and (b) you could give
+it hints in cases where its type inference broke down.</p>
+<p>Let's look at a simple function:</p>
+<pre class="literal-block">
+def gcd(a, b):
+    while a:
+        a, b = b%a, a
+    return b
+</pre>
+<p>This pretty much only makes sense with integer arguments, but the
+compiler won't stop you if you call it with string or floating point
+arguments. Purely based on the type system, those types are fine: the
+% operator on two strings does string formatting (e.g. "(%s)" %
+"foobar" gives "(foobar)"), and Python happens to define % on floats
+as well (3.7 % 0.5 gives 0.2). But with string arguments the function
+is likely to raise a TypeError (gcd("", "%s") notwithstanding) and
+float arguments often cause bogus results due to the rounding errors.</p>
+<p>So let's consider a simple type annotation for this function:</p>
+<pre class="literal-block">
+def gcd(a: int, b: int) -&gt; int:
+    while a:
+        a, b = b%a, a
+    return b
+</pre>
+<p>I've considered various ways of adding argument types, and I've come
+to like this notation best. I couldn't use a colon to indicate the
+return type, because it would be too ambiguous to distinguish between
+these two:</p>
+<pre class="literal-block">
+def foo(): int:
+
+def foo(): print
+</pre>
+<p>(Yes, that's in part because Python's parser generator is so lame, but
+that in turn is intentional -- it is so lame to prevent me from
+inventing syntax that is either hard to write a parser for or hard to
+disambiguate by human readers, who always come first in Python's
+design.)</p>
+</div>
+<div class="section" id="issues">
+<h1><a name="issues">Issues</a></h1>
+<p>Let's look at a bunch of issues. For some, I have strawman answers.
+For others, I'm still groping in the dark. (And I need a re-education
+on how some of these things are solved in other languages!)</p>
+<div class="section" id="concrete-vs-abstract-types">
+<h2><a name="concrete-vs-abstract-types">Concrete vs. Abstract Types</a></h2>
+<p>It would be a shame if declaring gcd() as taking int arguments would
+mean that gcd(123456789012345, 23456789012355) would no longer work
+(those are longs, not ints).  This particular case can be solved by
+using inheritance (let int derive from long, or vice versa), but there
+are others that aren't solved so easily.  For example:</p>
+<pre class="literal-block">
+from StringIO import StringIO
+
+def foo(f: StringIO) -&gt; str:
+    f.write("hello")
+    return f.getvalue()
+
+f1 = StringIO("booh+")
+print foo(f1)  # prints "booh+hello"
+</pre>
+<p>What if a cStringIO instance were passed?  There are technical reasons
+why cStringIO can't or shouldn't inherit from StringIO, but more
+importantly, requiring inheritance defeats Python's reliance on <a class="reference" href="http://c2.com/cgi/wiki?DuckTyping">duck
+typing</a>.</p>
+<p><strong>Possible solution?</strong>: the compiler derives an inherited interface
+(let's call this a <em>duck type</em>) for the argument from the fact that
+the only two methods used are write() and getvalue(); the latter
+returning a str.  It makes sure that these methods are in fact defined
+by the StringIO class, and then accepts other class instances that
+implement the duck type.</p>
+<p><strong>But...</strong>: taking that to the extreme would not flag gcd("x", "y") as
+a bug because the operations used (bool-testing, binary %) are
+supported.  Also, it doesn't help for the return type.  What if I had
+a UnicodeStringIO class whose getvalue() returned a Unicode string?</p>
+</div>
+<div class="section" id="container-types">
+<h2><a name="container-types">Container Types</a></h2>
+<p>Container types offer lots of interesting problems.  As an
+introduction (not yet using containers), consider a function that
+compute the smallest of two values:</p>
+<pre class="literal-block">
+def min(a, b):
+    if a &lt; b:
+        return a
+    else:
+        return b
+</pre>
+<p>We would like to be able to add type annotations indicating that a and
+b should have the same type and that the result also has that type.
+Strawman syntax:</p>
+<pre class="literal-block">
+def min(a: T, b: T) -&gt; T:
+    if a &lt; b:
+        return a
+    else:
+        return b
+</pre>
+<p>As a (rather unpythonic) strawman, I'm using T and T0, T1, T2, etc. as
+<em>type variables</em>.  You can think of these as the free variables in an
+equation of types; we're saying that the types of a, b and the
+(unnamed) return value must all be the same.  So min(1, 2) is valid
+and returns an int; min("a", "b") is valid and returns a string.</p>
+<p>What about min(1, 2.5)?  That ought to be valid and return a float.  I
+guess this means that there should be some kind of typing hierarchy
+that explains how the various numeric types are embedded in each
+other.  The VM already knows about these coercion rules, but the trick
+is to build them into the type system.  I think I would like to do
+this using a mechanism separate from inheritance, since I really don't
+think that it is a good idea to require that int is a subclass of
+float and float a subclass of complex.  But the mechanism should also
+be open to user-defined types; there shouldn't be mechanisms in Python
+that the user cannot extend (not many, anyway).</p>
+<p>Now on to containers.  Let's look at a different function that
+computes the smallest element of a sequence:</p>
+<pre class="literal-block">
+def min(a):
+    it = iter(a)
+    x = it.next()    # This raises StopIteration if a is empty
+    for y in it:
+        if y &lt; x:
+            x = y
+    return x
+</pre>
+<p>How would we write the signature?  Clearly a is any iterable; the
+function return type is the iterable's element type.  Strawman:</p>
+<pre class="literal-block">
+def min(a: iterable(T)) -&gt; T:
+    it = iter(a)
+    x = it.next()    # This raises StopIteration if a is empty
+    for y in it:
+        if y &lt; x:
+            x = y
+    return x
+</pre>
+<p>I guess iterable would have to be a new built-in to represent the
+concept "anything over which you can iterate".  This includes lists
+and tuples and strings, but also dictionaries, files, and in general
+anything that defines __getitem__ or __iter__.</p>
+<p>The Boost folks have a habit of Capitalizing these abstract types, so
+it would be Iterable.  That would perhaps also be a way out of the
+dilemma of int vs. long: we could use Integer for idealized integers.
+There are other numeric abstractions that we might want to define,
+like Exact and Inexact, Rational, Real and Complex (and Quaternion?),
+but I don't want to digress into number systems.  Type systems are
+hard enough without them.</p>
+<p>Perhaps we could extend this convention to saying that whenever a
+class name starts with a Capital letter it acts as a duck type, and
+when it starts with a lower case letter it acts as a concrete type (so
+only instances of the type and its subclasses are allowed).</p>
+<p>I don't particularly like enforcing naming conventions based on case;
+it's one thing to have an agreement amongst a group of Python
+developers that Foo is an abstract class and foo is a concrete class,
+but it's quit a different thing to have the compiler look at this too
+for its type checking.</p>
+<p>It would be good to have a set of notations both for the common
+(abstract and concrete) container types, just so we can write more
+examples.  Here's a strawman.</p>
+<blockquote>
+<p>list(T): a list whose elements are all T's</p>
+<p>set(T): a set whose elements are all T's (set is a builtin in Python
+2.4)</p>
+<p>tuple(T0, T1, T2): a tuple of length three whose elements have the
+specified types (if you want to use tuples of arbitrary length as
+sequences, use Seqence)</p>
+<p>dict(T1, T2): a dict whose key type is T1 and whose value type is T2</p>
+<p>Iterable(T): an iterable whose elements are all T's</p>
+<p>Sequence(T): a sequence whose elements are all T's</p>
+<p>Mapping(T1, T2): a mapping whose key type is T1 and whose value type
+is T2</p>
+<p>union(T1, T2): either T1 or T2 (union is not really a type but an
+operator, but I think it could just be a built-in)</p>
+</blockquote>
+<p>Do we need to distinguish between mutable and immutable sets and
+sequences?</p>
+<p>We need a better name for type(None) than types.NoneType; perhaps void
+will do?</p>
+<p>A common pattern for optional values is to have union(T, void).
+Perhaps we could add the notation optional(T) to mean just this?</p>
+<p>I'm handwaving a bit about how the compiler knows all these built-in
+names.  I think it should assume that names of built-ins that aren't
+redefined as globals (or imported, etc.) stand for their built-in
+meaning and there's no surreptitious run-time redefinition going on.
+So then it can know about int, and about len(x: sequence(T))-&gt;int, and
+so on.</p>
+</div>
+<div class="section" id="overloading">
+<h2><a name="overloading">Overloading</a></h2>
+<p>This is not about operator overloading, which is simple enough, but
+about method signature overloading a la Java.  While most overloading
+is easily expressed using either default argument values or a simple
+union type, there are some cases that defeat this approach.</p>
+<p>For example, the signatures of the built-in min() and max() functions
+cause some grief: they overload two quite different functions:</p>
+<pre class="literal-block">
+def min(a: iterable(T)) -&gt; T:
+    ...
+
+def min(x: T, y: T, *rest: sequence(T)) -&gt; T:
+    ...
+</pre>
+<p>I don't know how to deal with this except by somehow making this kind
+of overloading explicit.  Decorators to the rescue perhaps:</p>
+<pre class="literal-block">
+@overloaded
+def min(a: iterable(T)) -&gt; T:
+    ...
+
+@overloaded
+def min(x: T, y: T, *rest: sequence(T)) -&gt; T:
+    ...
+</pre>
+<p>The overloaded decorator could build a multimethod dispatched based on
+the call signature.  That's probably quicker than decoding the types
+by hand from a varargs argument...</p>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="adding-optional-static-typing-to-python-part-ii.html">&larr; Previous</a> &middot; <a href="bob-martins-agile-programming-book.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

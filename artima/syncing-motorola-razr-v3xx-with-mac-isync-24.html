@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Syncing Motorola RAZR v3xx With Mac iSync 2.4 - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="it-isnt-easy-to-remove-the-gil.html">&larr; Previous</a> &middot; <a href="python-3000-alpha-1-released.html">Next &rarr;</a></p>
+
+<h1>Syncing Motorola RAZR v3xx With Mac iSync 2.4</h1>
+<p><i>September 9, 2007 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=214122">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p>Edit this file:</p>
+<pre class="literal-block">
+/Applications/iSync.app/Contents/PlugIns/ApplePhoneConduit.syncdevice/Contents/PlugIns/PhoneModelsSync.phoneplugin/Contents/Resources/MetaClasses.plist
+</pre>
+<p>(make a backup first!)</p>
+<p>Somewhere at an appropriate place (e.g. after the first <tt class="docutils literal"><span class="pre">&lt;dict&gt;</span></tt>), add this XML:</p>
+<pre class="literal-block">
+&lt;key&gt;com.motorola.razorV3xx&lt;/key&gt;
+&lt;dict&gt;
+        &lt;key&gt;Identification&lt;/key&gt;
+        &lt;dict&gt;
+                &lt;key&gt;com.apple.cgmi+cgmm&lt;/key&gt;
+                &lt;string&gt;"Motorola CE, Copyright 2006"+"GSM900","GSM1800","GSM1900","WCDMA","MODEL=RAZRV3xx"&lt;/string&gt;
+                &lt;key&gt;com.apple.gmi+gmm&lt;/key&gt;
+                &lt;string&gt;"Motorola CE, Copyright 2006"+"GSM900","GSM1800","GSM1900","WCDMA","MODEL=RAZRV3xx"&lt;/string&gt;
+        &lt;/dict&gt;
+        &lt;key&gt;InheritsFrom&lt;/key&gt;
+        &lt;array&gt;
+                &lt;string&gt;com.motorola.switchable-usb-bt.0x22B8/0x4902&lt;/string&gt;
+        &lt;/array&gt;
+        &lt;key&gt;Services&lt;/key&gt;
+        &lt;array&gt;
+                &lt;dict&gt;
+                        &lt;key&gt;ServiceName&lt;/key&gt;
+                        &lt;string&gt;com.apple.model&lt;/string&gt;
+                        &lt;key&gt;ServiceProperties&lt;/key&gt;
+                        &lt;dict&gt;
+                                &lt;key&gt;ModelIcon&lt;/key&gt;
+                                &lt;string&gt;MOTV3-silver.tiff&lt;/string&gt;
+                                &lt;key&gt;ModelName&lt;/key&gt;
+                                &lt;string&gt;RAZR V3xx&lt;/string&gt;
+                        &lt;/dict&gt;
+                &lt;/dict&gt;
+                &lt;dict&gt;
+                        &lt;key&gt;ServiceName&lt;/key&gt;
+                        &lt;string&gt;com.apple.synchro&lt;/string&gt;
+                        &lt;key&gt;ServiceProperties&lt;/key&gt;
+                        &lt;dict&gt;
+                                &lt;key&gt;stringEncoding&lt;/key&gt;
+                                &lt;string&gt;UCS2&lt;/string&gt;
+                        &lt;/dict&gt;
+                &lt;/dict&gt;
+        &lt;/array&gt;
+&lt;/dict&gt;
+</pre>
+<p>Note: I think all that indentation should be tabs.  Use at your own risk.  And, I'll say it again: make a backup first!  If iSync is already running, quit it and restart it.  No reboot necessary!</p>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="it-isnt-easy-to-remove-the-gil.html">&larr; Previous</a> &middot; <a href="python-3000-alpha-1-released.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

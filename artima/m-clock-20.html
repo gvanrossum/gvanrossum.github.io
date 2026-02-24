@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>M Clock 2.0 - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="the-harry-potter-theory-of-programming-language-design.html">&larr; Previous</a> &middot; <a href="interfaces-or-abstract-base-classes.html">Next &rarr;</a></p>
+
+<h1>M Clock 2.0</h1>
+<p><i>August 5, 2005 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=122250">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p>Some time in the '80s I saw a very cool wall clock.  It has two transparent discs attached to the hands, where each disc has nine gradations of a primary color applied to it.  The background has a similar, fixed pattern using the third primary color.  The result is a clock that looks different every minute!  Hard to describe properly; you have to see it.  (And you will, hold on.)
+
+<p>My parents bought me that clock as a birthday present.  The front says "M Clock" and "Rob Juda".  (I've seen other, similar clocks by the same designer.)  After having moved half a dozen times, it's still hanging on my kitchen wall telling the time and getting curious looks from visitors.
+
+<p>In the early '90s I did a software implementation of that clock in Python, using the SGI GL bindings that we had just created at CWI.  It made it into the Python distribution as a demo, but was eventually withdrawn because GL support died and I didn't have the time to port it to OpenGL.  (It's still in the
+<a href="http://cvs.sf.net/viewcvs.py/python/python/dist/src/Demo/sgi/gl/Attic/mclock.py?view=markup">CVS Attic</a>.)
+
+<p>A few weeks I received an email from the designer, Mr. Juda (a compatriot of mine), asking if the software was still available.  There is a clock museum in the Netherlands (Schoonhoven) which has all of Mr. Juda's designs on display, and he thought that the museum would be interested in the software version, if it was still available (and ran on Windows).  He told me some of the history of the clock -- about 100,000 clocks were produced and sold from '84 through '94.  It was hard to sell the clock because people wouldn't realize that three totally different looking clocks were really the same clock at different times!
+
+<p>I promised Mr. Juda that I would consider reviving the software, and here it is:
+<a href="http://python.org/~guido/mclock2.py">mclock2.py</a>.  It runs on Windows and Unix as long as you have a recent version of Python with Tkinter enabled.  (The most recent Windows installer of Python is downloadable from <a href="http://python.org/2.4.1/">python.org/2.4.1/</a>.)  Tip for Windows users: rename the file to "mclock2.pyw" to suppress the text console.
+
+<p>PS: It would be cool if someone did an Xscreensaver version of this...
+
+<p>PPSS: The first version I posted had the color gradations reversed.  I've fixed that, made the hands look more like those on the original, and removed the right-click-to-zoom feature on Unix (it was using a Tk feature that only works on Windows).  URL is unchanged.
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="the-harry-potter-theory-of-programming-language-design.html">&larr; Previous</a> &middot; <a href="interfaces-or-abstract-base-classes.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>

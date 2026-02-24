@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python 3000 - Adaptation or Generic Functions? - All Things Pythonic</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="dynamic-function-overloading.html">&larr; Previous</a> &middot; <a href="library-or-framework.html">Next &rarr;</a></p>
+
+<h1>Python 3000 - Adaptation or Generic Functions?</h1>
+<p><i>April 5, 2006 &mdash; originally posted on
+<a href="https://www.artima.com/weblogs/viewpost.jsp?thread=155123">artima.com</a></i></p>
+
+<hr>
+
+<p>
+<p>Alex Martelli has been arguing for adaptation since the dawn of time; and at various times he's chided me for not seeing the light.  Well am I ever grateful for dragging my feet!</p>
+<div class="section" id="adaptation">
+<h1><a name="adaptation">Adaptation</a></h1>
+<p>Let me first briefly describe adaptation, reduced to its simplest form.  The motivation comes from a common situation where an object wrapper is required (aptly named the Adapter Pattern).  PEP 246 proposes a built-in function adapt(X, P) where X is any object and P a Protocol.  We intentionally don't define what a protocol is; all we care about that it can be represented by an object.  The call adapt(X, P) returns an object constructed from X that satisfies P, or raises an exception if it can't.  It uses a global registry which maps types and protocols to adapter functions; we can write this as a dict R = {(T, P): A, ...}.  Then, adapt(X, P) computes the adapter A = R[type(X), P] and then returns A(X).  There is a registration function register(T, P, A) which simply sets R[T, P] = A.  Read Alex's post for a gentler explanation (and lots of things I left out).</p>
+<p>As soon as Alex had posted this version of how adaptation works, several people (including myself) independently realized that the global registry (which has always been a sore point to some) is a red herring; the registry could just as well be separated out per protocol!  So now we make adapt() and register() methods on the protocol: instead of adapt(X, P) we write P.adapt(X) and instead of register(T, P, A) we write P.register(T, A).  The signature of A is unchanged.  I call this "second-generation adaptation".</p>
+<p>The nice thing about this is that you no longer have a fixed global implementation of exactly what register() and adapt() do.  Alex mentions a whole slew of issues he's ignoring but that would need to be addressed for a real-life implementation, such as how to handle adaptation for an object where its type hasn't been registered but some base type has been registered; or the notion of inheritance between protocols (useful when you equate protocols with interfaces, as in Zope and Twisted); or automatic detection of the where an object already implements a protocol/interface (again useful in Zope and Twisted).  Several of those extensions make lookup performance an issue, and there are different ways to address that.  By having multiple protocol implementations (each implementing the same adapt() and register() APIs) each framework can have its own notion of how adaptation works for its own protocols, without having to deal with a fixed global implementation of adaptation that may or may not do the best thing for a particular framework.</p>
+</div>
+<div class="section" id="generic-functions">
+<h1><a name="generic-functions">Generic Functions</a></h1>
+<p>But then Ian Bicking posted a competing idea: instead of adaptation, why don't we use generic functions?  In his and Phillip Eby's view these are more powerful than adapters, yet in some sense equivalent.  Let me briefly describe generic functions to set the stage.</p>
+<p>A generic function, G, is a callable that behaves like a function (taking arguments and returning a value) but whose implementation is extensible and can be spread across different modules.  TG contains a registry of implementations which is indexed by a tuple of the combined types of the arguments.  Suppose we want G to be callable with two arguments, then the registry would map type pairs to implementation functions.  We'd write G.register((T1, T2), F) to indicate that F(X1, X2) is a suitable implementation for G(X1, X2) when type(X1)==T1 and type(X2)==T2.  The simplest implementation would just map the arguments to their types (or better, classes), convert to a tuple, and use that as a key in the registry to find the implementation function.  If that key is not found, a default implementation is invoked; this is provided when G is first defined and can either provide some fallback action or raise an exception.</p>
+<p>A useful implementation of generic functions must also support looking for matches on the base types of the argument types.  This is where things get hairy, at least when you have multiple arguments.  For example, if you have a solution that is an exact match on the first argument and a base type match on the second, and another that is a base type match on the first argument an exact match on the second; which do you prefer?  Phillip Eby's implementation, RuleDispatch (part of PEAK) refuses to guess; if there isn't one <em>dominant</em> solution (whatever that means) it raises an exception.  You can always cut the tie by registering a more specific signature.</p>
+<p>C++ users will recognize generic functions as a run-time implementation of the strategy used by the C++ compiler to resolve function overloading.  Fortunately we're not bound by backwards compatibility with C to repeat C++'s mistakes (which, for example, can cause a float to be preferred over a bool).  Lisp or Dylan users (are there any left? :-) and PyPy developers will recognize them as multi-methods.</p>
+<p>In order to contrast and compare the two ideas, I posted a very simple version of adaptation and generic functions, applied to the idea of reimplementing the built-in iter() function.  I used descriptors for registration, making the signatures slightly different from what I showed above, but the essence is the same.</p>
+</div>
+<div class="section" id="the-lightbulb-went-off">
+<h1><a name="the-lightbulb-went-off">The Lightbulb Went Off</a></h1>
+<p>Now we're ready for the Aha! moment (already implicit in Ian's and Phillip's position), brought home by an altenative version of the Protocol independently developed by Tim Hochberg: P.adapt(X) is just a verbose way of spelling a generic function call G(X)!</p>
+<p>Interestingly, it took Alex a little time to like this -- he was thinking of adaptation as more powerful because it can return an object implementing several methods, while doing the same thing with generic functions would required a separate generic function for each method.  But of course we can write a generic <em>factory</em> function, which returns an object with multiple methods, just like adapt() can; and the generic function approach wins in the (common) case where we want to adapt to a "point protocol" -- an interface with just one method, which we immediately call in order to obtain the desired result.  When using adaptation, this would require each adapter to use a helper class with a single method that does the desired operation; when using a generic function, the generic function can just do the operation.  And we haven't even used generic function dispatch on multiple arguments!</p>
+<p>I'm not sure where this will eventually lead; but I've already killed PEP 246 (adaptation) and PEP 245 (interfaces) in anticipation of a more "generic" proposal.</p>
+</div>
+<div class="section" id="references">
+<h1><a name="references">References</a></h1>
+<ul class="simple">
+<li>Alex's seminal post: <a class="reference" href="http://mail.python.org/pipermail/python-3000/2006-April/000267.html">http://mail.python.org/pipermail/python-3000/2006-April/000267.html</a></li>
+<li>Ian Bicking's post: <a class="reference" href="http://mail.python.org/pipermail/python-3000/2006-April/000342.html">http://mail.python.org/pipermail/python-3000/2006-April/000342.html</a></li>
+<li>Phillip Eby's PEAK, including RuleDispatch: <a class="reference" href="http://peak.telecommunity.com/">http://peak.telecommunity.com/</a></li>
+<li>My toy implementations of adaptation and generic functions: <a class="reference" href="http://mail.python.org/pipermail/python-3000/2006-April/000425.html">http://mail.python.org/pipermail/python-3000/2006-April/000425.html</a></li>
+<li>Phillip Hochberg's implementation of adaptation: <a class="reference" href="http://mail.python.org/pipermail/python-3000/2006-April/000402.html">http://mail.python.org/pipermail/python-3000/2006-April/000402.html</a></li>
+<li>Py3K mailing list: <a class="reference" href="http://mail.python.org/mailman/listinfo/python-3000">http://mail.python.org/mailman/listinfo/python-3000</a></li>
+<li>Py3K branch: <a class="reference" href="http://svn.python.org/view/python/branches/p3yk/">http://svn.python.org/view/python/branches/p3yk/</a> (sic)</li>
+</ul>
+
+<hr>
+<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="dynamic-function-overloading.html">&larr; Previous</a> &middot; <a href="library-or-framework.html">Next &rarr;</a></p>
+
+</div>
+</body>
+</html>
