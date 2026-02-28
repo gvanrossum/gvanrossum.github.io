@@ -981,8 +981,7 @@ I think I know that you're probably looking to organize a Python conference with
 
 Fortec.
 
-**Yeah, yeah.
-I think Barry always called it Foreskin.**  **[TODO: drop or keep?]**
+**Yeah, yeah.**
 
 Very Barry.
 
@@ -1019,7 +1018,7 @@ He had all the equipment in his car
 and he didn't arrive until noon or so.
 Steve Holden was very panicky about that.
 Somehow it worked out.
-I got to ask Steve.**
+I've got to ask Steve.**
 
 **And that's all we have time for.
 Thank you, Thomas!**
