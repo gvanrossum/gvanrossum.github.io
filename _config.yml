@@ -1,0 +1,7 @@
+# Minimal Jekyll configuration for GitHub Pages
+exclude:
+  - publish.py
+  - README.md
+  - "*.txt"
+  - "*.aiff"
+  - "*.au"
