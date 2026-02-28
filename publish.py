@@ -213,15 +213,18 @@ def add_post_to_blog_index(
     index_path = blog_dir / "index.html"
     index_html = index_path.read_text()
 
+    # GitHub Pages converts .md to .html
+    html_filename = Path(md_filename).stem + ".html"
+
     # Idempotent: skip if already listed
-    if md_filename in index_html:
-        print(f"  Post already in index: {md_filename}")
+    if html_filename in index_html:
+        print(f"  Post already in index: {html_filename}")
         return
 
     escaped_title = html_module.escape(title)
     date_display = format_date_display(date_str)
     new_entry = (
-        f'<li><b><a href="{md_filename}">{escaped_title}</a></b>'
+        f'<li><b><a href="{html_filename}">{escaped_title}</a></b>'
         f' <span style="color: #666;">&mdash; {date_display}</span></li>'
     )
 
