@@ -674,7 +674,7 @@ No, this is way before namespace packages.
 
 **I think there was a much hackier solution at the time.**
 
-**[TODO: Decide common spelling for xmlplus]**
+<!-- TODO: Decide common spelling for xmlplus] -->
 
 So I can tell you how it worked because I had to deal with it at Google for very, very many years after any of this was relevant.
 So the XML package in the standard library, when you imported it, so in its dunder init.py, it would try to import underscore XML plus, which was not installed by default, but you could install underscore XML plus.
@@ -723,7 +723,7 @@ Neil Norwitz, who is in your neck of the woods.
 I think he's still in your neck of the woods.
 I know he left Google a couple of years ago.
 
-**[TODO: Too much personal stuff here that's not relevant]**
+<!-- TODO: Too much personal stuff here that's not relevant -->
 
 **That's as much as I know, yeah.
 We were fairly close friends, and then he got married, and they moved to, like, extreme South Bay.
@@ -841,7 +841,7 @@ Any parting words?
 Things that suddenly pop in your memory?**
 
 I think you shouldn't overlook the PSF as well.
-And I think they're as little as Satan Grisly.  **[TODO: ???]**
+And I think there's a little bit of a saving grace there.
 I think there are more records at the start of the PSF than there are at the start of core development.
 If you look at the list of board members for the first couple of years, a couple more names may pop out.
 
