@@ -87,7 +87,7 @@ And I was also involved in some other MUDs that weren't LambdaMOO.
 **But still as a teenager?**
 
 I was technically a teenager, but I was working at an ISP in the Netherlands.
-I started working at the Digital City, and then I started working for the company that set up the Digital City, Access for All, where I worked for 11 years, as a system administrator, and then as a software developer as well.
+I started working at the Digital City, and then I started working for the company that set up the Digital City, XS4ALL, where I worked for 11 years, as a system administrator, and then as a software developer as well.
 But in my hobby time, I still played a lot of different MUDs and in one of them, someone introduced me to Python saying, you'll like this language since you like LambdaMOO.
 And then that, so that was like 1998 or 99, I think,
 that they first said this and I didn't really take it serious because I was too busy learning Perl, and realizing
@@ -788,7 +788,7 @@ Yeah, my parents weren't happy when I dropped out, but I had a job that I droppe
 I mean, that was a simple job, I worked at the local hospital.
 And they were like, ah, he'll go back to school in a year.
 And then I got a job at the Digital City, which is like an ISP, sort of an ISP.
-And then I landed a job at Access for All.
+And then I landed a job at XS4ALL.
 And then I moved to Google.
 And they were like, okay, he's not going back to school. (Guido laughs.)
 Yeah, working in big tech, I made more than my parents combined, even though my father was already a professor at the time.
@@ -809,7 +809,7 @@ Don't drop out of college.
 And they'd go, yes, but Steve Jobs!**
 
 No. No.
-It was funny at Access for All, I mean, I was 19 or 20 when I started there.
+It was funny at XS4ALL, I mean, I was 19 or 20 when I started there.
 Most of the people were around that age, a little older, not much older.
 They were all college dropouts.
 because they were in college doing something with, or discovered computers in college and then dropped out to do fun things with them. And I was basically the same except...
@@ -831,7 +831,7 @@ Yeah.
 
 **Having that extra bit in my resume.**
 
-Yeah, one of the people I worked with at Access for All, she was, I don't remember, she was a friend of one of the SysAdmins, and he knew that she would be good at SysAdmin.
+Yeah, one of the people I worked with at XS4ALL, she was, I don't remember, she was a friend of one of the SysAdmins, and he knew that she would be good at SysAdmin.
 She wanted to go back to university but couldn't quite do it yet or something, and she worked for us for a year.
 She is now a professor of quantum crypto at one of the other universities.
 So you can go back to school after you do this, but it is very, very rare.
