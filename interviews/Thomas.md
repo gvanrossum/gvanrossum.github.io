@@ -721,24 +721,6 @@ Martin von Loewis.
 Just thinking about Unicode.
 Neil Norwitz, who is in your neck of the woods.
 I think he's still in your neck of the woods.
-I know he left Google a couple of years ago.
-
-<!-- TODO: Too much personal stuff here that's not relevant -->
-
-**That's as much as I know, yeah.
-We were fairly close friends, and then he got married, and they moved to, like, extreme South Bay.
-Actually, I think it was Santa Cruz.**
-
-Yeah, it was like a farm near Santa Cruz.
-
-**Scotts Valley.
-We visited there once and his wife was like ridiculous about some kind of ankle-biting dog.**
-
-I never met her, so I don't know.
-
-**And soon they started getting kids and they were just overwhelmed, I think, or at least very busy.**
-
-Yeah, change of life.
 
 **But yeah, all good names to try to follow up.
 I hope Martin wants to talk to me.
