@@ -6,7 +6,7 @@ date: 2026-02-28
 
 ## Preface
 
-I've always enjoyed the literary form if the interview,
+I've always enjoyed the literary form of the interview,
 and hoped that once I would be able to dabble in it.
 
 Here's how I finally got motivated.
