@@ -700,7 +700,7 @@ That was a little awkward.
 I mean, it's not that different from if people had been using the third party package from the start, but the fact that they
 imported from XML made it seem like it was a standard library module and it wasn't.
 
-***Yeah, yeah, I can see that.**
+**Yeah, yeah, I can see that.**
 
 I'm glad we didn't do that in more places.
 
