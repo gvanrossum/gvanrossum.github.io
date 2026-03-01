@@ -652,15 +652,15 @@ Oh, yeah.
 I totally blanked out on that because I'm not an XML user at all, but that's
 something that belongs in the standard library because so many people in different fields feel the need to do something with XML, and it's good if you have something reliable in your hands.**
 
-Yeah, the downside is we try to make it extensible by using XML+, if you remember that.
+Yeah, the downside is we try to make it extensible by using xmlplus, if you remember that.
 
-**I don't remember what  XML+ was.**
+**I don't remember what  xmlplus was.**
 
 So we had the XML namespace in the standard library, and that contained elementtree and Celementtree, which was the C implementation that was faster but had some different functionality.
 And then I think elementpath was a thing that was very similar to XPath but not standardized and not as versatile as XPath.
 Those were the things that were in the XML package by default.
 And then the concern was that we were taking up the XML namespace, right?
-Because we introduced the XML.
+Because we introduced xmlplus.
 
 **Oh, you are right.
 That is also a really good memory.**
@@ -674,14 +674,12 @@ No, this is way before namespace packages.
 
 **I think there was a much hackier solution at the time.**
 
-<!-- TODO: Decide common spelling for xmlplus] -->
-
 So I can tell you how it worked because I had to deal with it at Google for very, very many years after any of this was relevant.
-So the XML package in the standard library, when you imported it, so in its dunder init.py, it would try to import underscore XML plus, which was not installed by default, but you could install underscore XML plus.
-And then it would add the XML plus directory to its own dunder path.
+So the XML package in the standard library, when you imported it, so in its dunder init.py, it would try to import `_xmlplus`, which was not installed by default, but you could install `_xmlplus`.
+And then it would add the `_xmlplus` directory to its own dunder path.
 So that directory was also searched when you tried to import things from the XML package.
 So it could add to the standard library without overriding the standard library.
-So it would always take the standard library version first in case we added things to the standard library, but otherwise it would take it from the XML plus package.
+So it would always take the standard library version first in case we added things to the standard library, but otherwise it would take it from the xmlplus package.
 
 **Oh, that's interesting.
 That's at least one reasonable use for
@@ -694,10 +692,10 @@ So it's very welcome.
 It's really convenient.
 And it's easy to explain and think about and reason about.
 But it is a little bit of extra complexity that most people don't see.
-But the XML plus solution,
-Turned out to be very awkward because eventually the XML plus package became unmaintained.
-and it didn't work for newer Python versions, but people were still like relying on some of the functionality. I think XPath was actually added to XML and XSLT was added to the XML plus package.
-And anyone using those things wouldn't be able to upgrade Python because the XML plus version didn't support it.
+But the xmlplus solution
+turned out to be very awkward because eventually the xmlplus package became unmaintained.
+and it didn't work for newer Python versions, but people were still relying on some of the functionality. I think XPath was actually added to XML and XSLT was added to the xmlplus package.
+And anyone using those things wouldn't be able to upgrade Python because the xmlplus version didn't support it.
 That was a little awkward.
 I mean, it's not that different from if people had been using the third party package from the start, but the fact that they
 imported from XML made it seem like it was a standard library module and it wasn't.
