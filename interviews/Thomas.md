@@ -961,10 +961,6 @@ I think I know that you're probably looking to organize a Python conference with
 
 Fortec.
 
-**Yeah, yeah.**
-
-Very Barry.
-
 **And he said he had
 reserved a venue for a Perl conference, or a Perl unconference or something, but there were too many of those, too many people independently deciding that they wanted to organize something Perl related.
 And he said, I've given up on using that venue for Perl, but if you want it, here are the people to call because I happen to know that
