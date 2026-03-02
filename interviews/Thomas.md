@@ -106,7 +106,7 @@ Just reading posts and especially Tim Peters posts, of course.
 
 **Yeah, tell me more about people who made an impression on you when you first subscribed to Python-List and sort of what the atmosphere was.**
 
-So, I mean, obviously it's Tim Peters and it's Frederik Lundh.
+So, I mean, obviously it's Tim Peters and it's Fredrik Lundh.
 They were the prolific posters that I remember.
 Tim was always super excited in participating in discussions and giving his point of view and explaining things in a way that sort of invited people to participate, that provided more contributions, more discussions, which in Usenet really, I mean, that was sort of the Usenet
 attitude in general, right?
@@ -293,13 +293,13 @@ Yeah, yeah.
 And the idea of optimizations was attractive at the time, because Python was known to be very slow.
 I mean, it's gotten so much better over the years, but back then the difference was more noticeable and it was not as advanced as it is now.
 
-**So at that time, who were sort of the big names who were discussing things in the Python-Dev list once you were on it?
+**So at that time, who were sort of the big names who were discussing things in the Python-Dev list once you were on it?**
 
 Obviously Tim as well.
-Now for these, I happen to know that this area, the archives are available,0
+Now for these, I happen to know that this area, the archives are available,
 and I did look at the archives like two weeks ago.
 There were some names there that I didn't recognize and I don't remember them participating.
-But the people who stand out were Tim Peters, Frederik Lund, as I mentioned before, Fred Drake, if it was anything about communication.
+But the people who stand out were Tim Peters, Fredrik Lundh, as I mentioned before, Fred Drake, if it was anything about communication.
 
 **Yeah, he did a lot of work on the docs too.**
 
@@ -340,7 +340,7 @@ So it's hard to imagine now because nested scopes are just...
 **Yeah, they've been in the language for 25 years almost.**
 
 But back then, if you had a function defined in another function,
-You couldn't refer to a variable from the outer function in the inner function.
+you couldn't refer to a variable from the outer function in the inner function.
 
 **Not at all.
 The namespace was completely invisible.**
@@ -384,7 +384,7 @@ Yes.
 So we argued about that one for a long time.
 Was it worth the backward compatibility break?
 How do we approach backward compatibility in general?
-Jeremy was like, well, if you if you I think this is sort of the professionalization of Python development as well, where we're no longer thinking about our own code.
+Jeremy was like, well, I think this is sort of the professionalization of Python development as well, where we're no longer thinking about our own code.
 We're thinking about how other people deploy Python, not for their own code.
 They deploy Python for users of Python.
 So before then, I think we were all thinking, oh, I build Python, and then I use Python, and I use the version that I built.
@@ -398,13 +398,13 @@ And I still am.
 **Yeah, well, I remember in the early 2000s, that was sort of an ongoing debate and an ongoing issue.
 I remember Steve Holden at some point standing up during a plenary session, I think, and sort of telling the people on stage, maybe it was just me, maybe it was a bunch of core devs, that Python was changing too fast and that we had to somehow
 make commitments and not sort of make releases with new features too soon after a previous release with new features. I think at a time the compromise was 18 months and we kept that on for a very long time until
-I think after two releases with the modern process, I think Lukasz.
+I think after two releases with the modern process, I think Łukasz.
 Or maybe it was after the steering council started?**
 
 No, we switched to yearly in 3.9.
 I think after 3.9.
 
-**I don't rememer when 3.9 was, but I'm pretty sure it was after the steering council took over.**
+**I don't remember when 3.9 was, but I'm pretty sure it was after the steering council took over.**
 
 Yes.
 
@@ -416,7 +416,7 @@ Yeah.
 yeah, we need to do yearly releases to stay in sync with many other big open source projects.
 And then suddenly we realized, Oh! The steering council also gets elected every year instead of more irregularly.
 But I think before Steve complained about that, we were still pretty lackadaisical about
-new features in point releases. I think the last time i got away with that, do you remember?**
+new features in point releases. I think the last time I got away with that, do you remember?**
 
 Uh, `True` and `False` getting added to 2.2.3.
 
@@ -446,9 +446,9 @@ That happens more often than I wish it would.
 I don't know a good solution.
 It's just a hard problem.
 
-**Let's reminisce a bit about Frederick Lund.
+**Let's reminisce a bit about Fredrik Lundh.
 Because I can't interview him.
-So all we'll hear about him is from other people's recollections.
+So all we'll hear about him is from other people's recollections.**
 
 I remember, I think I met him in person a couple of times.
 We were at Google at the same time for a long time, but I never really...
@@ -467,7 +467,7 @@ I don't remember that.
 **I remember he got a divorce and sort of one of the stresses in his life was getting enough time with his daughter while being in Zurich.**
 
 I remember he was Effbot because he was like Tim.
-Tim was Timbot and Frederick was Effbot, posting so much about so many subjects.
+Tim was Timbot and Fredrik was Effbot, posting so much about so many subjects.
 And I think his focus was always Tkinter, if I remember correctly.
 
 **He had a lot to do with that.
@@ -502,7 +502,7 @@ Like, they were paid to do that work.
 I mean, they went out of their way.
 We relied on it for very many years.
 They were, you know, always there.
-Frederick, at least, was always there to support it as well.
+Fredrik, at least, was always there to support it as well.
 But my recollection is that CNRI paid for this.
 
 **It's not impossible.
@@ -539,7 +539,7 @@ There's a bunch more names there.
 They're fairly well-known people in the Python community in their own right, but at the time they were the Twisted developers working on their own little thing.
 They're fairly disconnected from Python.
 
-**Yeah, somehow what I remember, and I think that's just distorted, was that Twisted was all Glyphs work.**
+**Yeah, somehow what I remember, and I think that's just distorted, was that Twisted was all Glyph's work.**
 
 Oh no, Twisted was a big project.
 
@@ -694,7 +694,7 @@ And it's easy to explain and think about and reason about.
 But it is a little bit of extra complexity that most people don't see.
 But the xmlplus solution
 turned out to be very awkward because eventually the xmlplus package became unmaintained.
-and it didn't work for newer Python versions, but people were still relying on some of the functionality. I think XPath was actually added to XML and XSLT was added to the xmlplus package.
+And it didn't work for newer Python versions, but people were still relying on some of the functionality. I think XPath was actually added to XML and XSLT was added to the xmlplus package.
 And anyone using those things wouldn't be able to upgrade Python because the xmlplus version didn't support it.
 That was a little awkward.
 I mean, it's not that different from if people had been using the third party package from the start, but the fact that they
@@ -706,13 +706,13 @@ I'm glad we didn't do that in more places.
 
 **Yeah, it's always a little awkward to be able to tell whether something's a standard library module or not.**
 
-But yeah, the XML, I think F-Bob was all about XML at some point.
+But yeah, the XML, I think Effbot was all about XML at some point.
 Before he joined Google, he was all about XML.
 
 **Ah, he must have had a corporate customer that was all about XML.
 I mean, nobody does XML out of a passion, except maybe the people on the XML committee.**
 
-Martin von Loewis.
+Martin von Löwis.
 
 **Of course, yeah.**
 
@@ -907,7 +907,7 @@ It may have just been the people who could physically make it to LA, IPC.
 I can sort of count back and see that it must have been at one of the IPCs.
 But the memory that stands out for me is that
 there was a whole bunch of practical stuff that had to be done to get the PSF actually off the ground, including, I don't know, registering to be a 501(c)(3).
-And so the first year, because Dick Hart was there from ActiveState,
+And so the first year, because Dick Hardt was there from ActiveState.
 He said, I am a businessman.
 I'll take care of all these things.
 I know how that goes.
@@ -930,7 +930,7 @@ I think I even attended a few times.**
 Yeah, I think I went to one of those.
 
 **In the end, it was not the real Python conference.
-And so the PSF played an enormously important role for the first PyCon because we had asked all the corporate members or the sponsor members to pay, I don't know what it was, $3,000 a year or so as membership fees, and various very small companies.
+And so the PSF played an enormously important role for the first PyCon because we had asked all the corporate members or the sponsor members to pay, I don't know what it was, $3,000 a year or so as membership fees, and various very small companies
 that cared a lot about Python, most of which companies have long gone under, all paid us that for two years.
 And then we had enough cash in the bank because we had no expenses.
 We didn't do anything with it.
