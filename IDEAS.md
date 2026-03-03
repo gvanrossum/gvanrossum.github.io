@@ -1,0 +1,105 @@
+# Ideas for future interviewees
+
+See [the devguide](https://devguide.python.org/core-team/team-log/)
+for a full list of core devs.
+
+Skipping (for now) the folks who appeared in the Python Documentary.
+
+- Łukasz Langa (needs a do-over due to losing half the transcript)
+- Christian Tismer
+- Tim Peters (if he's willing)
+- Steve Holden (could be controversial)
+- Eric Raymond (even more controversial)
+- Raymond Hettinger
+- Jim Fulton
+- Fred Drake
+- Jeremy Hylton
+- Andrew Kuchling
+- Jack Jansen
+- Neil Schemenauer
+- Greg Ward
+- Greg Stein
+- Trent Mick
+- Marc-Andre Lemburg
+- Mark Hammond
+- Skip Montanaro
+- Paul Prescod
+- Moshe Zadka (in person)
+- Martin v. Löwis
+- Ka-Ping Yee
+- Paul Everitt
+- Kurt B. Kaiser
+- Piers Lauder?
+- Finn Bock?
+- Michael W. Hudson
+- Neal Norwitz
+- Anthony Bazter
+- Greg P. Smith
+- Walter Dörwald?
+- Andrew MacIntyre?
+- Jason Tishler?
+- Tony Lownds?
+- Gustavo Niemeyer?
+- David Goodger
+- Alex Martelli (!)
+- Anna Ravencroft
+- Laura Creighton
+- Armin Rigo?
+- Hye-Shik Chang
+- Vinay Sajip
+- Phillip J. Eby
+- Matthias Klose?
+- Sean Reifschneider
+- Facundo Batista
+- Bob Ippolito
+- Terry Jan Reedy
+- Georg Brandl
+- Alyssa Coghlan
+- Steven Bethard
+- Jack Diederich
+- Kristján Valur Jónsson
+- Collin Winter
+- Josiah Carlson?
+- Eric V. Smith
+- Travis Oliphant
+- Jeffrey Yasskin
+- Bill Janssen
+- Christiam Heimes
+- Amaury Forgeot d’Arc
+- Mark Dickinson
+- Trent Nelson
+- Jesús Cea?
+- Jesse Noller
+- Senthil Kumaran
+- Antoine Pitrou
+- Tarek Ziadé
+- Chris Withers
+- R. David Murray
+- Ezio Melotti
+- Frank Wierzbicki
+- Stefan Krah (controversial?)
+- Dino Viehland
+- Brian Curtin
+- Giampaolo Rodolà
+- Tim Golden?
+- Alexander Belopolsky
+- Brian Quinlan
+- Éric Araujo
+- Tal Einat
+- Ned Deily
+- Eli Bendersky
+- Jason R. Coombs
+- Alex Gainor
+- Andrew Svetlov
+- Hynep Schlawak?
+- Eric Snow
+- Serhiy Storchaka
+- Ethan Furman
+- Donald Stufft
+- Zachary Ware
+- Yury Selivanov
+- Steven D'Aprano
+- Kushal Das
+- Steve Dower
+- Berker Peksağ (is he local?)
+- Paul Moore
