@@ -1,1 +1,6 @@
+# Cloudflare / Counterscale
 /.wrangler/
+/.cloudflare_api_token
+
+# macOS
+.DS_Store
