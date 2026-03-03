@@ -717,7 +717,7 @@ Martin von Löwis.
 **Of course, yeah.**
 
 Just thinking about Unicode.
-Neil Norwitz, who is in your neck of the woods.
+Neal Norwitz, who is in your neck of the woods.
 I think he's still in your neck of the woods.
 
 **But yeah, all good names to try to follow up.
@@ -936,7 +936,7 @@ And then we had enough cash in the bank because we had no expenses.
 We didn't do anything with it.
 I remember Tim Peters at some point taking care of the 501(c)(3) stuff.**
 
-Neil Norwitz, I think.
+Neal Norwitz, I think.
 I think Neil was on the board as well.
 He was secretary for a while.
 
