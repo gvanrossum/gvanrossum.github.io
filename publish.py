@@ -403,7 +403,10 @@ def register_blog_in_top_index(blog_folder: str, blog_title: str) -> None:
         return
 
     escaped = html_module.escape(blog_title)
-    new_entry = f'<li><a href="{blog_folder}/index.html">{escaped}</a></li>'
+    new_entry = (
+        f'<li><a href="{blog_folder}/index.html">{escaped}</a>'
+        f' (<a href="{blog_folder}/feed.xml">RSS</a>)</li>'
+    )
 
     if BLOG_LIST_MARKER in index_html:
         index_html = index_html.replace(
@@ -417,6 +420,34 @@ def register_blog_in_top_index(blog_folder: str, blog_title: str) -> None:
             f"  WARNING: Marker {BLOG_LIST_MARKER!r} not found in index.html.\n"
             f"  Please add the blog entry manually."
         )
+
+
+def ensure_top_index_has_feed_link(blog_folder: str) -> None:
+    """Ensure top-level index entry for a blog includes a feed link."""
+    index_path = SITE_ROOT / "index.html"
+    index_html = index_path.read_text()
+
+    feed_href = f'{blog_folder}/feed.xml'
+    if feed_href in index_html:
+        return
+
+    blog_href = f'{blog_folder}/index.html'
+    pattern = re.compile(
+        rf'(<li>\s*<a href="{re.escape(blog_href)}"[^>]*>.*?</a>)(.*?</li>)',
+        flags=re.IGNORECASE,
+    )
+    match = pattern.search(index_html)
+    if not match:
+        return
+
+    replacement = (
+        match.group(1)
+        + f' (<a href="{blog_folder}/feed.xml">RSS</a>)'
+        + match.group(2)
+    )
+    index_html = index_html[: match.start()] + replacement + index_html[match.end() :]
+    index_path.write_text(index_html)
+    print(f"  Added top-level RSS link for '{blog_folder}'")
 
 
 # ---------------------------------------------------------------------------
@@ -467,6 +498,7 @@ def main() -> None:
 
     # 4. Ensure RSS link and refresh feed
     ensure_blog_index_has_feed_link(blog_dir)
+    ensure_top_index_has_feed_link(blog_folder)
     blog_title = detect_blog_title(blog_dir, slugify_to_title(blog_folder))
     write_blog_rss_feed(blog_dir, blog_title)
 
