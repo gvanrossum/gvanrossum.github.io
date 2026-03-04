@@ -9,7 +9,7 @@
 <body>
 <div class="container">
 
-<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="stricter-whitespace-enforcement.html">&larr; Previous</a> &middot; <a href="the-fate-of-reduce-in-python-3000.html">Next &rarr;</a></p>
+<p class="post-nav"><a href="index.html">&larr; Back to the Artima index</a> &middot; <a href="stricter-whitespace-enforcement.html">&larr; Previous</a> &middot; <a href="the-fate-of-reduce-in-python-3000.html">Next &rarr;</a></p>
 
 <h1>Five-minute Multimethods in Python</h1>
 <p><i>March 30, 2005 &mdash; originally posted on
@@ -146,7 +146,7 @@ if hasattr(function, "__lastreg__"):
 <p>You could try to put the assignment to mm.__lastreg__ inside the register() method, but that would just add more distance between the code that sets it and the code that uses it, so I like it better this way.  In a more static language, of course, there would have to be a declaration of the __lastreg__ attribute; Python doesn't need this.  It's important that this isn't a "normal" attribute name, so that other uses of function attributes aren't preempted.  (Hm...  There are almost no "normal" uses of function attributes; they are mostly used for various "secret" purposes so name conflicts in the __xxx__ namespace are not inconceivable.  Oh well, maybe we should use something really long like multimethod_last_registered or even put the whole thing inside the MultiMethod class so we can use a private variable name like __lastreg.)
 
 <hr>
-<p class="post-nav"><a href="index.html">&larr; All Posts</a> &middot; <a href="stricter-whitespace-enforcement.html">&larr; Previous</a> &middot; <a href="the-fate-of-reduce-in-python-3000.html">Next &rarr;</a></p>
+<p class="post-nav"><a href="index.html">&larr; Back to the Artima index</a> &middot; <a href="stricter-whitespace-enforcement.html">&larr; Previous</a> &middot; <a href="the-fate-of-reduce-in-python-3000.html">Next &rarr;</a></p>
 
 </div>
 <script
