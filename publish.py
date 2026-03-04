@@ -312,9 +312,9 @@ def create_blog_index(blog_dir: Path, blog_title: str) -> None:
 <body>
 <div class="container">
 
-<h1>{escaped}</h1>
-
 <p><a href="../index.html">&larr; Back to home page</a></p>
+
+<h1>{escaped}</h1>
 
 <hr>
 

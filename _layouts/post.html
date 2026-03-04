@@ -9,7 +9,17 @@
 <body>
 <div class="container">
 
-<p><a href="index.html">&larr; All Posts</a></p>
+{% assign blog_slug = page.dir | split: '/' | last %}
+{% if blog_slug == '' %}
+  {% assign blog_slug = page.dir | split: '/' | slice: 1, 1 | first %}
+{% endif %}
+{% capture blog_name %}
+{% assign words = blog_slug | replace: '-', ' ' | split: ' ' %}
+{% for word in words %}{% if forloop.first == false %} {% endif %}{{ word | capitalize }}{% endfor %}
+{% endcapture %}
+{% assign blog_name = blog_name | strip %}
+
+<p><a href="index.html">&larr; Back to the {{ blog_name }} index</a></p>
 
 <h1>{{ page.title }}</h1>
 <p><i>{{ page.date | date: "%B %d, %Y" }}</i></p>
@@ -19,7 +29,7 @@
 {{ content }}
 
 <hr>
-<p><a href="index.html">&larr; All Posts</a></p>
+<p><a href="index.html">&larr; Back to the {{ blog_name }} index</a></p>
 
 </div>
 <script
