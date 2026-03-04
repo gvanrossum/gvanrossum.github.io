@@ -26,14 +26,20 @@ What it does (idempotently):
 
   3. If the folder already has index.html:
      - Adds the post at the top of the list (if not already present).
+
+  4. Refreshes <folder>/feed.xml (RSS 2.0) from all .md posts in the folder,
+      and ensures the folder's index.html links to the feed.
 """
 
 import html as html_module
+import re
 import sys
 from datetime import date, datetime
+from email.utils import format_datetime
 from pathlib import Path
 
 SITE_ROOT = Path(__file__).resolve().parent
+SITE_URL = "https://gvanrossum.github.io"
 
 # Markers used to locate insertion points in HTML files
 BLOG_LIST_MARKER = "<!-- BLOG_LIST -->"
@@ -128,6 +134,129 @@ def format_date_display(date_str: str) -> str:
     return d.strftime("%B %d, %Y")
 
 
+def parse_publish_datetime(date_str: str) -> datetime:
+    """Parse front-matter date/datetime and return an aware local datetime."""
+    normalized = date_str.strip()
+    if normalized.endswith("Z"):
+        normalized = normalized[:-1] + "+00:00"
+
+    try:
+        dt = datetime.fromisoformat(normalized)
+    except ValueError:
+        dt = datetime.strptime(normalized, "%Y-%m-%d")
+
+    return dt.astimezone()
+
+
+def format_rss_pub_date(date_str: str) -> str:
+    """Format front-matter date/datetime as RFC-2822 in local timezone."""
+    return format_datetime(parse_publish_datetime(date_str))
+
+
+def absolute_url(relative_path: str) -> str:
+    """Build an absolute URL under the site root."""
+    return f"{SITE_URL.rstrip('/')}/{relative_path.lstrip('/')}"
+
+
+def collect_blog_posts(blog_dir: Path) -> list[dict[str, str]]:
+    """Collect post metadata from all Markdown files in a blog directory."""
+    posts: list[dict[str, str]] = []
+
+    for md_path in blog_dir.glob("*.md"):
+        text = md_path.read_text()
+        meta, _ = parse_front_matter(text)
+
+        title = meta.get("title") or title_from_filename(md_path.name)
+        date_str = meta.get("date") or date.today().isoformat()
+        html_filename = md_path.stem + ".html"
+
+        posts.append(
+            {
+                "title": title,
+                "date": date_str,
+                "html_filename": html_filename,
+            }
+        )
+
+    posts.sort(
+        key=lambda p: (parse_publish_datetime(p["date"]), p["html_filename"]),
+        reverse=True,
+    )
+    return posts
+
+
+def detect_blog_title(blog_dir: Path, fallback_title: str) -> str:
+    """Read blog title from index.html (<h1> or <title>), with fallback."""
+    index_path = blog_dir / "index.html"
+    if not index_path.exists():
+        return fallback_title
+
+    index_html = index_path.read_text()
+
+    h1_match = re.search(
+        r"<h1>(.*?)</h1>", index_html, flags=re.IGNORECASE | re.DOTALL
+    )
+    if h1_match:
+        return html_module.unescape(h1_match.group(1).strip())
+
+    title_match = re.search(
+        r"<title>(.*?)</title>", index_html, flags=re.IGNORECASE | re.DOTALL
+    )
+    if title_match:
+        return html_module.unescape(title_match.group(1).strip())
+
+    return fallback_title
+
+
+def write_blog_rss_feed(blog_dir: Path, blog_title: str) -> None:
+    """Generate or refresh RSS feed.xml for a blog directory."""
+    posts = collect_blog_posts(blog_dir)
+
+    blog_rel = f"{blog_dir.name}/index.html"
+    blog_link = absolute_url(blog_rel)
+    feed_link = absolute_url(f"{blog_dir.name}/feed.xml")
+
+    if posts:
+        last_build = format_rss_pub_date(posts[0]["date"])
+    else:
+        last_build = format_datetime(datetime.now().astimezone())
+
+    item_blocks: list[str] = []
+    for post in posts:
+        title = html_module.escape(post["title"])
+        post_rel = f"{blog_dir.name}/{post['html_filename']}"
+        post_url = html_module.escape(absolute_url(post_rel))
+        pub_date = format_rss_pub_date(post["date"])
+        item_blocks.append(
+            "    <item>\n"
+            f"      <title>{title}</title>\n"
+            f"      <link>{post_url}</link>\n"
+            f"      <guid>{post_url}</guid>\n"
+            f"      <pubDate>{pub_date}</pubDate>\n"
+            "    </item>"
+        )
+
+    channel_title = html_module.escape(blog_title)
+    channel_description = html_module.escape(f"Posts from {blog_title}")
+    rss = (
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        "<rss version=\"2.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">\n"
+        "  <channel>\n"
+        f"    <title>{channel_title}</title>\n"
+        f"    <link>{html_module.escape(blog_link)}</link>\n"
+        f"    <description>{channel_description}</description>\n"
+        f"    <atom:link href=\"{html_module.escape(feed_link)}\" "
+        "rel=\"self\" type=\"application/rss+xml\" />\n"
+        f"    <lastBuildDate>{last_build}</lastBuildDate>\n"
+        + ("\n".join(item_blocks) + "\n" if item_blocks else "")
+        + "  </channel>\n"
+        "</rss>\n"
+    )
+
+    (blog_dir / "feed.xml").write_text(rss)
+    print(f"  Wrote {blog_dir.name}/feed.xml ({len(posts)} post(s))")
+
+
 # ---------------------------------------------------------------------------
 # Core operations
 # ---------------------------------------------------------------------------
@@ -191,6 +320,8 @@ def create_blog_index(blog_dir: Path, blog_title: str) -> None:
 
 <h3>Posts</h3>
 
+<p><a href="feed.xml">RSS feed</a></p>
+
 <ul>
 {POSTS_START_MARKER}
 </ul>
@@ -239,6 +370,26 @@ def add_post_to_blog_index(
 
     index_path.write_text(index_html)
     print(f"  Added {html_filename} to {blog_dir.name}/index.html")
+
+
+def ensure_blog_index_has_feed_link(blog_dir: Path) -> None:
+    """Ensure a blog index has a link to feed.xml."""
+    index_path = blog_dir / "index.html"
+    index_html = index_path.read_text()
+
+    if "feed.xml" in index_html:
+        return
+
+    marker = "<h3>Posts</h3>"
+    feed_paragraph = '\n\n<p><a href="feed.xml">RSS feed</a></p>'
+
+    if marker in index_html:
+        index_html = index_html.replace(marker, marker + feed_paragraph, 1)
+    else:
+        index_html = feed_paragraph.strip() + "\n" + index_html
+
+    index_path.write_text(index_html)
+    print(f"  Added RSS link to {blog_dir.name}/index.html")
 
 
 def register_blog_in_top_index(blog_folder: str, blog_title: str) -> None:
@@ -313,6 +464,11 @@ def main() -> None:
 
     # 3. Post entry in blog index
     add_post_to_blog_index(blog_dir, md_path.name, title, date_str)
+
+    # 4. Ensure RSS link and refresh feed
+    ensure_blog_index_has_feed_link(blog_dir)
+    blog_title = detect_blog_title(blog_dir, slugify_to_title(blog_folder))
+    write_blog_rss_feed(blog_dir, blog_title)
 
     print("Done!")
 
