@@ -46,7 +46,8 @@ threading.
 Here's a condensed, cleaned-up rendition of our conversation.
 I think we both had fun reminiscing!
 (Also note that you're hearing two Dutchmen chatting in English
--- which is what Thomas and I do whenever we talk shop, and often even when we don't.)
+-- which is what Thomas and I do whenever we talk shop,
+and often even when we're looking for sushi.)
 
 **_Guido:_ Tell me how you first heard about Python and how you decided that it was a fun place to contribute.**
 
