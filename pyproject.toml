@@ -1,0 +1,17 @@
+[project]
+name = "bdfl"
+version = "1.0"
+description = "Guido van Rossum's home page (python.org/~guido)"
+readme = { file = "README.md", content-type = "text/markdown" }
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+  { name = "Guido van Rossum", email = "gvanrossum@gmail.com" },
+]
+requires-python = ">=3.14"
+dependencies = [
+]
+
+[project.urls]
+GitHub = "https://github.com/gvanrossum/gvanrossum.github.io"
+Documentation = "https://github.com/gvanrossum/gvanrossum.github.io/README.md"
