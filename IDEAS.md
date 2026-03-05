@@ -3,8 +3,6 @@
 See [the devguide](https://devguide.python.org/core-team/team-log/)
 for a full list of core devs.
 
-Skipping (for now) the folks who appeared in the Python Documentary.
-
 - Łukasz Langa (needs a do-over due to losing half the transcript)
 - Christian Tismer
 - Tim Peters (if he's willing)
@@ -91,7 +89,7 @@ Skipping (for now) the folks who appeared in the Python Documentary.
 - Jason R. Coombs
 - Alex Gainor
 - Andrew Svetlov
-- Hynep Schlawak?
+- Hynek Schlawak?
 - Eric Snow
 - Serhiy Storchaka
 - Ethan Furman
@@ -103,3 +101,10 @@ Skipping (for now) the folks who appeared in the Python Documentary.
 - Steve Dower
 - Berker Peksağ (is he local?)
 - Paul Moore
+
+Folks who were in the documentary:
+
+- Ken Manheimer
+- Barry Warsaw
+- Armin Ronacher
+- Travis Oliphant, Peter Wang?
