@@ -36,19 +36,19 @@ HotBot or one of those early search engines.
 **Alta Vista was good.**
 
 Anyway, I kept running into advice like, Perl should be your sixth language, and
-Python is a great first language. So I tried Python and immediately liked it. I
+Python is a great first language. I tried Python and immediately liked it. I
 read the tutorial in the docs, and I think I also read an O'Reilly book around
-then. Not Mark Lutz's *Programming Python* with the snake. The smaller one:
+then: not Mark Lutz's *Programming Python* with the snake, but the smaller one,
 *Learning Python*, with the mouse on the cover. I'm not sure if it was out yet,
 but if it was, I read it -- I've always preferred books. **[It was. --Guido]**
 
 **Was that by Alex Martelli?**
 
-No, that was also Lutz, remarkably.
+No, that was Mark Lutz.
 
 **I forget which book Martelli was involved with.**
 
-That was the Cookbook. Anyway, I learned Python and loved it, and somewhat
+That was *Python Cookbook*. Anyway, I learned Python and loved it, and somewhat
 ironically I didn't end up needing object-oriented programming for that entrance
 exam after all. But I liked Python enough that I kept using it -- and I've been
 using it ever since. So that's how I found Python, and Python found me.
