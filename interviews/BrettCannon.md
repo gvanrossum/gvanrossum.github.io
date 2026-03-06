@@ -19,7 +19,7 @@ take the intro CS courses.
 Correct. I was doing my bachelor's degree. I was going to be in philosophy, but
 I still wanted to take the computer science courses. I couldn't double
 major for reasons, but I still wanted to take CS courses. The intro CS
-course, CS61A, has an entrance exam. And I was afraid there was going to be
+course, CS 61A, has an entrance exam. And I was afraid there was going to be
 potentially some object-oriented programming questions. I had already learned C
 at that point. So I was searching for a language to basically learn a bit more
 programming before I had to take that exam. Well, you could choose C++ or Java.
@@ -90,7 +90,7 @@ first version because you had to supply all the locale information, but I
 figured out how to reverse-engineer it. That's what led me into core
 development: in May 2002, the week after I graduated, I asked Alex how to get it
 into the standard library. He pointed me to python-dev. I sent the email in
-mid-June, Tom Picard responded and helped me through the process, and about a
+mid-June, François Pinard responded and helped me through the process, and about a
 month later `time.strptime` was in. I never unsubscribed.
 
 **When did you start posting your python-dev summaries?**
@@ -99,8 +99,8 @@ August of 2002, I think.
 
 **The same year. That was quick!**
 
-My bachelor's was in philosophy, and I'd taken the intro CS and undergrad AI
-courses at Cal. I wanted a double major, but for unit cap reasons in the UC
+My bachelor's was in philosophy, and I'd taken the intro CS and the undergrad AI
+course at Cal. I wanted a double major, but for unit cap reasons in the UC
 system I couldn't. I decided I wanted to go to grad school in CS, but not having
 a bachelor's in it might be a hindrance, so I took a gap year to build my
 credentials and apply to grad programs. That's why I had the time to get so
@@ -143,7 +143,7 @@ Two or three years.
 
 Back then it was early 2.x days -- just after 2.2 came out, or maybe 2.1.
 Who was there? Martin [von Löwis], Neil Norwitz, Marc-André [Lemburg],
-Andrew Kuchling, Alex Martelli, Tim [Peters], Jeremy [Hylton]. All theoriginals.
+Andrew Kuchling, Alex Martelli, Tim [Peters], Jeremy [Hylton]. All the originals.
 Raymond [Hettinger] was there. Greg [Stein] was there. Jack [Jansen] was
 around still. It was still a small group. I got involved just before the first
 PyCon US in DC, 2003. I remember going to that and meeting everybody in the
@@ -189,12 +189,12 @@ twenties.
 
 I remember for a long time I kept track of it as a way to try to poke companies
 to let people be more active at work. Like, please let your employees who are
-core devs do more because we only have so many active.Or donate to the PSF so
+core devs do more because we only have so many active. Or donate to the PSF so
 someday we might be able to hire people, like we finally do now to help
 contribute consistently, because a lot of us just didn't get work time.
 
 **Yeah, we have at least four developers-in-residence now.**
-**There's Łukasz, Peter, Serhiy, and Seth, the security guy.**
+**There's Łukasz, Petr, Serhiy, and Seth, the security guy.**
 
 Security engineer in residence.
 They don't call Seth a developer-in-residence from the PSF perspective because
@@ -252,7 +252,7 @@ Exactly, he occasionally came up with ideas.
 
 **Who else was very vocal?**
 
-Marc-André was vocal. I think PJ [Phillip J. Eby] was around by then too.
+Marc-André was vocal. I think PJE [Phillip J. Eby] was around by then too.
 Martin, obviously.
 
 **Martin was much more centrally important,**
