@@ -1,4 +1,8 @@
-# Interview with Brett Cannon
+---
+layout: post
+title: Interview with Brett Cannon
+date: 2026-03-06
+---
 
 This interview has been lightly edited for clarity, but kept close to the
 original conversation.
