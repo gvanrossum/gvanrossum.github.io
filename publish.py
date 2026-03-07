@@ -175,6 +175,7 @@ def collect_blog_posts(blog_dir: Path) -> list[dict[str, str]]:
                 "title": title,
                 "date": date_str,
                 "html_filename": html_filename,
+                "md_filename": md_path.name,
             }
         )
 
@@ -183,6 +184,37 @@ def collect_blog_posts(blog_dir: Path) -> list[dict[str, str]]:
         reverse=True,
     )
     return posts
+
+
+def update_post_nav_links(blog_dir: Path) -> None:
+    """Update newer/older front-matter links for all posts in a blog dir."""
+    posts = collect_blog_posts(blog_dir)
+    # posts is sorted newest-first
+    for i, post in enumerate(posts):
+        newer = posts[i - 1]["html_filename"] if i > 0 else ""
+        older = posts[i + 1]["html_filename"] if i < len(posts) - 1 else ""
+
+        md_path = blog_dir / post["md_filename"]
+        text = md_path.read_text()
+        meta, body = parse_front_matter(text)
+
+        changed = False
+        if meta.get("newer", "") != newer:
+            if newer:
+                meta["newer"] = newer
+            elif "newer" in meta:
+                del meta["newer"]
+            changed = True
+        if meta.get("older", "") != older:
+            if older:
+                meta["older"] = older
+            elif "older" in meta:
+                del meta["older"]
+            changed = True
+
+        if changed:
+            md_path.write_text(format_front_matter(meta) + "\n" + body)
+            print(f"  Updated nav links in {post['md_filename']}")
 
 
 def detect_blog_title(blog_dir: Path, fallback_title: str) -> str:
@@ -501,6 +533,9 @@ def main() -> None:
     ensure_top_index_has_feed_link(blog_folder)
     blog_title = detect_blog_title(blog_dir, slugify_to_title(blog_folder))
     write_blog_rss_feed(blog_dir, blog_title)
+
+    # 5. Update Newer/Older navigation links across all posts
+    update_post_nav_links(blog_dir)
 
     print("Done!")
 

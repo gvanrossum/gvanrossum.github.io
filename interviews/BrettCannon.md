@@ -2,7 +2,9 @@
 layout: post
 title: Interview with Brett Cannon
 date: 2026-03-06
+older: ThomasWouters.html
 ---
+
 
 This interview has been lightly edited for clarity, but kept close to the
 original conversation.

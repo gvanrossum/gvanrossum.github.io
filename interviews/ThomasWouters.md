@@ -2,7 +2,9 @@
 layout: post
 title: Interview with Thomas Wouters
 date: 2026-02-28
+newer: BrettCannon.html
 ---
+
 
 ## Preface
 

@@ -19,7 +19,7 @@
 {% endcapture %}
 {% assign blog_name = blog_name | strip %}
 
-<p><a href="index.html">&larr; Back to the {{ blog_name }} index</a></p>
+<p class="post-nav"><a href="index.html">&larr; Back to the {{ blog_name }} index</a>{% if page.newer %} &middot; <a href="{{ page.newer }}">&larr; Newer</a>{% endif %}{% if page.older %} &middot; <a href="{{ page.older }}">Older &rarr;</a>{% endif %}</p>
 
 <h1>{{ page.title }}</h1>
 <p><i>{{ page.date | date: "%B %d, %Y" }}</i></p>
@@ -29,7 +29,7 @@
 {{ content }}
 
 <hr>
-<p><a href="index.html">&larr; Back to the {{ blog_name }} index</a></p>
+<p class="post-nav"><a href="index.html">&larr; Back to the {{ blog_name }} index</a>{% if page.newer %} &middot; <a href="{{ page.newer }}">&larr; Newer</a>{% endif %}{% if page.older %} &middot; <a href="{{ page.older }}">Older &rarr;</a>{% endif %}</p>
 
 </div>
 <script
