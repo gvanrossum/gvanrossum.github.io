@@ -268,8 +268,10 @@ def write_blog_rss_feed(blog_dir: Path, blog_title: str) -> None:
             "    </item>"
         )
 
-    channel_title = html_module.escape(blog_title)
-    channel_description = html_module.escape(f"Posts from {blog_title}")
+    channel_title = html_module.escape(f"Guido van Rossum: {blog_title}")
+    channel_description = html_module.escape(
+        f"Posts from Guido van Rossum: {blog_title}"
+    )
     rss = (
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
         "<rss version=\"2.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">\n"
