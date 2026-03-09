@@ -335,7 +335,7 @@ but it is somewhat of a burden.
 
 **I think the PEP was a good idea at the time.**
 **It was an improvement over the pattern where**
-**`profile` and `cProfile` had *subtly different APIs.**
+**`profile` and `cProfile` had subtly different APIs.**
 
 Definitely. But that's more of a future-of-Python thing. It's a good
 reminder that I wrote that PEP way back when.
