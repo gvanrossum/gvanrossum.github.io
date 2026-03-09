@@ -28,7 +28,11 @@ major for reasons, but I still wanted to take CS courses. The intro CS
 course, CS 61A, has an entrance exam. And I was afraid there was going to be
 potentially some object-oriented programming questions. I had already learned C
 at that point. So I was searching for a language to basically learn a bit more
-programming before I had to take that exam. Well, you could choose C++ or Java.
+programming before I had to take that exam.
+
+**Well, you could choose C++ or Java.**
+
+Yeah, potentially.
 
 **Those would have been the obvious choices in 2000.**
 
@@ -68,8 +72,11 @@ choose the programming language, I was choosing Python at that time.
 
 **What languages did you know before Python?**
 
-C. Just C? A little Pascal, but not much. But yeah, pretty much just C at that
-point.
+C.
+
+**Just C?**
+
+A little Pascal, but not much. But yeah, pretty much just C at that point.
 
 **I think Pascal was already pretty much out of style by 2000.**
 
