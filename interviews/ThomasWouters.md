@@ -5,38 +5,6 @@ date: 2026-02-28
 newer: BrettCannon.html
 ---
 
-
-## Preface
-
-I've always enjoyed the literary form of the interview,
-and hoped that once I would be able to dabble in it.
-
-Here's how I finally got motivated.
-
-A fantastic documentary about Python was recently released on YouTube,
-and in the aftermath of the viewing party, some old-timers started
-reminiscing about all the Python developers and contributors who
-*weren't* mentioned in the film.
-
-I realized that there have been some oral histories of Python told
-through my own lens (notably the Computer History Museum did a thorough
-one), but few others in the community have been able to tell their
-story.
-
-With this series I am trying to fill that vacuum by letting all core
-developers (and other contributors) speak. Of course this is still seen
-through my lens, but I try to mostly let the interviewees talk.
-
-You may ask, why not a podcast? While I respect the medium, I myself
-much prefer the written word, both as a producer and as a consumer.
-
-## Scope
-
-I've set an arbitrary cutoff year of 2015. If you weren't involved in
-the Python community by that year, I deem your participation too recent
-to be considered "history". Someone after me can interview the younger
-generation, but I'd like to limit myself to Python's first 25 years.
-
 ## Thomas Wouters
 
 My first interview was with Thomas Wouters. He's played many, many roles
