@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thoughts on Python Typing &mdash; Guido van Rossum</title>
+<style>
+  :root {
+    --blue: #1a56a0;
+    --ink: #0d1117;
+    --ink2: #1e3a52;
+    --ink3: #374151;
+    --rule: #c8d6e5;
+    --bg: #ffffff;
+    --bg2: #f3f6fa;
+    --slide-w: 1020px;
+    --slide-h: 660px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #dde3eb;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+
+  #deck {
+    position: relative;
+    width: var(--slide-w);
+    height: var(--slide-h);
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    background: var(--bg);
+    border-radius: 12px;
+    padding: 52px 64px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    opacity: 0;
+    transform: translateX(40px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    pointer-events: none;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.14), 0 1px 4px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+
+  .slide.active  { opacity: 1; transform: translateX(0); pointer-events: all; }
+  .slide.exit    { opacity: 0; transform: translateX(-40px); }
+
+  .slide::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, var(--blue), #5b9bd5);
+  }
+
+  /* === TITLE === */
+  .slide-title { text-align: center; padding: 52px 72px; }
+
+  .slide-title .eyebrow {
+    font-size: 20px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 700;
+    margin-bottom: 28px;
+  }
+
+  .slide-title h1 {
+    font-size: 56px;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 32px;
+    color: var(--ink);
+  }
+
+  .slide-title h1 em { font-style: normal; color: var(--blue); }
+
+  .slide-title .byline { font-size: 26px; color: var(--ink3); }
+  .slide-title .byline strong { color: var(--ink); font-weight: 700; }
+
+  /* === DIVIDER === */
+  .slide-divider {
+    background: var(--bg2);
+    text-align: center;
+    align-items: center;
+    border-left: 8px solid var(--blue);
+    border-radius: 0 12px 12px 0;
+  }
+
+  .slide-divider::before { display: none; }
+
+  .slide-divider h2 {
+    font-size: 44px;
+    font-weight: 800;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+
+  .slide-divider p {
+    margin-top: 24px;
+    font-size: 26px;
+    color: var(--ink3);
+    line-height: 1.5;
+  }
+
+  /* === CONTENT === */
+  .slide-content .label,
+  .slide-questions .label,
+  .slide-chart .label {
+    font-size: 20px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--blue);
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+
+  .slide-content h2 {
+    font-size: 38px;
+    font-weight: 800;
+    color: var(--ink);
+    line-height: 1.2;
+    margin-bottom: 28px;
+  }
+
+  .slide-content h2 em { font-style: normal; color: var(--blue); }
+
+  .slide-content p {
+    font-size: 26px;
+    line-height: 1.6;
+    color: var(--ink2);
+    margin-bottom: 16px;
+  }
+
+  .slide-content p:last-child { margin-bottom: 0; }
+
+  .slide-content p code {
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+    font-size: 23px;
+    background: var(--bg2);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 2px 7px;
+    color: var(--ink);
+  }
+
+  /* === QUESTIONS === */
+  .slide-questions h2 {
+    font-size: 34px;
+    font-weight: 800;
+    color: var(--ink);
+    margin-bottom: 28px;
+  }
+
+  .q-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .q-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    font-size: 26px;
+    color: var(--ink2);
+    line-height: 1.4;
+  }
+
+  .q-list li .bullet {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    background: var(--blue);
+    color: white;
+    border-radius: 50%;
+    font-size: 20px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 3px;
+  }
+
+  .q-list li strong { color: var(--ink); font-weight: 700; }
+
+  /* === CHART === */
+  .slide-chart h2 {
+    font-size: 34px;
+    font-weight: 800;
+    color: var(--ink);
+    margin-bottom: 20px;
+  }
+
+  .bar-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+  }
+
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .bar-label {
+    font-size: 24px;
+    color: var(--ink2);
+    width: 370px;
+    flex-shrink: 0;
+    line-height: 1.25;
+    font-weight: 500;
+  }
+
+  .bar-track {
+    flex: 1;
+    background: var(--bg2);
+    border: 1px solid var(--rule);
+    border-radius: 5px;
+    height: 42px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: var(--blue);
+    display: flex;
+    align-items: center;
+    padding-right: 10px;
+    justify-content: flex-end;
+  }
+
+  .bar-fill.top { background: #0e3d6e; }
+
+  .bar-pct {
+    font-size: 20px;
+    font-weight: 700;
+    color: white;
+    white-space: nowrap;
+  }
+
+  /* === CALLOUT === */
+  .slide-callout {
+    background: var(--bg2);
+    text-align: center;
+    padding: 52px 72px;
+    align-items: center;
+    border-left: 8px solid var(--blue);
+    border-radius: 0 12px 12px 0;
+  }
+
+  .slide-callout::before { display: none; }
+
+  .slide-callout blockquote {
+    font-size: 28px;
+    line-height: 1.55;
+    color: var(--ink);
+    font-weight: 500;
+    max-width: 820px;
+    border: none;
+  }
+
+  .slide-callout blockquote em {
+    font-style: normal;
+    color: var(--blue);
+    font-weight: 800;
+  }
+
+  .slide-callout .attribution {
+    margin-top: 32px;
+    font-size: 22px;
+    color: var(--ink3);
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  /* === CLOSING === */
+  .slide-closing {
+    text-align: center;
+    align-items: center;
+    padding: 52px 72px;
+  }
+
+  .slide-closing h2 {
+    font-size: 52px;
+    font-weight: 800;
+    color: var(--ink);
+    margin-bottom: 24px;
+  }
+
+  .slide-closing p {
+    font-size: 28px;
+    color: var(--ink2);
+    line-height: 1.6;
+    max-width: 700px;
+  }
+
+  .slide-closing p em { font-style: normal; color: var(--blue); font-weight: 700; }
+
+  /* === CONTROLS (outside slide, not projected) === */
+  #controls {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-top: 24px;
+  }
+
+  .btn {
+    background: white;
+    color: var(--ink);
+    border: 1.5px solid #a0b4c8;
+    padding: 9px 22px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    font-family: inherit;
+  }
+
+  .btn:hover { background: var(--bg2); border-color: var(--blue); }
+  .btn:disabled { opacity: 0.35; cursor: default; }
+
+  #progress {
+    color: var(--ink3);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    min-width: 60px;
+    text-align: center;
+  }
+
+  #dots { display: flex; gap: 8px; margin-top: 14px; }
+
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #b0bfcc;
+    transition: background 0.25s;
+    cursor: pointer;
+  }
+
+  .dot.on { background: var(--blue); }
+
+  /* === FULLSCREEN === */
+  body.is-fullscreen {
+    background: black;
+    height: 100vh;
+    overflow: hidden;
+  }
+  body.is-fullscreen #controls,
+  body.is-fullscreen #dots { display: none !important; }
+</style>
+</head>
+<body>
+
+<div id="deck">
+
+  <!-- 1. Title -->
+  <div class="slide slide-title active" data-index="0">
+    <div class="eyebrow">Typing Summit &nbsp;·&nbsp; PyCon US 2026 &nbsp;·&nbsp; Long Beach, CA</div>
+    <h1>Thoughts on<br><em>Python Typing</em></h1>
+    <div class="byline"><strong>Guido van Rossum</strong> &nbsp;·&nbsp; <strong>Paul Moore</strong></div>
+    <div class="byline">May 2026</div>
+  </div>
+
+  <!-- 2. Framing -->
+  <div class="slide slide-content" data-index="1">
+    <div class="label">Framing</div>
+    <h2>This is a discussion,<br>not a conclusion</h2>
+    <p>Not many hard facts here. I want to start a conversation.</p>
+    <p>I'm speaking from gut and instinct &mdash; honed by 35+ years of thinking about Python, but still fallible.</p>
+  </div>
+
+  <!-- 3. Discussion Quality -->
+  <div class="slide slide-questions" data-index="2">
+    <div class="label">Discussion Quality</div>
+    <h2>Three things I keep wondering about</h2>
+    <ul class="q-list">
+      <li>
+        <span class="bullet">1</span>
+        <span>Are new typing features becoming too <strong>esoteric</strong> for most Python users?</span>
+      </li>
+      <li>
+        <span class="bullet">2</span>
+        <span>Are our discussions dominated by <strong>"typing nerds"</strong> &mdash; out of touch with everyday pain?</span>
+      </li>
+      <li>
+        <span class="bullet">3</span>
+        <span>Are the discussions going in <strong>circles</strong>? If so, what can we do about that?</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- 4. Original Philosophy -->
+  <div class="slide slide-content" data-index="3">
+    <div class="label">Original Philosophy</div>
+    <h2>mypy's founding principle:<br><em>useful</em>, not perfect.</h2>
+    <p>Jukka's original vision was to balance false positives and false negatives &mdash; occasionally accepting unsound behaviour if the sound option would make typical user code too complicated or noisy.</p>
+    <p>Is that still our guiding star? Or have we drifted toward type-theoretical purity?</p>
+  </div>
+
+  <!-- 5. Intersection -->
+  <div class="slide slide-content" data-index="4">
+    <div class="label">Turtle and Hare</div>
+    <h2>Why don't we have an <br><em>Intersection</em> type yet?</h2>
+    <p>It would appear to be straightforward &mdash; certainly compared to the complexity of type manipulation, which already has a draft PEP (823) in review.</p>
+    <p>What does it say about our priorities that Intersection is still in limbo?</p>
+  </div>
+
+  <!-- 6. Rethinking Constraints -->
+  <div class="slide slide-content" data-index="5">
+    <div class="label">Rethinking Constraints</div>
+    <h2>Are we still bound by PEP 484's<br>"no core language changes" rule?</h2>
+    <p>We've already moved past it: variable annotations, generics, <code>type</code> statement,
+      even the new lazy <code>__annotations__</code> work. The rule is gone in practice.</p>
+    <p>Could more ergonomic annotation-specific syntax (soft-keyword-based) unlock a nice-looking version of type manipulation?</p>
+    <p>Could it enable superior behavior in other areas? (More concise annotations; make <code>cast</code> a soft keyword?)</p>
+  </div>
+
+  <!-- 7. Tooling -->
+  <div class="slide slide-content" data-index="6">
+    <div class="label">Tooling</div>
+    <h2>Why do type checkers<br>still <em>diverge</em> so much?</h2>
+    <p>Why is it so hard to make code conform to multiple checkers? Why are users forced to pick one and live with its quirks?</p>
+    <p>More consistency across <i>mypy</i>, <i>pyright</i>, <i>ty</i>, <i>pyrefly</i>, and others would make life easier for everyone.</p>
+  </div>
+
+  <!-- 8. Survey intro -->
+  <div class="slide slide-divider" data-index="7">
+    <h2>What does the<br>2025 Typing Survey say?</h2>
+    <p>819 non-empty responses to<br>"What is the hardest part about using the Python type system?"</p>
+  </div>
+
+  <!-- 9. Bar chart -->
+  <div class="slide slide-chart" data-index="8">
+    <div class="label">2025 Typing Survey · Top Pain Points</div>
+    <h2>Where users actually struggle</h2>
+    <div class="bar-chart">
+      <div class="bar-row">
+        <span class="bar-label">Complexity &amp; learning curve</span>
+        <div class="bar-track"><div class="bar-fill" style="width:48%"><span class="bar-pct">19.0%</span></div></div>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">Advanced features &amp; generics</span>
+        <div class="bar-track"><div class="bar-fill" style="width:43%"><span class="bar-pct">17.0%</span></div></div>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">Tooling &amp; checker inconsistency</span>
+        <div class="bar-track"><div class="bar-fill" style="width:38%"><span class="bar-pct">15.1%</span></div></div>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">Untyped third-party libraries</span>
+        <div class="bar-track"><div class="bar-fill" style="width:38%"><span class="bar-pct">15.0%</span></div></div>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">Dynamic patterns hard to type</span>
+        <div class="bar-track"><div class="bar-fill" style="width:37%"><span class="bar-pct">14.8%</span></div></div>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">Other / one-off issues</span>
+        <div class="bar-track"><div class="bar-fill top" style="width:100%"><span class="bar-pct">39.4%</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. Takeaway quote -->
+  <div class="slide slide-callout" data-index="9">
+    <blockquote>
+      "The dominant pain is not one single issue. People most often struggle with <em>complexity</em>, advanced type features (especially <em>generics</em>), <em>checker&nbsp;friction</em>, and missing type info in dependencies."
+    </blockquote>
+    <div class="attribution">2025 Typing Survey &mdash; plain-English takeaway</div>
+  </div>
+
+   <!-- 11. User perspectives -->
+   <div class="slide slide-content" data-index="10">
+     <div class="label">User Perspectives</div>
+     <h2>One community,<br>two expectations</h2>
+     <p>Some users treat typing as a better linter; others treat it as a correctness gate.</p>
+     <p>The gap is about workflow expectations, not expertise or ideology.</p>
+     <p>The idea of <strong>gradual typing</strong> often feels deprecated: partial coverage is treated as unfinished, especially in IDE-heavy teams.</p>
+   </div>
+
+   <!-- 12. Practical consequences -->
+   <div class="slide slide-content" data-index="11">
+     <div class="label">Practical Consequences</div>
+     <h2>Where the pressure lands</h2>
+     <p>Missing type information in dependencies pushes effort onto maintainers and downstream users.</p>
+     <p>Users often over-constrain for convenience: <code>list[str]</code> instead of <code>Sequence[str]</code>
+      (which requires an import and is longer).<br>Result: local convenience, global rigidity.</p>
+   </div>
+
+   <!-- 13. Closing -->
+   <div class="slide slide-closing" data-index="12">
+    <h2>Let's talk about it.</h2>
+    <p>Can we focus more on <em>user pain</em> than power features?</p>
+    <p>The data says that's where people are hurting.</p>
+  </div>
+
+</div>
+
+<div id="controls">
+  <button class="btn" id="prev" disabled>← Prev</button>
+  <span id="progress">1 / 13</span>
+  <button class="btn" id="next">Next →</button>
+  <button class="btn" id="reload-btn">Reload  [R]</button>
+  <button class="btn" id="fs-btn">Full screen  [F]</button>
+</div>
+<div id="dots"></div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+  let current = 0;
+
+  const prevBtn  = document.getElementById('prev');
+  const nextBtn  = document.getElementById('next');
+  const reloadBtn = document.getElementById('reload-btn');
+  const fsBtn    = document.getElementById('fs-btn');
+  const progressEl = document.getElementById('progress');
+  const dotsEl   = document.getElementById('dots');
+  const deck     = document.getElementById('deck');
+  const SLIDE_W  = 1020;
+  const SLIDE_H  = 660;
+
+  const storedIndex = Number(sessionStorage.getItem('presentationCurrent'));
+  if (!Number.isNaN(storedIndex) && storedIndex >= 0 && storedIndex < total) {
+    current = storedIndex;
+    slides[0].classList.remove('active');
+    slides[current].classList.add('active');
+  }
+
+  function persistCurrentSlide() {
+    sessionStorage.setItem('presentationCurrent', String(current));
+  }
+
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === current ? ' on' : '');
+    d.addEventListener('click', () => go(i));
+    dotsEl.appendChild(d);
+  });
+
+  update();
+
+  function go(n) {
+    if (n < 0 || n >= total) return;
+    slides[current].classList.remove('active');
+    slides[current].classList.add('exit');
+    const prev = current;
+    current = n;
+    slides[current].classList.add('active');
+    setTimeout(() => slides[prev].classList.remove('exit'), 380);
+    persistCurrentSlide();
+    update();
+  }
+
+  function update() {
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === total - 1;
+    progressEl.textContent = `${current + 1} / ${total}`;
+    document.querySelectorAll('.dot').forEach((d, i) =>
+      d.classList.toggle('on', i === current));
+  }
+
+  // ── Fullscreen ──────────────────────────────────────────────────────────────
+
+  function applyScale() {
+    const s = Math.min(window.innerWidth / SLIDE_W, window.innerHeight / SLIDE_H);
+    deck.style.transform = `scale(${s})`;
+  }
+
+  function clearScale() {
+    deck.style.transform = '';
+  }
+
+  function enterFullscreen() {
+    document.documentElement.requestFullscreen().catch(() => {});
+  }
+
+  function exitFullscreen() {
+    document.exitFullscreen().catch(() => {});
+  }
+
+  document.addEventListener('fullscreenchange', () => {
+    const isFs = !!document.fullscreenElement;
+    document.body.classList.toggle('is-fullscreen', isFs);
+    fsBtn.textContent = isFs ? 'Exit full screen  [F]' : 'Full screen  [F]';
+    if (isFs) applyScale(); else clearScale();
+  });
+
+  window.addEventListener('resize', () => {
+    if (document.fullscreenElement) applyScale();
+  });
+
+  prevBtn.addEventListener('click', () => go(current - 1));
+  nextBtn.addEventListener('click', () => go(current + 1));
+  reloadBtn.addEventListener('click', () => {
+    persistCurrentSlide();
+    location.reload();
+  });
+  fsBtn.addEventListener('click', () =>
+    document.fullscreenElement ? exitFullscreen() : enterFullscreen());
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'f' || e.key === 'F') {
+      document.fullscreenElement ? exitFullscreen() : enterFullscreen();
+      return;
+    }
+    if (e.key === 'r' || e.key === 'R') {
+      persistCurrentSlide();
+      location.reload();
+      return;
+    }
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') go(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')                    go(current - 1);
+  });
+
+  window.addEventListener('beforeunload', persistCurrentSlide);
+</script>
+</body>
+</html>
