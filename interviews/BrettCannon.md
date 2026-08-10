@@ -547,4 +547,4 @@ nominees.
 I can do that. No big deal.
 
 **[Brett didn't propose it. In December 2025**
-**Thomas Wouters was elected for a 6th term, after a one-year gap. --Guido]**
+**Thomas Wouters and Pablo Galindo Salgado were elected for a 6th term. --Guido]**
