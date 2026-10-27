@@ -21,376 +21,376 @@
 
 <div>
 <h1 class="ace-copy-paste-skip-this-tag">
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">The AnyStr type variable </span></h1>
+<span>The AnyStr type variable </span></h1>
 </div>
 <div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">I was drafting a blog post on how to add type annotations for the new </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">__fspath__()</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> &nbsp;protocol (</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z attrlink url"><a class="attrlink" data-target-href="https://www.python.org/dev/peps/pep-0519/" href="https://www.python.org/dev/peps/pep-0519/" rel="noreferrer nofollow">PEP 519</a></span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">) when I realized that I should write a separate post about </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">AnyStr</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> . So here it is.</span></div>
+<span>I was drafting a blog post on how to add type annotations for the new </span><span class="inline-code">__fspath__()</span><span> &nbsp;protocol (</span><span class="attrlink url"><a class="attrlink" data-target-href="https://www.python.org/dev/peps/pep-0519/" href="https://www.python.org/dev/peps/pep-0519/" rel="noreferrer nofollow">PEP 519</a></span><span>) when I realized that I should write a separate post about </span><span class="inline-code">AnyStr</span><span> . So here it is.</span></div>
 <div>
 <h2>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">A simple function on strings</span></h2>
+<span>A simple function on strings</span></h2>
 </div>
 <div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">Let’s write a function that surrounds a string in parentheses. We’ll put it in a file named </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">demo.py</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> :</span></div>
+<span>Let’s write a function that surrounds a string in parentheses. We’ll put it in a file named </span><span class="inline-code">demo.py</span><span> :</span></div>
 <div>
 <br /></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">def parenthesize(s):</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>def parenthesize(s):</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&nbsp; &nbsp; return '(' + s + ')'</span></code></div>
-<div>
-<br /></div>
-<div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">It works, too:</span></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>&nbsp; &nbsp; return '(' + s + ')'</span></code></div>
 <div>
 <br /></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&gt;&gt;&gt; from demo import parenthesize</span></code></div>
-<div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&gt;&gt;&gt; print(parenthesize('hola'))</span></code></div>
-<div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">(hola)</span></code></div>
+<span>It works, too:</span></div>
 <div>
 <br /></div>
 <div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">Of course, if you pass it something that’s not a string it will fail:</span></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>&gt;&gt;&gt; from demo import parenthesize</span></code></div>
+<div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>&gt;&gt;&gt; print(parenthesize('hola'))</span></code></div>
+<div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>(hola)</span></code></div>
 <div>
 <br /></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&gt;&gt;&gt; parenthesize(42)</span></code></div>
+<span>Of course, if you pass it something that’s not a string it will fail:</span></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">Traceback (most recent call last):</span></code></div>
+<br /></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&nbsp; File "demo.py", line 1, in <module></module></span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span>&gt;&gt;&gt; parenthesize(42)</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&nbsp; File "demo.py", line 2, in parenthesize</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span>Traceback (most recent call last):</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">TypeError: Can't convert 'int' object to str implicitly</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span>&nbsp; File "demo.py", line 1, in <module></module></span></code></div>
+<div>
+<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span>&nbsp; File "demo.py", line 2, in parenthesize</span></code></div>
+<div>
+<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span>TypeError: Can't convert 'int' object to str implicitly</span></code></div>
 <div>
 <h2>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">Adding type annotations</span></h2>
+<span>Adding type annotations</span></h2>
 </div>
 <div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">Using </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z attrlink url"><a class="attrlink" data-target-href="https://www.python.org/dev/peps/pep-0484/" href="https://www.python.org/dev/peps/pep-0484/" rel="noreferrer nofollow">PEP 484</a></span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> type annotations we can clarify our little function’s signature:</span></div>
+<span>Using </span><span class="attrlink url"><a class="attrlink" data-target-href="https://www.python.org/dev/peps/pep-0484/" href="https://www.python.org/dev/peps/pep-0484/" rel="noreferrer nofollow">PEP 484</a></span><span> type annotations we can clarify our little function’s signature:</span></div>
 <div>
 <br /></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">def parenthesize(s: str) -&gt; str:</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>def parenthesize(s: str) -&gt; str:</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&nbsp; &nbsp; return '(' + s + ')'</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>&nbsp; &nbsp; return '(' + s + ')'</span></code></div>
 <div>
 <br /></div>
 <div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">Nothing to it, right? Even if you’ve never heard of PEP 484 before you can guess what this means. (Note that PEP 484 also says that the runtime behavior is unchanged. The calls I showed above will still have exactly the same effect, including the </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">TypeError</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> raised by </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">parenthesize(42)</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> .)</span></div>
+<span>Nothing to it, right? Even if you’ve never heard of PEP 484 before you can guess what this means. (Note that PEP 484 also says that the runtime behavior is unchanged. The calls I showed above will still have exactly the same effect, including the </span><span class="inline-code">TypeError</span><span> raised by </span><span class="inline-code">parenthesize(42)</span><span> .)</span></div>
 <div>
 <h2>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">Polymorphic functions</span></h2>
+<span>Polymorphic functions</span></h2>
 </div>
 <div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">Now suppose this is actually part of a networking app and we need to be able to parenthesize byte strings as well as text strings. Here’s how you’d implement that:</span></div>
+<span>Now suppose this is actually part of a networking app and we need to be able to parenthesize byte strings as well as text strings. Here’s how you’d implement that:</span></div>
 <div>
 <br /></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">def parenthesize(s):</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>def parenthesize(s):</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&nbsp; &nbsp; if isinstance(s, str):</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>&nbsp; &nbsp; if isinstance(s, str):</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&nbsp; &nbsp; &nbsp; &nbsp; return '(' + s + ')'</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>&nbsp; &nbsp; &nbsp; &nbsp; return '(' + s + ')'</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&nbsp; &nbsp; elif isinstance(s, bytes):</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>&nbsp; &nbsp; elif isinstance(s, bytes):</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&nbsp; &nbsp; &nbsp; &nbsp; return b'(' + s + b')'</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>&nbsp; &nbsp; &nbsp; &nbsp; return b'(' + s + b')'</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&nbsp; &nbsp; else:</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>&nbsp; &nbsp; else:</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&nbsp; &nbsp; &nbsp; &nbsp; raise TypeError(f"That's not a string, it's a {type(s)}") &nbsp;# See </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z attrlink url"><a class="attrlink" data-target-href="https://www.python.org/dev/peps/pep-0498/" href="https://www.python.org/dev/peps/pep-0498/" rel="noreferrer nofollow">PEP 498</a></span></code></div>
-<div>
-<br /></div>
-<div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">With a fancy word we call that a polymorphic function. How do you write a signature for such a function? For the answer we have to dive a little deeper into PEP 484. It defines a nifty operator named </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">Union</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> &nbsp;that lets us state that a type can be either this or that (or something else). In our case, it’s either </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">str</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> &nbsp;or </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">bytes</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> , so we can write it like this:</span></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>&nbsp; &nbsp; &nbsp; &nbsp; raise TypeError(f"That's not a string, it's a {type(s)}") &nbsp;# See </span><span class="attrlink url"><a class="attrlink" data-target-href="https://www.python.org/dev/peps/pep-0498/" href="https://www.python.org/dev/peps/pep-0498/" rel="noreferrer nofollow">PEP 498</a></span></code></div>
 <div>
 <br /></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">from typing import Union</span></code></div>
+<span>With a fancy word we call that a polymorphic function. How do you write a signature for such a function? For the answer we have to dive a little deeper into PEP 484. It defines a nifty operator named </span><span class="inline-code">Union</span><span> &nbsp;that lets us state that a type can be either this or that (or something else). In our case, it’s either </span><span class="inline-code">str</span><span> &nbsp;or </span><span class="inline-code">bytes</span><span> , so we can write it like this:</span></div>
+<div>
+<br /></div>
+<div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>from typing import Union</span></code></div>
 <div>
 <code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><br /></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">def parenthesize(s: Union[str, bytes]) -&gt; Union[str, bytes]:</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>def parenthesize(s: Union[str, bytes]) -&gt; Union[str, bytes]:</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&nbsp; &nbsp; if isinstance(s, str):</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>&nbsp; &nbsp; if isinstance(s, str):</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&nbsp; &nbsp; # Etc.</span></code></div>
-<div>
-<br /></div>
-<div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">Now let’s write a little main program with a bug, to show off the type checker:</span></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>&nbsp; &nbsp; # Etc.</span></code></div>
 <div>
 <br /></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">from demo import parenthesize</span></code></div>
+<span>Now let’s write a little main program with a bug, to show off the type checker:</span></div>
+<div>
+<br /></div>
+<div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>from demo import parenthesize</span></code></div>
 <div>
 <code class="listtype-code listindent1 list-code1" spellcheck="false"><br /></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">a = parenthesize('hello')</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>a = parenthesize('hello')</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">b = parenthesize(b'hola')</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>b = parenthesize(b'hola')</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">c = a + b &nbsp;### bug here<-- bug="" span=""></--></span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>c = a + b &nbsp;### bug here<-- bug="" span=""></--></span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">print(c)</span></code></div>
-<div>
-<br /></div>
-<div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">When we try to run this, the two </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">parenthesize()</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> &nbsp;calls work fine (yay polymorphism!) but we get a </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">TypeError</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> on the last line:</span></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>print(c)</span></code></div>
 <div>
 <br /></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">$ python3 main.py&nbsp;</span></code></div>
-<div>
-<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">Traceback (most recent call last):</span></code></div>
-<div>
-<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&nbsp; File "main.py", line 5, in <module></module></span></code></div>
-<div>
-<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&nbsp; &nbsp; c = a + b &nbsp;### bug here<-- bug="" span=""></--></span></code></div>
-<div>
-<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">TypeError: Can't convert 'bytes' object to str implicitly</span></code></div>
+<span>When we try to run this, the two </span><span class="inline-code">parenthesize()</span><span> &nbsp;calls work fine (yay polymorphism!) but we get a </span><span class="inline-code">TypeError</span><span> on the last line:</span></div>
 <div>
 <br /></div>
 <div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">The reason should be pretty obvious: in Python 3 you can’t mix bytes and str objects. And when we type-check this program using </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z attrlink url"><a class="attrlink" data-target-href="http://mypy-lang.org/" href="http://mypy-lang.org/" rel="noreferrer nofollow">mypy</a></span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> we indeed get a type error:</span></div>
+<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span>$ python3 main.py&nbsp;</span></code></div>
+<div>
+<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span>Traceback (most recent call last):</span></code></div>
+<div>
+<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span>&nbsp; File "main.py", line 5, in <module></module></span></code></div>
+<div>
+<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span>&nbsp; &nbsp; c = a + b &nbsp;### bug here<-- bug="" span=""></--></span></code></div>
+<div>
+<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span>TypeError: Can't convert 'bytes' object to str implicitly</span></code></div>
 <div>
 <br /></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">$ mypy main.py&nbsp;</span></code></div>
+<span>The reason should be pretty obvious: in Python 3 you can’t mix bytes and str objects. And when we type-check this program using </span><span class="attrlink url"><a class="attrlink" data-target-href="http://mypy-lang.org/" href="http://mypy-lang.org/" rel="noreferrer nofollow">mypy</a></span><span> we indeed get a type error:</span></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">main.py:5: error: Unsupported operand types for + (likely involving Union)</span></code></div>
+<br /></div>
+<div>
+<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span>$ mypy main.py&nbsp;</span></code></div>
+<div>
+<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span>main.py:5: error: Unsupported operand types for + (likely involving Union)</span></code></div>
 <div>
 <h2>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">Debugging the bug</span></h2>
+<span>Debugging the bug</span></h2>
 </div>
 <div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">So let’s try a program without a bug:</span></div>
+<span>So let’s try a program without a bug:</span></div>
 <div>
 <br /></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">from demo import parenthesize</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>from demo import parenthesize</span></code></div>
 <div>
 <code class="listtype-code listindent1 list-code1" spellcheck="false"><br /></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-bash" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">a = parenthesize('hello')</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-bash" spellcheck="false"><span>a = parenthesize('hello')</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-bash" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">b = parenthesize('hola')</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-bash" spellcheck="false"><span>b = parenthesize('hola')</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-bash" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">c = a + b &nbsp;### bug here<-- bug="" no="" span=""></--></span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-bash" spellcheck="false"><span>c = a + b &nbsp;### bug here<-- bug="" no="" span=""></--></span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-bash" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">print(c)</span></code></div>
-<div>
-<br /></div>
-<div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">Run it and it works great:</span></div>
+<code class="listtype-code listindent1 list-code1 lang-bash" spellcheck="false"><span>print(c)</span></code></div>
 <div>
 <br /></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">$ python3 main.py</span></code></div>
-<div>
-<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">(hello)(hola)</span></code></div>
+<span>Run it and it works great:</span></div>
 <div>
 <br /></div>
 <div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">So the type checker should be happy too, right?</span></div>
+<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span>$ python3 main.py</span></code></div>
+<div>
+<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span>(hello)(hola)</span></code></div>
 <div>
 <br /></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">$ mypy main.py</span></code></div>
-<div>
-<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">main.py:5: error: Unsupported operand types for + (likely involving Union)</span></code></div>
+<span>So the type checker should be happy too, right?</span></div>
 <div>
 <br /></div>
 <div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">Whoops! The same error. What happened? Of course, I set you up, so I can explain something about type checking.</span></div>
+<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span>$ mypy main.py</span></code></div>
+<div>
+<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span>main.py:5: error: Unsupported operand types for + (likely involving Union)</span></code></div>
+<div>
+<br /></div>
+<div>
+<span>Whoops! The same error. What happened? Of course, I set you up, so I can explain something about type checking.</span></div>
 <div>
 <h2>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">The trouble with </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z s"><s>tribbles</s></span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> unions</span></h2>
+<span>The trouble with </span><span class="s"><s>tribbles</s></span><span> unions</span></h2>
 </div>
 <div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">The type checker takes the signature at face value, so that when checking the call, it infers the type </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">Union[str, bytes]</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> &nbsp;for every call to </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">parenthesize()</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> , regardless of what the arguments are. This is because, for most functions of even modest complexity, a type checker doesn’t understand enough about what’s going on in the function body, so it just has to believe the types in the signature (even though in this particular case it would probably be easy enough to do better).</span></div>
+<span>The type checker takes the signature at face value, so that when checking the call, it infers the type </span><span class="inline-code">Union[str, bytes]</span><span> &nbsp;for every call to </span><span class="inline-code">parenthesize()</span><span> , regardless of what the arguments are. This is because, for most functions of even modest complexity, a type checker doesn’t understand enough about what’s going on in the function body, so it just has to believe the types in the signature (even though in this particular case it would probably be easy enough to do better).</span></div>
 <div>
 <br /></div>
 <div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">In our test program the types of </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">a</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> &nbsp;and </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">b</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> &nbsp;are both inferred to be exactly what </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">parenthesize()</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> &nbsp;claims to return, i.e., both variables have the type </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">Union[str, bytes]</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> . The type checker then analyzes the expression </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">a + b</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> , and for this i</span><span class="author-d-z89zz72zz79zvhpz67zz83z9z66zz78zxz122z1xz74zu4z83z4myz73zkiz71zdz77zz71zz65zz79z4iz79ziosz75zz85zreqz69z">t</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> discovers a problem: if </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">a</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> is either str or bytes, and so is </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">b</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> , then the </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">+</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> &nbsp;operator may be invoked on any of these combinations of types: </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">str + str</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> , </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">str + bytes</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> , </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">bytes + str</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> , or </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">bytes + bytes</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> . But only the first and the last are valid! In Python 3, </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">str + bytes</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> &nbsp;or </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">bytes + str</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> &nbsp;are invalid operations.</span></div>
+<span>In our test program the types of </span><span class="inline-code">a</span><span> &nbsp;and </span><span class="inline-code">b</span><span> &nbsp;are both inferred to be exactly what </span><span class="inline-code">parenthesize()</span><span> &nbsp;claims to return, i.e., both variables have the type </span><span class="inline-code">Union[str, bytes]</span><span> . The type checker then analyzes the expression </span><span class="inline-code">a + b</span><span> , and for this i</span><span>t</span><span> discovers a problem: if </span><span class="inline-code">a</span><span> is either str or bytes, and so is </span><span class="inline-code">b</span><span> , then the </span><span class="inline-code">+</span><span> &nbsp;operator may be invoked on any of these combinations of types: </span><span class="inline-code">str + str</span><span> , </span><span class="inline-code">str + bytes</span><span> , </span><span class="inline-code">bytes + str</span><span> , or </span><span class="inline-code">bytes + bytes</span><span> . But only the first and the last are valid! In Python 3, </span><span class="inline-code">str + bytes</span><span> &nbsp;or </span><span class="inline-code">bytes + str</span><span> &nbsp;are invalid operations.</span></div>
 <div>
 <br /></div>
 <div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">Aside: Even in Python 2, those two are suspect: since while </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">'x' + u'y'</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> &nbsp;indeed works (returning </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">u'xy'</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> ), other combinations will raise UnicodeDecodeError, e.g.:</span></div>
+<span>Aside: Even in Python 2, those two are suspect: since while </span><span class="inline-code">'x' + u'y'</span><span> &nbsp;indeed works (returning </span><span class="inline-code">u'xy'</span><span> ), other combinations will raise UnicodeDecodeError, e.g.:</span></div>
 <div>
 <br /></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&gt;&gt;&gt;'Franç' + u'ois'</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span>&gt;&gt;&gt;'Franç' + u'ois'</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">Traceback (most recent call last):</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span>Traceback (most recent call last):</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&nbsp; File "<stdin>", line 1, in <module></module></stdin></span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span>&nbsp; File "<stdin>", line 1, in <module></module></stdin></span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position 4:</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span>UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position 4:</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">ordinal not in range(128)</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-ruby" spellcheck="false"><span>ordinal not in range(128)</span></code></div>
 <div>
 <br /></div>
 <div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">Anyway, the type checker doesn’t like this business, and it rejects operations on Unions where some combinations are invalid. What can we do instead?</span></div>
+<span>Anyway, the type checker doesn’t like this business, and it rejects operations on Unions where some combinations are invalid. What can we do instead?</span></div>
 <div>
 <h2>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">Function overloading</span></h2>
+<span>Function overloading</span></h2>
 </div>
 <div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">One option would be function overloading. PEP 484 defines a magical decorator, </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">@overload</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> , which lets us get around this problem. We could write something like this:</span></div>
+<span>One option would be function overloading. PEP 484 defines a magical decorator, </span><span class="inline-code">@overload</span><span> , which lets us get around this problem. We could write something like this:</span></div>
 <div>
 <br /></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">from typing import overload</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>from typing import overload</span></code></div>
 <div>
 <code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><br /></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">@overload</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>@overload</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">def parenthesize(s: str) -&gt; str: ...</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>def parenthesize(s: str) -&gt; str: ...</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">@overload</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>@overload</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">def parenthesize(s: bytes) -&gt; bytes: ...</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>def parenthesize(s: bytes) -&gt; bytes: ...</span></code></div>
 <div>
 <br /></div>
 <div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">This tells the type checker that if the argument is a </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">str</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> , the return value is also a </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">str</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> , and similarly for </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">bytes</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> . Unfortunately </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">@overload</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> &nbsp;is only allowed in </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z attrlink url"><a class="attrlink" data-target-href="https://mypy.readthedocs.io/en/stable/getting_started.html" href="https://mypy.readthedocs.io/en/stable/getting_started.html" rel="noreferrer nofollow">stub files</a></span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">, which are a kind of interface definition files that show a type checker the signatures of a module’s contents without giving the implementation.</span></div>
+<span>This tells the type checker that if the argument is a </span><span class="inline-code">str</span><span> , the return value is also a </span><span class="inline-code">str</span><span> , and similarly for </span><span class="inline-code">bytes</span><span> . Unfortunately </span><span class="inline-code">@overload</span><span> &nbsp;is only allowed in </span><span class="attrlink url"><a class="attrlink" data-target-href="https://mypy.readthedocs.io/en/stable/getting_started.html" href="https://mypy.readthedocs.io/en/stable/getting_started.html" rel="noreferrer nofollow">stub files</a></span><span>, which are a kind of interface definition files that show a type checker the signatures of a module’s contents without giving the implementation.</span></div>
 <div>
 <h2>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">Type variables</span></h2>
+<span>Type variables</span></h2>
 </div>
 <div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">Fortunately there’s an even better way, using type variables. This is how it goes:</span></div>
+<span>Fortunately there’s an even better way, using type variables. This is how it goes:</span></div>
 <div>
 <br /></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">from typing import TypeVar</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>from typing import TypeVar</span></code></div>
 <div>
 <code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><br /></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">S = TypeVar('S')</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>S = TypeVar('S')</span></code></div>
 <div>
 <code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><br /></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">def parenthesize(s: S) -&gt; S:</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>def parenthesize(s: S) -&gt; S:</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&nbsp; &nbsp; if isinstance(s, str):</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>&nbsp; &nbsp; if isinstance(s, str):</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&nbsp; &nbsp; &nbsp; &nbsp; return '(' + s + ')'</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>&nbsp; &nbsp; &nbsp; &nbsp; return '(' + s + ')'</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&nbsp; &nbsp; elif isinstance(s, bytes):</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>&nbsp; &nbsp; elif isinstance(s, bytes):</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&nbsp; &nbsp; &nbsp; &nbsp; return b'(' + s + b')'</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>&nbsp; &nbsp; &nbsp; &nbsp; return b'(' + s + b')'</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&nbsp; &nbsp; else:</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>&nbsp; &nbsp; else:</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&nbsp; &nbsp; &nbsp; &nbsp; raise TypeError("That's not a string, dude! It's a %s" % type(s))</span></code></div>
-<div>
-<br /></div>
-<div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">Well… Almost. Our main.py program (unchanged from above) now gets a clean bill of health, but when we type-check this version we get errors on both </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">return</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> &nbsp;lines:</span></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>&nbsp; &nbsp; &nbsp; &nbsp; raise TypeError("That's not a string, dude! It's a %s" % type(s))</span></code></div>
 <div>
 <br /></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-bash" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">demo.py: note: In function "parenthesize":</span></code></div>
-<div>
-<code class="listtype-code listindent1 list-code1 lang-bash" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">demo.py:7: error: Incompatible return value type: expected S`-1, got builtins.str</span></code></div>
-<div>
-<code class="listtype-code listindent1 list-code1 lang-bash" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">demo.py:9: error: Incompatible return value type: expected S`-1, got builtins.bytes</span></code></div>
+<span>Well… Almost. Our main.py program (unchanged from above) now gets a clean bill of health, but when we type-check this version we get errors on both </span><span class="inline-code">return</span><span> &nbsp;lines:</span></div>
 <div>
 <br /></div>
 <div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">This is a </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z attrlink url"><a class="attrlink" data-target-href="https://github.com/python/mypy/issues/1539" href="https://github.com/python/mypy/issues/1539" rel="noreferrer nofollow">bit hard to fathom</a></span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">, but the fix is what I was leading up to anyway, so I’ll reveal it now:</span></div>
+<code class="listtype-code listindent1 list-code1 lang-bash" spellcheck="false"><span>demo.py: note: In function "parenthesize":</span></code></div>
+<div>
+<code class="listtype-code listindent1 list-code1 lang-bash" spellcheck="false"><span>demo.py:7: error: Incompatible return value type: expected S`-1, got builtins.str</span></code></div>
+<div>
+<code class="listtype-code listindent1 list-code1 lang-bash" spellcheck="false"><span>demo.py:9: error: Incompatible return value type: expected S`-1, got builtins.bytes</span></code></div>
 <div>
 <br /></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">from typing import TypeVar</span></code></div>
+<span>This is a </span><span class="attrlink url"><a class="attrlink" data-target-href="https://github.com/python/mypy/issues/1539" href="https://github.com/python/mypy/issues/1539" rel="noreferrer nofollow">bit hard to fathom</a></span><span>, but the fix is what I was leading up to anyway, so I’ll reveal it now:</span></div>
+<div>
+<br /></div>
+<div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>from typing import TypeVar</span></code></div>
 <div>
 <code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><br /></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">S = TypeVar('S', str, bytes)</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>S = TypeVar('S', str, bytes)</span></code></div>
 <div>
 <code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><br /></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">def parenthesize(s: S) -&gt; S:</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>def parenthesize(s: S) -&gt; S:</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&nbsp; &nbsp; if isinstance(s, str):</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>&nbsp; &nbsp; if isinstance(s, str):</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&nbsp; &nbsp; &nbsp; &nbsp; return '(' + s + ')'</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>&nbsp; &nbsp; &nbsp; &nbsp; return '(' + s + ')'</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&nbsp; &nbsp; elif isinstance(s, bytes):</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>&nbsp; &nbsp; elif isinstance(s, bytes):</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&nbsp; &nbsp; &nbsp; &nbsp; return b'(' + s + b')'</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>&nbsp; &nbsp; &nbsp; &nbsp; return b'(' + s + b')'</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&nbsp; &nbsp; else:</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>&nbsp; &nbsp; else:</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&nbsp; &nbsp; &nbsp; &nbsp; raise TypeError("That's not a string, dude! It's a %s" % type(s))</span></code></div>
-<div>
-<br /></div>
-<div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">The only changed line is this one:</span></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>&nbsp; &nbsp; &nbsp; &nbsp; raise TypeError("That's not a string, dude! It's a %s" % type(s))</span></code></div>
 <div>
 <br /></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-bash" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">S = TypeVar('S', str, bytes)</span></code></div>
+<span>The only changed line is this one:</span></div>
 <div>
 <br /></div>
 <div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">This notation is called a </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z attrlink url"><a class="attrlink" data-target-href="http://mypy.readthedocs.io/en/latest/generics.html#type-variables-with-value-restriction" href="http://mypy.readthedocs.io/en/latest/generics.html#type-variables-with-value-restriction" rel="noreferrer nofollow">type variable with value restriction</a></span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> . Yes, it’s mouthful; we sometimes also call it a </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z i"><i>constrained type variable</i></span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">. </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">S</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> is a type variable restricted to a set of types. It also has the advantage of telling the type checker that types other than </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">str</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> &nbsp;or </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">bytes</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> &nbsp;are not acceptable. Without that, a call like this would have been considered valid:</span></div>
+<code class="listtype-code listindent1 list-code1 lang-bash" spellcheck="false"><span>S = TypeVar('S', str, bytes)</span></code></div>
 <div>
 <br /></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-ini" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">x = parenthesize(42)</span></code></div>
+<span>This notation is called a </span><span class="attrlink url"><a class="attrlink" data-target-href="http://mypy.readthedocs.io/en/latest/generics.html#type-variables-with-value-restriction" href="http://mypy.readthedocs.io/en/latest/generics.html#type-variables-with-value-restriction" rel="noreferrer nofollow">type variable with value restriction</a></span><span> . Yes, it’s mouthful; we sometimes also call it a </span><span class="i"><i>constrained type variable</i></span><span>. </span><span class="inline-code">S</span><span> is a type variable restricted to a set of types. It also has the advantage of telling the type checker that types other than </span><span class="inline-code">str</span><span> &nbsp;or </span><span class="inline-code">bytes</span><span> &nbsp;are not acceptable. Without that, a call like this would have been considered valid:</span></div>
 <div>
 <br /></div>
 <div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">because the original type variable (without the restrictions) doesn't tell mypy that this is a bad idea.</span></div>
+<code class="listtype-code listindent1 list-code1 lang-ini" spellcheck="false"><span>x = parenthesize(42)</span></code></div>
 <div>
 <br /></div>
 <div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">In fact, this particular use case (a type variable constrained to str or bytes) is so commonly needed that it's predefined in the </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">typing</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> module, and all we have to do is import it:</span></div>
+<span>because the original type variable (without the restrictions) doesn't tell mypy that this is a bad idea.</span></div>
 <div>
 <br /></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">from typing import AnyStr</span></code></div>
+<span>In fact, this particular use case (a type variable constrained to str or bytes) is so commonly needed that it's predefined in the </span><span class="inline-code">typing</span><span> module, and all we have to do is import it:</span></div>
+<div>
+<br /></div>
+<div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>from typing import AnyStr</span></code></div>
 <div>
 <code class="listtype-code listindent1 list-code1" spellcheck="false"><br /></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">def parenthesize(s: AnyStr) -&gt; AnyStr:</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>def parenthesize(s: AnyStr) -&gt; AnyStr:</span></code></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">&nbsp; &nbsp; # Etc. -- trust me, it works!</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>&nbsp; &nbsp; # Etc. -- trust me, it works!</span></code></div>
 <div>
 <h2>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">Real-world use of AnyStr</span></h2>
+<span>Real-world use of AnyStr</span></h2>
 </div>
 <div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">In fact, this is how many polymorphic functions in the </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">os</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> &nbsp;and </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">os.path</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> &nbsp;modules are defined. For example, in the stub for </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">os.py</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> &nbsp;we find definitions like </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z attrlink url"><a class="attrlink" data-target-href="https://github.com/python/typeshed/blob/main/stdlib/os/__init__.pyi" href="https://github.com/python/typeshed/blob/main/stdlib/os/__init__.pyi" rel="noreferrer nofollow">the following</a></span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">:</span></div>
+<span>In fact, this is how many polymorphic functions in the </span><span class="inline-code">os</span><span> &nbsp;and </span><span class="inline-code">os.path</span><span> &nbsp;modules are defined. For example, in the stub for </span><span class="inline-code">os.py</span><span> &nbsp;we find definitions like </span><span class="attrlink url"><a class="attrlink" data-target-href="https://github.com/python/typeshed/blob/main/stdlib/os/__init__.pyi" href="https://github.com/python/typeshed/blob/main/stdlib/os/__init__.pyi" rel="noreferrer nofollow">the following</a></span><span>:</span></div>
 <div>
 <br /></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">def link(src: AnyStr, link_name: AnyStr) -&gt; None: ...</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>def link(src: AnyStr, link_name: AnyStr) -&gt; None: ...</span></code></div>
 <div>
 <br /></div>
 <div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">and also </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z attrlink url"><a class="attrlink" data-target-href="https://github.com/python/typeshed/blob/main/stdlib/os/path.pyi" href="https://github.com/python/typeshed/blob/main/stdlib/os/path.pyi" rel="noreferrer nofollow">this</a></span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">:</span></div>
+<span>and also </span><span class="attrlink url"><a class="attrlink" data-target-href="https://github.com/python/typeshed/blob/main/stdlib/os/path.pyi" href="https://github.com/python/typeshed/blob/main/stdlib/os/path.pyi" rel="noreferrer nofollow">this</a></span><span>:</span></div>
 <div>
 <br /></div>
 <div>
-<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">def split(path: AnyStr) -&gt; Tuple[AnyStr, AnyStr]: ...</span></code></div>
+<code class="listtype-code listindent1 list-code1 lang-python" spellcheck="false"><span>def split(path: AnyStr) -&gt; Tuple[AnyStr, AnyStr]: ...</span></code></div>
 <div>
 <br /></div>
 <div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">These show us a bit more of the power of type variables: the signature for </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">link()</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> &nbsp;indicates that either both arguments must be </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">str</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> &nbsp;or both must be </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">bytes</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> ; </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">split()</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> &nbsp;demonstrates that the type variable may also occur in more complex constructs: splitting a </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">str</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> returns a tuple of two </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">str</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> objects, while splitting </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">bytes</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> returns a tuple of two </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">bytes</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> &nbsp;objects.</span></div>
+<span>These show us a bit more of the power of type variables: the signature for </span><span class="inline-code">link()</span><span> &nbsp;indicates that either both arguments must be </span><span class="inline-code">str</span><span> &nbsp;or both must be </span><span class="inline-code">bytes</span><span> ; </span><span class="inline-code">split()</span><span> &nbsp;demonstrates that the type variable may also occur in more complex constructs: splitting a </span><span class="inline-code">str</span><span> returns a tuple of two </span><span class="inline-code">str</span><span> objects, while splitting </span><span class="inline-code">bytes</span><span> returns a tuple of two </span><span class="inline-code">bytes</span><span> &nbsp;objects.</span></div>
 <div>
 <br /></div>
 <div>
-<span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z">That’s all I wanted to share about </span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z inline-code">AnyStr</span><span class="author-d-16z86ztz122z98z81zz82zz85zunv3z82zpqfnlaklz69zehdlvnz73zz65zz81zz79zz73zpz76z22z66ztsz89zz122zz73zz122zfz83z"> . Thanks for comments on the draft to Stephen Turnbull, Koos Zevenhoven, Ethan Furman, and Brett Cannon.</span></div>
+<span>That’s all I wanted to share about </span><span class="inline-code">AnyStr</span><span> . Thanks for comments on the draft to Stephen Turnbull, Koos Zevenhoven, Ethan Furman, and Brett Cannon.</span></div>
 <div>
 <br /></div>
 
