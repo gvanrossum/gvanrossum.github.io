@@ -1,0 +1,681 @@
+---
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parade of the PEPs</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p><a href="index.html">&larr; Python Essays</a></p>
+
+<h1>Parade of the PEPs</h1>
+
+<p>To start off Developer's Day at the <a
+href="https://legacy.python.org/workshops/2002-02/">Python10 conference</a> I gave a
+keynote ending in what I dubbed "the parade of the PEPs".  It was a
+brief overview of <a href="https://legacy.python.org/dev/peps/">all
+open PEPs</a>, where I gave my highly personal and subjective opinion
+for each PEP.  Later, I realized that this might have been of interest
+to other developers.  I didn't take notes at the conference, so below
+is a different set of comments that I created from scratch during a
+single two-hour sitting on March 7, 2002.  I intend to occasionally
+update this with new comments and new PEPs.
+
+<blockquote>--Guido van Rossum</blockquote>
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0042">PEP 42</a> - Small Feature Requests - Hylton</h3>
+
+<p>Frankly, this is mostly a dumpster for "would be nice" ideas that
+don't have enough priority to ever get implemented.  It seems nobody
+ever goes through this and finds a nice idea for which they write the
+code and submit a patch.  So in effect, an idea that is moved to PEP
+42 is worse off than one that is outright rejected -- it's in a zombie
+zone from which there is no possible escape either to heaven or to
+hell.  How can we change this?
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0206">PEP 206</a> - 2.0 Batteries Included - Zadka</h3>
+
+<p>This is a good idea.  But PythonLabs doesn't have the energy to carry
+it forward, nor does the original author.  How can we make this a
+community effort?
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0209">PEP 209</a> - Adding Multidimensional Arrays - Barrett, Oliphant</h3>
+
+<p><i>March 28, 2002:</i> My previous comments were based on several
+misunderstandings.  (E.g. slices in the new Numeric acts the same as
+in the old version, and don't make copies as I mistakenly thought.)
+Quoting Perry Greenfield:
+
+<i><blockquote>
+[...] the new version is becoming more and more backward-
+compatible. In fact, the major differences that remain are:
+
+<ol>
+
+<li> difference coercion rules when scalars are combined with
+   arrays. At the scientific Python BoF, there was consensus
+   that this change was a Good Thing.
+<p>
+<li> Types are represented by type objects rather than single
+   character codes. We've implemented this so that it is
+   backward compatible so there should be very little old
+   Python code broken with this.
+<p>
+<li> No array attributes (namely shape, flat, real and imag)
+   for Python versions previous to 2.2 (we use the properties
+   feature to support this for 2.2 and later; so it is only
+   incompatible with Numeric with older versions of Python)
+</ol>
+
+<p>There are more minor differences, but these are the major
+backward compatiblity issues at the Python level. Two of
+them should not be problems for most users using Python 2.2
+or later. It does have a number of important enhancements,
+but these are not a compatiblity issue. Probably the biggest
+issues for its acceptance are:
+
+<ol>
+
+<li> A incompatible C API. We can provide tools to make it
+   easier to adapt C code but we can't make it automatic.
+<p>
+<li> A lack of libraries. We are starting on documenting the
+   API, providing examples of how to add C code, and adding
+   some standard libraries now. There will have to be enough
+   support in libraries (including plotting) before there is
+   critical mass of functionality to cause people to begin
+   to switch (outside of astronomy, those will be driven by
+   our libraries that are using numarray)
+<p>
+<li> Slower performance for small arrays. Since more of it
+   is written in Python, it is an order of magnitude slower for
+   smaller arrays (but just as fast or faster for large arrays
+   (&gt; 1MB)). Optimization is in our plans, but won't be done
+   until we fill out the libraries and finish the safety issue
+   (which is near completion).
+<p>
+<li> Because of 1) and 2), not many people are using it yet
+   (some are busy and find Numeric suitable for their purpose;
+   it takes more than just its availablity for them to try it
+   out and give their opinion.)
+</ol>
+
+<p>[on incorporation into the Python core]
+
+<p>Well it's still our goal and we are working towards that end
+(we are even beginning to look at converting the documentation
+to the Python standard). There is a draft manual available.
+I imagine it may be a year before there is a significant switch-
+over of the community to start using it (assuming we are succesful
+in getting them to do so).
+
+<p>On the other hand, I don't think that timescale should necessarily
+be the driver for when (or whether) it is accepted into the core.
+It could accepted into the core before that (they have different
+names and can coexist) or well after that. I think that decision
+should be made on a somewhat different basis.
+
+</blockquote></i>
+
+<p>Paul Dubois sent me email supporting Perry's message, announcing
+that he'll be a Numarray user soon for one particular application.
+Paul also mentions the C API as the only nasty issue.  He doesn't
+think that the performance problem for small array is much of an
+issue.
+
+<p>Based on this feedback, I expect that this PEP will move forward
+slowly but steadily.  I expect that the authors will eventually
+provide me with a patch set to incorporate their code base into the
+Python CVS tree.  Whether this will be for Python 2.3 or later I can't
+tell.
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0215">PEP 215</a> - String Interpolation - Yee</h3>
+
+<p>I don't foresee that the debate here will ever yield a clear
+conclusion.  Some people think it's a clear case of YAGNI (You Ain't
+Gonna Need It), while others think this is the most important missing
+feature for beginning programmers.  I don't know which side is right.
+Even if it's a needed feature, the syntax is problematic: the first $
+in
+
+<pre>
+    print $"The area of a $x by $y rectangle is $z"
+</pre>
+
+<p>is very questionable, but none of the alternatives I've seen proposed
+(e.g. i"...") look very good either.  We can't just always turn on
+string interpolation in literals because that would break existing
+code.  Maybe "from __future__ import interpolation" would enable
+interpolation in string literals?  (Only in literals!)
+
+<p>There's also the question whether to allow arbitrary expressions like
+
+<pre>
+    print "The area is ${x*y}"
+</pre>
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0216">PEP 216</a> - Docstring Format - Zadka</h3>
+
+<p>This has very little contents.  Maybe it should be withdrawn?  There
+are several other PEPs that deal with doc strings, notably 256-258,
+which I like much better.
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0228">PEP 228</a> - Reworking Python's Numeric Model - Zadka, van Rossum</h3>
+
+<p>This is way too much Py-in-the-sky.  There are way too many unresolved
+issues, and many aren't even mentioned in the PEP.  I think it should
+be rejected; maybe if there is interest in the future a task force or
+SIG could be created to explore this subject in more depth.
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0237">PEP 237</a> - Unifying Long Integers and Integers - Zadka, van Rossum</h3>
+
+<p>This one is already accepted, and we should implement phase B1 in
+Python 2.3.  Need I say more?
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0239">PEP 239</a> - Adding a Rational Type to Python - Zadka</h3>
+
+<p>Like 228, I think this is not a realistic PEP, it's just a collection
+of open issues.  A rational type seems to create more problems than it
+resolves.
+
+<p>Maybe, just <i>maybe</i> there could be an efficient rational type
+implemented in C (using Python longs of course) in an extension
+module.  But that's just a matter of hard work, and nobody seems
+interested.  In the mean time, if you need rational numbers, there are
+plenty of implementations in pure Python available (including
+Demo/classes/Rat.py).
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0240">PEP 240</a> - Adding a Rational Literal to Python - Zadka</h3>
+
+<p>Given my comments on 239, I propose to reject this.
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0242">PEP 242</a> - Numeric Kinds - Dubois</h3>
+
+<p>Nobody except the author seems to be interested in pursueing this.
+Personally, I think the idea is not particularly Pythonic -- the trend
+is towards fewer numeric types, nor more (see PEP 237).  I believe the
+author has said that it would be better to retract the PEP.
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0243">PEP 243</a> - Module Repository Upload Mechanism - Reifschneider</h3>
+
+<p>Sure, nice, but this should be a community effort.  Maybe Kapil's
+module repository project (Gideon,
+/usr/local/WWW/ftp.python.org/pub/www.python.org/sigs/catalog-sig)
+will bring new life to it?
+
+<p>I think the issue here is not so much software, but (a) setting up a
+server (or set of replicas) capable of being hit by the entire
+community, and (b) rallying the community into submitting all their
+code to the repository.
+
+<p>Another issue is review.  I think CPAN hasn't completely solved this
+either (given the number of complaints I hear about non-working
+packages).  How do you know which contributions are good?  Count
+downloads?  A "vote on this package" form?
+
+<p>What is the original author planning to do?
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0245">PEP 245</a> - Python Interface Syntax - Pelletier</h3>
+
+<p>Jim Fulton has said that this PEP was premature.  I agree.  It
+introduces a new keyword, 'interface', and I'm not yet convinced that
+that is needed.  On the other hand, the way this is currently done in
+Zope also looks butt-ugly, so something may indeed be needed.  I think
+that at some point in the future when we have more experience with
+using interfaces (especially in Zope 3) we'll go back to this PEP and
+see how much of it we can use.  Maybe there should be a special status
+"frozen" meaning not rejected but also not under consideration for the
+near future?  But with a different meaning than Py-in-the-sky -- this
+PEP at least has lots of concrete proposals and studies the
+consequences.
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0246">PEP 246</a> - Object Adaptation - Evans</h3>
+
+<p>I never even understood what this PEP was about until Alex Martelli
+explained it to me.  I think it's similar to an operation in Zope 3
+that looks for an adapter to a given object that implements a given
+interface.  If the object itself implements the interface, it is
+returned itself; otherwise a table of registered adapters is searched
+systematically to find the most suitable adapter.
+
+<p>But that's about all I know of the subject, and I think it should
+remain a nice idea, until we have a standard way to talk about
+interfaces.  So I think this will have "frozen" status (see above) at
+least as long as PEP 245.
+
+<p>I have to admit that I never read the whole PEP, and certainly never
+tried to read and understand the specification or the sample
+implementation, so maybe I'm still off base.
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0254">PEP 254</a> - Making Classes Look More Like Types - van Rossum</h3>
+
+<p>This PEP was intended to describe changes to the classic class
+implementation that would take it closer to new-style classes.  I
+haven't made a start with this work, and I think maybe it's not
+necessary -- the classic clas simplementation may as well remain
+exactly the way it is, until it is simply dropped in Python 3000.
+Somewhere along the way, when we believe that most users are using
+new-style classes anyway, we should add warnings for uses of old-style
+classes.  The PEP could be used to describe the timeframe for these
+warnings.  But before then, we should first make sure that the entire
+standard library (and the demos and tools) use new-style classes.  And
+that's not even going to happen in Python 2.3.  Also, that may break
+user code that subclasses a particular standard class, e.g. if a user
+defines a subclass that depends on coercions, which aren't supported
+by new-style classes.
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0256">PEP 256</a> - Docstring Processing System Framework - Goodger</h3>
+<h3><a href="https://legacy.python.org/dev/peps/pep-0257">PEP 257</a> - Docstring Conventions - Goodger, van Rossum</h3>
+<h3><a href="https://legacy.python.org/dev/peps/pep-0258">PEP 258</a> - DPS Generic Implementation Details - Goodger</h3>
+
+<p>I'll discuss these together.  I believe David Goodger is doing good
+work, and I still see frequent posts by him in the doc-sig.  But I
+haven't been following this work at all.  Since this doesn't affect
+the language, just a convention, I'm not particularly concerned about
+this.
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0262">PEP 262</a> - Database of Installed Python Packages - Kuchling</h3>
+
+<p>I think this was a distutils Py-in-the-sky project?  Maybe someone
+should just implement this; I have no issues with that, but I don't
+particularly feel the need myself.
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0263">PEP 263</a> - Defining Python Source Code Encodings - Lemburg</h3>
+
+<p>This one is very close to being checked in.  Martin and Marc-Andre are
+hashing out the implementation.  When they are ready, I think I'll
+just approve it.  There was some serious opposition by an outside
+expert, Stephen Turnbull, who wants us to define the language pure
+in terms of UTF-8, and implement encodings as site-specific (?)
+hooks.  But nobody agreed with him, and I've responded myself saying
+that I think it's best to do it MAL's way.
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0265">PEP 265</a> - Sorting Dictionaries by Value - Griffin</h3>
+
+<p>This is a small idea that's very important to its proposer, but that
+IMO attempts to solve a problem that is better solved in some other
+way, e.g. by teaching newbies the correct algorithm/idiom.  I note
+that the PEP uses sloppy language, e.g. it talks about "sorting a
+dictionary" while the dictionary itself is never sorted -- the PEP
+only proposes methods that return the items or keys in sorted order.
+
+<p>The PEP also suffers from lack of definiteness: it proposes a whole
+slew of alternatives frowm which I guess I am supposed to pick the one
+I like best.  Making me the bad guy again. :-)
+
+<p>Finally, the proposed "reversed=&lt;bool>" optional argument seems
+utterly application-specific.
+
+<p>I would like to reject this because it doesn't solve a general enough
+problem in a general enough way, it just clutters the dictionary API.
+I'd rather add dict.popitem(key).
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0266">PEP 266</a> - Optimizing Global Variable/Attribute Access  Montanaro</h3>
+<h3><a href="https://legacy.python.org/dev/peps/pep-0267">PEP 267</a> - Optimized Access to Module Namespaces - Hylton</h3>
+<h3><a href="https://legacy.python.org/dev/peps/pep-0280">PEP 280</a> - Optimizing access to globals - van Rossum</h3>
+
+<p>These three should be considered together; at most one of them can be
+implemented (or maybe a hybrid).  I would like one of them to be
+implemented eventually, because I think it may have a big performance
+benefit: not only avoiding dict lookups for globals and builtins, but
+also recognizing certain builtins in the parser and generating code
+that knows what the built-in does, like an opcode for len(x) and
+special code for "for i in range(x, y, z)".
+
+<p>I think that Montanaro's proposal is too complex.  I like Hylton's
+version about as well as my own; his version has some optional
+features (like support for attributes of globals denoting
+"module.attribute") that I think aren't worth the added complexity.
+
+<p>At the last PythonLabs meeting, we decided to do something much less
+ambitious first, and see if there's time before 2.3 to do more after
+that is done.  The less ambitious thing is to refactor the compiler,
+using a much more appropriate abstract parse tree, and introducing
+explicit multiple passes.  I predict that this alone is already barely
+doable in the time left before 2.3 beta1 (July 17).
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0268">PEP 268</a> - Extended HTTP functionality and WebDAV - Stein</h3>
+
+<p>I'm all for this, but it's library development work, and I'm not going
+to do it.
+
+<p>It seems the author has dropped the ball, and nobody has picked it up.
+There's an actual prototype checked into the sandbox/Lib directory
+(strange name), from September 2001; maybe we should beat up the
+author to finish the work, or ask what he's waiting for.
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0269">PEP 269</a> - Pgen Module for Python - Riehl</h3>
+
+<p>I know Martin von Loewis doesn't like this (on account of its lack of
+generality, e.g. there's no way to change the lexer beyond defining
+the set of reserved words), but I think it might be somewhat useful
+for people experimenting with Python-like languages (e.g. Python
+preprocessors that add new keywords and syntax).  Since pgen is pretty
+tightly bound to the Python distribution, it makes sense that an
+extension making pgen available to the Python programmer should also
+be in the Python distribution.
+
+<p>So, we should ask the author if he's planning to implement it.  If
+not, it should probably be dropped for lack of interest.
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0270">PEP 270</a> - uniq method for list objects - Petrone</h3>
+
+<p>Same story as for PEP 265.  As the battling cookbook entries on this
+topic prove, this is a lot harder to do in full generality than it
+seems.  The PEP is unfinished: it doesn't even specify the required
+semantics!  And why isn't the author's implementation included, if
+it's only 20 lines?
+
+<p>I propose to reject this, to save the author work (he should still
+reveal his implementation).
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0273">PEP 273</a> - Import Modules from Zip Archives - Ahlstrom</h3>
+
+<p>I like this concept.  I haven't studied the PEP or the proposed
+implementation in detail, so I don't know if it always does the right
+thing.  I hope that it will make it into 2.3.
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0274">PEP 274</a> - Dict Comprehensions - Warsaw</h3>
+
+<p><i>If</i> we were to adopt dict comprehensions, this PEP says everything
+that needs to be said.  But I don't even want to think about this for
+Python 2.3; I think it's way too minor a feature.
+
+<p>This would be a lot easier to adopt if there was a working
+implementation in patch form.
+
+<p>Sometimes it would be nice if things like this could be defined using
+hygienic macros or some other kind of preprocessor or whatever, and
+imported from a module, rather than requiring major hacking in the
+parser, the bytecode compiler, and the virtual machine.
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0275">PEP 275</a> - Switching on Multiple Values - Lemburg</h3>
+
+<p>I'm still not convinced that we need a switch statement, and the
+proposed syntax has problems: e.g. why only constants? why not allow
+ranges?  In addition, it proposes many different alternatives without
+picking one.
+
+<p>The first alternative proposed by the PEP, however, doesn't add any
+new syntax but simply proposes that the parser recognizes a certain
+common pattern and generates better code for it.  I'm all for that,
+provided it can be shown that the generated code is either
+significantly faster, significantly smaller, or both.  This
+project would probably a lot easier after the compiler refactoring
+proposed above in the comments for PEPs 266, 267, 280.
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0276">PEP 276</a> - Simple Iterator for ints - Althoff</h3>
+
+<p>I made the mistake of telling the author that I found this butt-ugly.
+Whatever the words, I do think it flies in the face of being Pythonic.
+To me:
+
+<pre>
+    for i in 12:
+        print i
+</pre>
+
+<p>just doesn't look right.  Maybe
+
+<pre>
+    for i in len(L):
+        print i, L[i]
+</pre>
+
+<p>is attractive, but somehow I just don't think this is the right
+solution.
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0277">PEP 277</a> - Unicode file name support for Windows NT - Hodgson</h3>
+
+<p>I don't know the status of this, but I believe this is already
+implemented or at least close to being implemented?  Is it
+controversial amongst the Germans?
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0278">PEP 278</a> - Universal Newline Support - Jansen</h3>
+
+<p>I've sent Jack a bunch of devil's advocate questions.  The issue is
+real, and I'd like to see it solved, but I'm wary that this is too
+much of a hack.  Here's the list:
+
+<ul>
+
+<li>What on earth is a source() call?
+
+<li>Why not support setting the delimiter for output files too?
+
+<li>The 't' mode conflicts with the use of this mode on Windows to be an
+  explicit way to invoke the default text translation mode.
+
+<li>Why can't 't' be used together with '+'?  Text mode on Windows
+  supports '+' AFAIK.
+
+<li>How does this interact with xreadlines?  With "for line in file" ?
+
+<li>Why settle for a compile-time option that's off by default?  That's
+  asking for problems; people who turn it on will write code that uses
+  the 't' mode and then find that it's not portable.
+
+<li>You say that 't' mode is used by import.  What about parsing source
+  code from a string?  What about Unicode strings?
+
+<li>I think I need more clarification of your remark about locks.  If
+  the implementation can be abused to create core dumps, I'm not for
+  it.
+
+</ul>
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0279">PEP 279</a> - Enhanced Generators - Hettinger</h3>
+
+<p><i>March 28, 2002:</i> The author took my advice and removed the
+restartable iterators idea, which I had called evil in a previous
+comment.  Here are my current comments:
+
+<ol>
+
+<li>New builtin: indexed()
+
+<p>   I like the idea of having some way to iterate over a sequence and
+   its index set in parallel.  It's fine for this to be a builtin.
+
+<p>   I don't like the name "indexed"; adjectives do not make good
+   function names.  Maybe iterindexed()?
+
+<p>   I don't like the start and stop arguments.  If I saw code like
+<pre>
+     for i, j in iterindexed("abcdefghij", 5, 10): print i, j
+</pre>
+   I would expect it to print
+<pre>
+     5 f
+     6 g
+     7 h
+     8 i
+     9 j
+</pre>
+   while the spec in the PEP would print
+<pre>
+     5 a
+     6 b
+     7 c
+     8 d
+     9 e
+</pre>
+<p>   Very confusing.  I propose to remove the start/stop arguments, <b>or</b>
+   change the spec to:
+<pre>
+     def iterindexed(sequence, start=0, stop=None):
+         i = start
+         while stop is None or i < stop:
+             try:
+                 item = sequence[i]
+             except IndexError:
+                 break
+             yield (i, item)
+             i += 1
+</pre>
+<p>   This reduces the validity to only sequences (as opposed to all
+   iterable collections), but has the advantage of making
+   iterindexed(x, i, j) iterate over x[i:j] while reporting the index
+   sequence range(i, j) -- not so easy otherwise.
+
+<p>   The simplified version is still attractive because it allows
+   arbitrary iterators to be passed in:
+<pre>
+     def iterindexed(collection):
+       i = 0
+       it = iter(collection)
+       while 1:
+         yield (i, it.next())
+         i += 1
+</pre>
+
+<li> Generator comprehensions
+
+<p>   I don't think it's worth the trouble.  I expect it will take a lot
+   of work to hack it into the code generator: it has to create a
+   separate code object in order to be a generator.  List
+   comprehensions are inlined, so I expect that the generator
+   comprehension code generator can't share much with the list
+   comprehension code generator.  And this for something that's not
+   that common and easily done by writing a 2-line helper function.
+   IOW the ROI isn't high enough.
+<p>
+
+<li> Generator exception passing
+
+<p>   This is where the PEP seems weakest.  There's no real motivation
+   ("This is a true deficiency" doesn't count :-).  There's no hint as
+   to how it should be implemented.  The example has a "return log"
+   statement in the generator body which is currently illegal, and I
+   can't figure out to where this value would be returned.  The
+   example looks like it doesn't need a generator, and if it did, it
+   would be easy to stop the generator by setting a global "please
+   stop" flag and calling next() once more.  (If you don't like
+   globals, make the generator a method of a class and make the stop
+   flag an instance variable.)
+
+</ol>
+
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0281">PEP 281</a> - Loop Counter Iteration with range and xrange Hetland</h3>
+
+<p>An alternative to irange() from PEP 212 (which is in the rejected
+pile, but doesn't have text explaining why it was rejected).  As long
+as we're going to introduce a notation FOO(sequence) that returns a
+(lazy or otherwise) version of range(0,len(sequence)), I think using
+FOO==range is more confusing than anything else.  IOW if we have to do
+this, invent a new name for it.
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0282">PEP 282</a> - A Logging System - Mick</h3>
+
+<p>I asked for this, and haven't even looked at it.  But I like it
+already!  I hope this can be implemented in 2.3.
+
+
+<h3><a href="https://legacy.python.org/dev/peps/pep-0284">PEP 284</a> - Integer for-loops - Eppstein, Ewing</h3>
+
+<p>Yet another way to address the fact that some people find
+
+<pre>
+    for i in range(10):
+</pre>
+
+<p>too ugly.  My main gripe with this one is that
+
+<pre>
+    for 0 &lt;= i &lt; 10:
+</pre>
+
+<p>puts the index variable in the middle, rather than right after the for
+keyword.  And in the case where the lower bound is a variable, this is
+confusing for the casual reader:
+
+<pre>
+    for i &lt;= j &lt; k:
+</pre>
+
+<p>looks similar to
+
+<pre>
+    for i in j, k:
+</pre>
+
+<p>but in one case the loop counter is j, in the other case it is i.
+
+<p>The good thing about this PEP is that it quotes and comments on all
+the previous PEPs that have attempted to solve this issue (204, 212,
+276, and 281).
+
+<p>I think that the current parser generator will have to be abused
+severely to allow the two syntactic alternatives
+
+<pre>
+    for &lt;target_list> in &lt;expression_list>
+</pre>
+
+<p>and
+
+<pre>
+    for &lt;expression> &lt;comparison> &lt;target> &lt;comparison> &lt;expression>
+</pre>
+
+<p>because a &lt;target_list> can start with &lt;expression> &lt;comparison>.
+
+
+<h3>Closing Remarks</h3>
+
+<p>Whew!  That's all.  Well, there are a few PEPs in the abandoned
+category that might deserve a comment, but I'll wait until someone
+wants to revive them.  We should definitely make a clearer distinction
+between rejected and deferred PEPs.  And no rejected PEP should be
+without an explanation for the rejection.
+
+<hr>
+<p><a href="index.html">&larr; Python Essays</a></p>
+<p><small>Originally published on <a href="https://legacy.python.org/doc/essays/pepparade/">python.org</a>.</small></p>
+
+</div>
+<script
+  id="counterscale-script"
+  data-site-id="bdfl"
+  src="https://counterscale.gvanrossum.workers.dev/tracker.js"
+  defer
+></script>
+</body>
+</html>

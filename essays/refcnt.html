@@ -1,0 +1,261 @@
+---
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Debugging Reference Count Problems</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p><a href="index.html">&larr; Python Essays</a></p>
+
+<H1>Debugging Reference Count Problems</H1>
+
+<P>
+From: <b>Guido van Rossum</b> &lt;guido@CNRI.Reston.VA.US&gt;<BR>
+To: <i>python-list@cwi.nl</i><BR>
+Date: Wed, 27 May 1998 11:09:40 -0400<BR>
+
+<P>
+Mike Fletcher wrote a number of posts about debugging C code that
+bombs, probably because of reference count problems.  His approach to
+debugging this problem seems typical, but I think it's not very
+productive, so I would like to suggest a different approach.
+Basically, it's often more productive to read your code carefully and
+reason about it than it is to use a bunch of generic debugging
+techniques.  (Those techniques are very useful, but only once you've
+isolated the problem sufficiently.)
+
+<P>
+Mike writes:
+
+<BLOCKQUOTE>
+PyErr_Print() let me know that I'm getting a KeyError on the GI of
+the node (which only appears as the _value_ in any dictionary).  So,
+thinks I (with nudging from Guido) it's a refcount error... so, I
+forge ahead and say "dang the memory leaks", adding Py_INCREF's
+everywhere.  No go :( Exactly the same behaviour.
+</BLOCKQUOTE>
+
+<P>
+Hmm...  This sounds like using an automatic weapon to kill a mosquito.
+Know thy enemy before choosing thy weapon.  The problem is, of course,
+with what "everywhere" is.  You may easily miss the one crucial place
+because you didn't think of it.
+
+<P>
+You should start by re-reading <A HREF="https://legacy.python.org/doc/api/refcounts.html" >
+section 1.2.1</A> of the Python/C API
+manual again, and then carefully read the descriptions of the
+functions you're calling.  (I know, the manual is not complete; but it
+isn't *that* incomplete, and if you're finding a function that's not
+in the manual, reading its source usually gives a clue.)
+
+<BLOCKQUOTE>
+So says I (beginning to talk to self), why not print the environment
+in which the functions are being run to see what's going on... no
+sooner said than done.  And the error disappeared!  Take the
+printing line out -- error reappears (iterate three or four times in
+disbelief).
+</BLOCKQUOTE>
+
+<P>
+This is a typical example of Heisenberg's law applied to programs: you
+can't observe something without influencing it.
+
+<BLOCKQUOTE>
+I'm using:
+
+<PRE>
+printf(" Env as rule called:\n\t%s\n",
+       PyString_AsString(PyObject_Repr(env)));
+</PRE>
+</BLOCKQUOTE>
+
+<P>
+This creates a new string object that is never collected: the new
+string object returned by PyObject_Repr().  Since this is presumably a
+big string and you are allocating a lot of them (one each time you get
+to this print statement) the malloc pattern of your application
+becomes very different and this means that you may see very different
+behavior.
+
+<BLOCKQUOTE>
+So, (maybe from shock), I eliminate the Py_INCREFs and try with just
+the printing... still works perfectly (save that I'm printing the
+entire parse tree on every iteration of the while loop (which isn't
+good...)).
+</BLOCKQUOTE>
+
+<P>
+Apparently, the INCREFs you added don't change your program's
+allocation behavior -- so obviously they aren't in the right places.
+This is confirmed by what you said earlier: adding the INCREF calls
+didn't remove the problem.
+
+<BLOCKQUOTE>
+So, my questions of the hour:
+
+<P>
+1) What's the c api equiv for sys.refcount? (so I can watch
+refcounts across calls and determine which are reference neutral)
+</BLOCKQUOTE>
+
+<P>
+(Echoed by Mark Hammond, who believes the reference count is the first
+2 bytes of the object -- in fact, it is the first 4 bytes, and this
+reveals that he is working in a little-endian machine, otherwise he
+would have said it's the 3rd and 4th byte. :-)
+
+<P>
+The reference count is the ob_refcnt field.  But I don't think this
+will help you a lot.  If the reference count of an object doesn't
+change during a call, that doesn't mean the call is reference
+count-neutral -- it could store a copy of the object.
+
+<P>
+For example, take PyList_SetItem(list, index, item).  It doesn't
+change the reference count of either the list or the item, but it is
+far from reference count neutral: it is neutral for the list, but it
+steals a reference from the item, and it expects you to hand it the
+item with the reference count already incremented.  (This particular
+function and its buddy, PyTuple_SetItem(), are used most often to
+initialize lists/tuples with new objects that have been created with
+an initial reference count of 1, which nicely matches their behavior.)
+
+<P>
+On the other hand, PySequence_SetItem(list, index, item) *does*
+increment the reference count of the item.  And it is considered
+reference count neutral.  (But it doesn't work for tuples, which are
+immutable; this is why you need PyTuple_SetItem().)
+
+<BLOCKQUOTE>
+2) What the heck is going on with printing?  Am I somehow saving the
+object from ignoble destruction by calling repr on it just before I
+need it?  Could this be a problem with refcounting objects inserted
+in the dictionary (doesn't seem likely given that PyDict_SetItem is
+said to store it's own references to objects).
+</BLOCKQUOTE>
+
+<P>
+As I said, it's not the printing, it's the repr() call.  I don't
+expect repr() to save a reference to your object, unless you
+implemented the object type yourself (then it could be a bug in your
+tp_repr or tp_str function).
+
+<BLOCKQUOTE>
+3) Anyone else becoming _really_ interested in a bytecode-to-C
+translator (as discussed a while ago on the list) :)
+</BLOCKQUOTE>
+
+<P>
+[Unfortunately, that's not going to help you as much as you'd like,
+because of Python's dynamic nature.  E.g. for the expression "a+b" it
+will have to generate a call to PyNumber_Add(a, b) because it can't
+know the types of a and b without a *lot* (and a mean a LOT) of type
+inferencing effort.]
+
+<P>
+Later, Mike writes:
+
+<BLOCKQUOTE>
+Okay, trying to debug this weird stack corruption thing, I thought
+along the lines of:
+
+<P>
+1) Stacks should only be corrupted if an object is decref'd which
+shouldn't be, or an object is created without a reference to begin
+with?
+</BLOCKQUOTE>
+
+<P>
+No -- corrupt stacks can also come from the use of uninitialized
+pointer variables, or out-of bounds indexing.  There could be some
+pretty subtle off-by-one errors in your code!
+
+<BLOCKQUOTE>
+2) You only need to decref objects if you're worried about memory
+leaks, since I'm just debugging, I'm not worried right now
+</BLOCKQUOTE>
+
+<P>
+You're doing yourself a big disfavor here.  Sure, core dumps are more
+serious problems than memory leaks, but memory leaks aren't any easier
+to find -- in fact, they are probably harder to find, because they
+hide in otherwise perfectly working code.  A memory leak that happens
+to be triggered in a loop can grow your memory so fast that you have
+no choice but start debugging right there!
+
+<P>
+The proper approach is to try and make sure that you have the right
+INCREF and DECREF calls at each place -- and the only way to go is to
+know (from the manual) the reference count behavior of each function
+you call (including functions you wrote yourself!).
+
+<BLOCKQUOTE>
+3) If I comment out all the DECREF calls, I should only have to
+worry about objects that I've created which don't have reference
+counts?  So, if I add an incref everywhere a new object is created,
+I should have a huge memory leak, but no stack corruption.
+</BLOCKQUOTE>
+
+<P>
+No, that's not how it works.  When an object is created, it already
+comes with a reference count of one.  The API manual says of this
+situation that you "own" a reference.  (You don't own the object -- it
+may be shared.  E.g. small integers and short strings are cached and
+shared aggressively -- but that doesn't affect whether you own a
+reference to them.)  Many routines that extract objects from other
+objects also give you the responsibility of owning a reference to the
+object, e.g. PyObject_GetAttr() and PyObject_GetItem().
+
+<P>
+On the other hand (and these are the most common examples, but not the
+only ones), PyList_GetItem(), PyTuple_GetItem(), PyDict_GetItem() and
+PyDict_GetItemString() all return to you an object without ownership
+of a reference to the object.  This is called a "borrowed" reference.
+When you pass a borrowed reference to another call that expects you to
+INCREF its argument (like PyList_SetItem() discussed above), you have
+a problem.
+
+<P>
+I suspect that the cause of your problem might be one of these cases,
+but since you won't post your code I can't be of much more help here
+-- I don't even know which functions you are calling.  Perhaps you
+could compile a list of Py* functions you are calling and any
+questions you have regarding their reference count behavior after
+looking them up in the manual?
+
+<BLOCKQUOTE>
+Of course, this didn't work or I wouldn't be bothering everyone with
+it. Am now breaking the thing down into smaller functions to see if
+that will help in tracking down the error (though it will almost
+certainly slow the function down).  Is there a FAQ on
+reference-counting woes somewhere?
+</BLOCKQUOTE>
+
+<P>
+There's really nothing that replace understanding the reference count
+behavior of each function you're using.  The Python/C API manual is
+your friend.  (And I promise to fix it when you find specific
+information missing or hard to find.)
+
+<HR>
+
+<hr>
+<p><a href="index.html">&larr; Python Essays</a></p>
+<p><small>Originally published on <a href="https://legacy.python.org/doc/essays/refcnt/">python.org</a>.</small></p>
+
+</div>
+<script
+  id="counterscale-script"
+  data-site-id="bdfl"
+  src="https://counterscale.gvanrossum.workers.dev/tracker.js"
+  defer
+></script>
+</body>
+</html>

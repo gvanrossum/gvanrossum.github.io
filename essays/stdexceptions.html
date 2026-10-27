@@ -1,0 +1,498 @@
+---
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Standard Exception Classes in Python 1.5</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p><a href="index.html">&larr; Python Essays</a></p>
+
+<H1>Standard Exception Classes in Python 1.5</H1>
+
+<em>(updated for Python 1.5.2 -baw)</em>
+
+<P>User-defined Python exceptions can be either strings or Python
+classes.  Since classes have many nice properties when used as
+exceptions, it is desirable to migrate to a situation where classes
+are used exclusively.  Prior to Python 1.5 alpha 4, Python's standard
+exceptions (IOError, TypeError, etc.) were defined as strings.
+Changing these to classes posed some particularly nasty backward
+compatibility problems.
+
+<P>In Python versions 1.5 and later, the standard exceptions are
+Python classes, and a few new standard exceptions have been added.
+The obsolete AccessError exception has been deleted.  Because it is
+possible (although unlikely) that this change broke existing code, the
+Python interpreter can be invoked the command line option
+<code>-X</code> to disable this feature, and use string exceptions
+like before.  This option is a temporary measure - eventually the
+string-based standard exceptions will be removed from the language
+altogether.  It hasn't been decided whether user-defined string
+exceptions will be allowed in Python 2.0.
+
+<H2>The Standard Exception Hierarchy</H2>
+
+<P>Behold the standard exception hierarchy.  It is defined in the new
+standard library module exceptions.py.  Exceptions that were new since
+Python 1.5 are marked with (*).
+
+<BLOCKQUOTE>
+<PRE>
+Exception(*)
+ |
+ +-- SystemExit
+ +-- StandardError(*)
+      |
+      +-- KeyboardInterrupt
+      +-- ImportError
+      +-- EnvironmentError(*)
+      |    |
+      |    +-- IOError
+      |    +-- OSError(*)
+      |
+      +-- EOFError
+      +-- RuntimeError
+      |    |
+      |    +-- NotImplementedError(*)
+      |
+      +-- NameError
+      +-- AttributeError
+      +-- SyntaxError
+      +-- TypeError
+      +-- AssertionError
+      +-- LookupError(*)
+      |    |
+      |    +-- IndexError
+      |    +-- KeyError
+      |
+      +-- ArithmeticError(*)
+      |    |
+      |    +-- OverflowError
+      |    +-- ZeroDivisionError
+      |    +-- FloatingPointError
+      |
+      +-- ValueError
+      +-- SystemError
+      +-- MemoryError
+</PRE>
+</BLOCKQUOTE>
+
+<P>The root class for all exceptions is the new exception Exception.
+From this, two additional classes are derived, StandardError, which is
+the root class for all standard exceptions, and SystemExit.  It is
+recommended that user-defined exceptions in new code be derived from
+Exception, although for backward compatibility reasons, this is not
+required.  Eventually this rule will be tightened.
+
+<p>SystemExit is derived from Exception because while it is an
+exception, it is not an error.
+
+<P>Most standard exceptions are direct descendants of StandardError.
+Some related exceptions are grouped together using an intermediate
+class derived from StandardError; this makes it possible to catch
+several different exceptions in one except clause, without using the
+tuple notation.
+
+<P><em>We looked into introducing more groups of related exceptions,
+but couldn't decide on the best grouping.  In a language as dynamic as
+Python, it's hard to say whether TypeError is a "program error", a
+"runtime error" or an "environmental error", so we decided to leave it
+undecided.  It could be argued that NameError and AttributeError
+should be derived from LookupError, but this is questionable and
+depends entirely on the application.</em>
+
+<H4>Exception Class Definitions</H4>
+
+<P>The Python class definitions for the standard exceptions are
+imported from the standard module "exceptions".  You can't change this
+file thinking that the changes will automatically show up in the
+standard exceptions; the builtin module expects the current hierarchy
+as defined in exceptions.py.
+
+<p>Details on the standard exception classes are available in the
+Python library reference manual's entry for the
+<a href="http://www.python.org/doc/lib/module-exceptions.html">
+exceptions</a> module.
+
+<H2>Changes to <code>raise</code></H2>
+
+<P>The <code>raise</code> statement has been extended to allow raising a class
+exception without explicit instantiation.  The following forms, called
+the "compatibility forms" of the <code>raise</code> statement, are allowed:
+
+<P>
+
+<UL>
+<LI><code>raise</code> <i>exception</i>
+<LI><code>raise</code> <i>exception</i>, <i>argument</i>
+<LI><code>raise</code> <i>exception</i>, (<i>argument, argument, ...</i>)
+</UL>
+
+<P>When <i>exception</i> is a class, these are equivalent to the
+following forms:
+
+<P>
+
+<UL>
+<LI><code>raise</code> <i>exception</i>()
+<LI><code>raise</code> <i>exception</i>(<i>argument</i>)
+<LI><code>raise</code> <i>exception</i>(<i>argument, argument, ...</i>)
+</UL>
+
+<P>Note that these are all examples of the form
+
+<p><ul><li><code>raise</code> <i>instance</i>
+</ul>
+
+<p>which in itself is a shorthand for
+
+<p><ul><li><code>raise</code> <i>class</i>, <i>instance</i>
+</ul>
+
+<p>where <i>class</i> is the class to which <i>instance</i> belongs.
+In Python 1.4, only the forms
+
+<p><ul><li><code>raise</code> <i>class</i>, <i>instance</i> and
+    <li><code>raise</code> <i>instance</i>
+</ul>
+<p>were allowed;
+in Python 1.5 (starting with 1.5a1) the forms
+
+<p><ul><li><code>raise</code> <i>class</i> and
+    <li><code>raise</code> <i>class</i>, <i>argument(s)</i>
+</ul><p>
+were added.  The allowable forms for string exceptions are unchanged.
+
+<P>For various reasons, passing None as the second argument to
+raise is equivalent to omitting it.  In particular, the
+statement
+
+<p><ul><li><code>raise</code> <i>class</i>, <code>None</code>
+</ul>
+
+<p>is equivalent to
+
+<p><ul><li><code>raise</code> <i>class</i>()
+</ul>
+<p>and <b>not</b> to
+<p><ul><li><code>raise</code> <i>class</i>(<code>None</code>)
+</ul>
+
+<p>Likewise, the statement
+
+<p><ul><li><code>raise</code> <i>class</i>, <i>value</i>
+</ul>
+<p>where
+<i>value</i> happens to be a tuple is equivalent to passing the
+tuple's items as individual arguments to the class constructor, rather
+than passing <i>value</i> as a single argument (and an empty tuple
+calls the constructor without arguments).  This makes a difference
+because there's a difference between <code>f(a,&nbsp;b)</code> and
+<code>f((a,&nbsp;b))</code>.
+
+<P>These are all compromises - they work well with the kind of
+arguments that the standard exceptions typically take (like a simple
+string).  For clarity in new code, the form
+
+<p><ul><li><code>raise</code> <i>class</i>(<i>argument</i>, ...)
+</ul>
+<p>is recommended (i.e. make an explicit call to the constructor).
+
+<H4>How Does This Help?</H4>
+
+<P>The motivation for introducing the compatibility forms was to allow
+backward compatibility with old code that raised a standard exception.
+For example, a __getattr__ hook might invoke the statement
+
+<p><ul><li><code>raise AttributeError</code>, <i>attrname</i>
+</ul>
+<p>when the desired attribute is not defined.
+
+<P>Using the new class exceptions, the proper exception to raise would
+be <code>AttributeError</code>(<i>attrname</i>); the compatibility
+forms ensure that the old code doesn't break.  (In fact, new code that
+wants to be compatible with the -X option <i>must</i> use the
+compatibility forms, but this is highly discouraged.)
+
+
+<H2>Changes to <code>except</code></H2>
+
+<P>No user-visible changes were made to the <code>except</code> clause of the
+<code>try</code> statement.
+
+<P>Internally, a lot has changed.  For example, class exceptions
+raised from C are instantiated when they are caught, not when they are
+raised.  This is a performance hack so that exceptions raised and
+caught entirely in C never pay the penalty of instantiation.  For
+example, iteration through a list in a <code>for</code> statement
+raises an IndexError at the end of the list by the list object, but
+the exception is caught in C and so never instantiated.
+
+<H2>What Could Break?</H2>
+
+<P>The new design does its very best not to break old code, but there
+are some cases where it wasn't worth compromising the new semantics in
+order to avoid breaking code.  In other words, some old code may
+break.  That's why the -X switch is there; however this shouldn't be
+an excuse for not fixing your code.
+
+<P>There are two kinds of breakage: sometimes, code will print
+slightly funny error messages when it catches a class exception but
+expects a string exception.  And sometimes, but much less often, code
+will actually crash or otherwise do the wrong thing in its error
+handling.
+
+<H4>Non-fatal Breakage</H4>
+
+<P>An examples of the first kind of breakage is code that attempts to
+print the exception name, e.g.
+
+<BLOCKQUOTE>
+<PRE>
+try:
+    1/0
+except:
+    print "Sorry:", sys.exc_type, ":", sys.exc_value
+</PRE>
+</BLOCKQUOTE>
+
+With string-based exceptions, this would print something like
+
+<BLOCKQUOTE>
+<PRE>
+Sorry: ZeroDivisionError : integer division or modulo
+</PRE>
+</BLOCKQUOTE>
+
+With class-based exceptions, it will print
+
+<BLOCKQUOTE>
+<PRE>
+Sorry: exceptions.ZeroDivisionError : integer division or modulo
+</PRE>
+</BLOCKQUOTE>
+
+The funny <code>exceptions.ZeroDivisionError</code> occurs because
+when an exception type is a class it is printed as
+<em>modulename.classname</em>.  This is handled internally by Python.
+
+<H4>Fatal Breakage</H4>
+
+<P>More serious is breaking error handling code.  This usually happens
+because the error handling code expects the exception or the value
+associated with the exception to have a particular type (usually
+string or tuple).  With the new scheme, the type is a class and the
+value is a class instance.  For example, the following code will
+break:
+
+<BLOCKQUOTE>
+<PRE>
+try:
+    raise Exception()
+except:
+    print "Sorry:", sys.exc_type + ":", sys.exc_value
+</PRE>
+</BLOCKQUOTE>
+
+because it tries to concatenate the exception type (a class object)
+with a string.  A fix (also for the previous example) would be to write
+
+<BLOCKQUOTE>
+<PRE>
+try:
+    raise Exception()
+except:
+    etype = sys.exc_type       # Save it; try-except overwrites it!
+    try:
+        ename = etype.__name__ # Get class name if it is a class
+    except AttributeError:
+        ename = etype
+    print "Sorry:", str(ename) + ":", sys.exc_value
+</PRE>
+</BLOCKQUOTE>
+
+Note how this example avoids an explicit type test!  Instead, it
+simply catches the (new) exception raised when the __name__ attribute
+is not found.  Just to be absolutely sure that we're concatenating a
+string, the built-in function str() is applied.
+
+<P>Another example involves code that assumes too much about the type
+of the value associated with the exception.  For example:
+
+<BLOCKQUOTE>
+<PRE>
+try:
+    open('file-doesnt-exist')
+except IOError, v:
+    if type(v) == type(()) and len(v) == 2:
+        (code, message) = v
+    else:
+        code = 0
+        message = v
+    print "I/O Error: " + message + " (" + str(code) + ")"
+    print
+</PRE>
+</BLOCKQUOTE>
+
+This code understands that IOError is often raised with a tuple of the
+form (errorcode, message), and sometimes with just a string.  However,
+since it explicitly tests for tuple-ness of the value, it will crash
+when the value is an instance!
+
+<P>Again, the remedy is to just go ahead and try the tuple unpack, and
+if it fails, use the fallback strategy:
+
+<BLOCKQUOTE>
+<PRE>
+try:
+    open('file-doesnt-exist')
+except IOError, v:
+    try:
+        (code, message) = v
+    except:
+        code = 0
+        message = v
+    print "I/O Error: " + str(message) + " (" + str(code) + ")"
+    print
+</PRE>
+</BLOCKQUOTE>
+
+This works because the tuple-unpack semantics have been loosened to
+work with any sequence on the right-hand size (see the section on
+Sequence Unpacking below), and the standard exception classes can be
+accessed like a sequence (by virtue of their __getitem__ method, see
+above).
+
+<P>Note that the second try-except statement does not specify the
+exception to catch - this is because with string exceptions, the
+exception raised is "TypeError: unpack non-tuple", while with class
+exceptions it is "ValueError: unpack sequence of wrong size".  This
+is because a string is a sequence; we must assume that error messages
+are always more than two characters long!
+
+<P>(An alternative approach would be to use try-except to test for the
+presence of the errno attribute; in the future, this would make sense,
+but at the present time it would require even more code in order to be
+compatible with string exceptions.)
+
+
+<H2>Changes to the C API</H2>
+
+<P>XXX To be described in more detail:
+
+<BLOCKQUOTE>
+<PRE>
+int PyErr_ExceptionMatches(PyObject *);
+int PyErr_GivenExceptionMatches(PyObject *, PyObject *);
+void PyErr_NormalizeException(PyObject**, PyObject**, PyObject**);
+</PRE>
+</BLOCKQUOTE>
+
+<P>PyErr_ExceptionMatches(exception) should be used in preference over
+PyErr_Occurred()==exception, since the latter will return an incorrect
+result when the exception raised is a class derived from the exception
+tested for.
+
+<P>PyErr_GivenExceptionMatches(raised_exception, exception) performs
+the same test as PyErr_ExceptionMatches() but allows you to pass the
+raised exception in explicitly.
+
+<P>PyErr_NormalizeException() is mostly for internal use.
+
+<P>
+
+
+<H2>Other Changes</H2>
+
+<P>Some changes to the language were made as part of the same project.
+
+<H4>New Builtin Functions</H4>
+
+<P>Two new intrinsic functions for class testing were introduced
+(since the functionality had to be implemented in the C API, there was
+no reason not to make it accessible to Python programmers).
+
+<P><code>issubclass(D, C)</code> returns true iff class D is derived
+from class C,
+directly or indirectly.  issubclass(C,&nbsp;C) always returns true.  Both
+arguments must be class objects.
+
+<P><code>isinstance(x, C)</code> returns true iff x is an
+instance of C or of a
+(direct or indirect) subclass of C.  The first argument may hyave any
+type; if x is not an instance of any class, isinstance(x,&nbsp;C) always
+returns false.  The second argument must be a class object.
+
+<H4>Sequence Unpacking</H4>
+
+<P>Previous Python versions require an exact type match between the
+left hand and right hand side of "unpacking" assignments, e.g.
+
+<BLOCKQUOTE>
+<PRE>
+(a, b, c) = x
+</PRE>
+</BLOCKQUOTE>
+
+requires that x is a tuple with three items, while
+
+<BLOCKQUOTE>
+<PRE>
+[a, b, c] = x
+</PRE>
+</BLOCKQUOTE>
+
+requires that x is a list with three items.
+
+<P>As part of the same project, the right hand side of either statement can be
+any sequence with exactly three items.  This makes it possible to
+extract e.g. the errno and strerror values from an IOError exception
+in a backwards compatible way:
+
+<BLOCKQUOTE>
+<PRE>
+try:
+    f = open(filename, mode)
+except IOError, what:
+    (errno, strerror) = what
+    print "Error number", errno, "(%s)" % strerror
+</PRE>
+</BLOCKQUOTE>
+
+<P>The same approach works for the SyntaxError exception, with the
+proviso that the info part is not always present:
+
+<BLOCKQUOTE>
+<PRE>
+try:
+    c = compile(source, filename, "exec")
+except SyntaxError, what:
+    try:
+        message, info = what
+    except:
+        message, info = what, None
+    if info:
+        "...print source code info..."
+    print "SyntaxError:", msg
+</PRE>
+</BLOCKQUOTE>
+
+<hr>
+<p><a href="index.html">&larr; Python Essays</a></p>
+<p><small>Originally published on <a href="https://legacy.python.org/doc/essays/stdexceptions/">python.org</a>.</small></p>
+
+</div>
+<script
+  id="counterscale-script"
+  data-site-id="bdfl"
+  src="https://counterscale.gvanrossum.workers.dev/tracker.js"
+  defer
+></script>
+</body>
+</html>

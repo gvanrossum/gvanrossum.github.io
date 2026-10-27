@@ -1,0 +1,162 @@
+---
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foreword for &quot;Programming Python&quot; (2nd ed.)</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p><a href="index.html">&larr; Python Essays</a></p>
+
+<H1>Foreword for "Programming Python" (2nd ed.)</H1>
+
+<HR>
+This is the foreword I wrote for Mark Lutz' book "Programming Python"
+(2nd ed.), published by O'Reilly in 2001.
+<HR>
+
+<p>Less than five years ago, I wrote the <a
+href="foreword.html">foreword for the 1st edition</a> of Programming
+Python.  Since then, the book has changed about as much as the
+language and the Python community!  I no longer feel the need to
+defend Python: the statistics and developments listed in Mark's
+Preface speak for themselves.
+
+<p>In the past year, Python has made great strides.  We released Python
+2.0, a big step forward, with new standard library features such as
+Unicode and XML support, and several new syntactic constructs,
+including augmented assignment: you can now write x += 1 instead of x
+= x+1.  A few people wondered what the big deal was (answer: instead
+of x, imagine dict[key] or list[index]), but overall this was a big
+hit with those users who were already used to augmented assignment in
+other languages.
+
+<p>Less warm was the welcome for the extended print statement:
+print&gt;&gt;file, a shortcut for printing to a different file object
+than standard output.  Personally, it's the Python 2.0 feature I use
+most frequently, but most people who opened their mouth about found it
+an abomination.  The discussion thread on the newsgroup berating this
+simple language extension was one of the longest ever -- apart from
+the never-ending Python vs. Perl thread.
+
+<p>Which brings me to the next topic.  (No, not Python vs. Perl.  There
+are better places to pick a fight than a foreword.)  I mean the speed
+of Python's evolution, a topic dear to the heart of the author of this
+book.  Every time I add a feature to Python, another patch of Mark's
+hair turns grey: there goes another chapter out of date!  Especially
+the slew of new features added to Python 2.0, which appeared just as
+he was working on this second edition, made him worry: what if Python
+2.1 added as many new things?  The book would be out of date as soon
+as it was published!
+
+<p>Relax, Mark.  Python will continue to evolve, but I promise that I
+won't remove things that are in active use!  For example, there was a
+lot of worry about the string module.  Now that string objects have
+methods, the string module is mostly redundant.  I wish I could to
+declare it obsolete (or deprecated) to encourage Python programmers to
+start using string methods instead.  But given that a large majority
+of existing Python code -- even many standard library modules --
+imports the string module, this change is obviously not going to
+happen overnight.  The first likely opportunity to remove the string
+module will be at the introduction of Python 3000; and even then there
+will probably be a string module in the backwards compatibility
+library for use with old code.
+
+<p>Python 3000?!  Yes, that's the nickname for the next generation of the
+Python interpreter.  The name may be considered a pun on Windows 2000,
+or a reference to Mystery Science Theatre 3000, a suitably Pythonesque
+tv show with a cult following.  When will Python 3000 be released?
+Not for a loooooong time -- although you won't quite have to wait
+until the year 3000.
+
+<p>Originally, Python 3000 was intended to be a complete rewrite and
+redesign of the language.  It would allow me to make incompatible
+changes in order to fix problems with the language design that weren't
+solvable in a backwards compatible way.  The current plan, however, is
+that the necessary changes will be introduced gradually into the
+current Python 2.x line of development, with a clear transition path
+that includes a period of backwards compatibility support.
+
+<p>Take for example integer division.  In line with C, Python currently
+defines x/y with two integer arguments to have an integer result.  In
+other words, 1/2 yields 0!  While most died-in-the-wool programmers
+expect this, it's a continuing source of confusion for newbies, who
+make up an ever-larger fraction of the -- exponentially growing --
+Python user population.  From a numerical perspective, it really makes
+more sense for the / operator to yield the same value regardless of
+the type of the operands: after all, that's what all other numeric
+operators do.  But we can't simply change Python so that 1/2 yield
+0.5, because (like removing the string module) it would break too much
+existing code.  What to do?
+
+<p>The solution, too complex to describe here in detail, will have to
+span several Python releases, and involves gradually increasing
+pressure on Python programmers (first through documentation, then
+through deprecation warnings, and eventually through errors) to change
+their code.  By the way, a framework for issuing warnings will be
+introduced as part of Python 2.1.  Sorry, Mark!
+
+<p>So, don't expect the announcement of the release of Python 3000 any
+time soon.  Instead, one day you may find that you are _already_ using
+Python 3000 -- only it won't be called that, but rather something like
+Python 2.8.7.  And most of what you've learned in this book will still
+apply!  Still, in the mean time references to Python 3000 will abound;
+just know that this is intentionally vaporware in the purest sense of
+the word.  Rather than worry about Python 3000, continue to use and
+learn more about the Python version that you do have.
+
+<p>I'd like to say a few words about Python's current development model.
+Until early 2000, there were hundreds of contributors to Python, but
+essentially all contributions had to go through my inbox.  To propose
+a change to Python, you would mail me a context diff, which I would
+apply to my work version of Python, and if I liked it, I would check
+it into my CVS source tree.  (CVS is a source code version management
+system, and the subject of several books.)  Bug reports followed the
+same path, except I also ended up having to come up with the patch.
+Clearly, with the increasing number of contributions, my inbox became
+a bottleneck.  What to do?
+
+<p>Fortunately, Python wasn't the only open source project with this
+problem, and a few smart people at VA Linux came up with a solution:
+SourceForge!  This is a dynamic website with a complete set of
+distributed project management tools available: a public CVS
+repository, mailing lists (using Mailman, a very popular Python
+application!), discussion forums, bug and patch managers, and a
+download area, all made available to any open source project for the
+asking.
+
+<p>We currently have a development group with SourceForge checkin
+privileges of 30 volunteers, and a development mailing list comprising
+twice as many folks.  The privileged volunteers have all sworn their
+allegiance to the BDFL (Benevolent Dictator For Life -- that's me :-).
+Introduction of major new features is regulated via a lightweight
+system of proposals and feedback, Python Enhancement Proposals (PEPs).
+Our PEP system proved so succesful that it was copied almost verbatim
+by the Tcl community when they made a similar transition from
+Cathedral to Bazaar.
+
+<p>So, it is with confidence in Python's future that I give the floor to
+Mark Lutz.  Excellent job, Mark.  And to finish with my favorite Monty
+Python quote: Take it away, Eric, the orchestra leader!
+
+<p>Guido van Rossum
+<br>Reston, Virginia, January 2001
+
+<hr>
+<p><a href="index.html">&larr; Python Essays</a></p>
+<p><small>Originally published on <a href="https://legacy.python.org/doc/essays/foreword2/">python.org</a>.</small></p>
+
+</div>
+<script
+  id="counterscale-script"
+  data-site-id="bdfl"
+  src="https://counterscale.gvanrossum.workers.dev/tracker.js"
+  defer
+></script>
+</body>
+</html>

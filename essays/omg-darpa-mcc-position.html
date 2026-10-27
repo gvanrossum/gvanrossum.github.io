@@ -1,0 +1,204 @@
+---
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Glue It All Together With Python</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p><a href="index.html">&larr; Python Essays</a></p>
+
+<H1>Glue It All Together With Python</H1>
+
+<BLOCKQUOTE>
+<b>Guido van Rossum</b><BR>
+CNRI<BR>
+1895 Preston White Drive<BR>
+Reston, VA 20191<BR>
+Email: <A
+HREF="mailto:guido@cnri.reston.va.us">guido@cnri.reston.va.us</A>,
+<A HREF="mailto:guido@python.org">guido@python.org</A>
+
+<P>Position paper for the <A
+HREF="http://www.objs.com/workshops/ws9801/report.html" >OMG-DARPA-MCC
+<b>Workshop on Compositional Software Architecture</b></A> in
+Monterey, California, January 6-8, 1998.  </BLOCKQUOTE>
+
+
+<H2>Introduction</H2>
+
+<P>Python is an advanced scripting language that is being used
+successfully to glue together large software components.  It spans
+multiple platforms, middleware products, and application domains.
+Python is an object-oriented language with high-level data structures,
+dynamic typing, and dynamic binding.  Python has been around since
+1991, and has a very active user community.  For more information, see
+the Python website <A HREF="http://www.python.org"
+>http://www.python.org</A>.
+
+<P>Like Tcl, Python is easily extensible with C/C++/Java code, and
+easily embeddable in applications.  Python even uses Tk, the Tcl GUI
+toolkit, for a de-facto standard portable GUI toolkit.  Unlike Tcl,
+however, Python supports object-oriented programming.  Python
+programmers can create classes, use multiple inheritance, define
+methods, overload operators, and so on.
+
+
+<H2>Python's Strengths</H2>
+
+<P>Syntactically, Python code looks like executable pseudo code.
+Program development using Python is 5-10 times faster than using
+C/C++, and 3-5 times faster than using Java.  In many cases, a
+prototype of an application can be written in Python without writing
+any C/C++/Java code.  Often, the prototype is sufficiently functional
+and performs well enough to be delivered as the final product, saving
+considerable development time.  Other times, the prototype can be
+translated in part or in whole to C++ or Java -- Python's
+object-oriented nature makes the translation a straightforward
+process.
+
+<P>The best approach is often to write only the performance-critical
+parts of the application in C++ or Java, and use Python for all
+higher-level control and customization.  There are several anecdotes
+about applications that started out as pure C++ cpde to which Python
+was added as an extension language, where in each new version the
+percentage of the application written in Python increased, while also
+increasing the overall performance, functionality and reliability of
+the application.  (E.g. Case Study: Python in a Commercial
+Environment, by Greg Stein, Microsoft, in <A
+HREF="http://www.python.org/workshops/1997-10/proceedings/">Proceedings
+of the 6th International Python Conference</A>, and the <A
+HREF="http://alice.cs.cmu.edu">Alice</A> VR project at UvA and CMU.)
+
+<P>Python has a strong presence on the web.  It is suitable for CGI
+programming (on all platforms: Unix, Windows and Mac); there are
+interfaces to all major commercial databases.  Python has a library
+that interfaces to the main Internet and web protocols, and has HTML
+parsing and generation toolkits.  Python was a major implementation
+language for <A HREF="http://www.infoseek.com">Infoseek</A> when they
+were smaller.  At least one company (<A HREF="http://www.digicool.com"
+>Digital Creations</A>) is selling a suite of server side tools using
+Python.  And finally, Python has been used to implement a web browser
+(<A HREF="http://grail.python.org/">Grail</A>).
+
+<P>Python is also well represented in the distributed systems world.
+It is one of the main languages supported by Xerox PARC's <A
+HREF="ftp://ftp.parc.xerox.com/pub/ilu/ilu.html" >ILU</A>
+(Inter-Language Unification; a CORBA compatible distributed object
+system), and many distributed applications have been built in Python
+using ILU.  Python is also used by the <A
+HREF="http://www.dstc.edu.au/Hector/" >Hector</A> project at the
+University of Queensland, Australia.
+
+<P>Finally, Python is well integrated with the Windows platforms.
+Python programs can interact with COM and DCOM services, and can even
+implement new COM and DCOM services (which is not possible using
+Visual Basic!).  Python can also be used as a scripting engine in
+Microsoft's Active Scripting architecture.
+
+
+<H2>Using Python as an Integration Language</H2>
+
+<P>Relevant to the topic of this workshop, Python is in use at many
+places as an integration language, used to glue together ("steer")
+existing components.  The strategy here is to create Python extension
+modules (written in C/C++) that make the functionality of large
+components written in C/C++ available to the Python programmer.  The
+extension ("glue") modules are required because Python cannot call
+C/C++ functions directly; the glue extensions handle conversion
+between Python data types and C/C++ data types and error checking,
+translation error return values into Python exception.
+
+<P>Creation of glue extensions is simplified by the existence of <A
+HREF="http://www.swig.org/">SWIG</A>, which reads
+header files containing function and method prototypes and
+automatically generates the necessary type conversion and error
+checking code.  In situations where the underlying code (usually C
+code) doesn't use an object-oriented model, the glue extension can in
+turn be wrapped in a Python module that defines a proper class
+hierarchy, while delegating the performance critical operations to the
+C code.
+
+<P>Using Python, better applications can be developed because
+different kinds of programmers can work together on a project.  For
+example, when building a scientific application, C/C++ programmers can
+implement efficient numerical algorithms, while scientists on the same
+project can write Python programs that test and use those algorithms.
+The scientist doesn't have to learn a low-level programming language,
+and the C/C++ programmer doesn't need to understand the science
+involved.
+
+<P>Without Python, large amounts of C/C++ code often have to be written
+just to provide a flexible enough input mechanism so that scientists
+can feed the program its data, in all the variantions that are
+required for reasons of experimental setup (for instance).  With
+Python, Python can be used to wrote a much more flexible input
+mechanism in a much shorter time, or Python itself can be the ultimate
+flexible input mechanism.  As an extreme example, Lawrence Livermore
+National Laboratories is using Python to eventually replace a
+scripting language (BASIS) that was developed in house for the same
+purpose; BASIS started out as a simple input mechanism for Fortran
+programs, and gradually acquired many features of scripting languages
+(variables, conditionals, loops, procedures and so on) with increasing
+awkwardness.
+
+<P>Because Python has existing interfaces to so many different
+components in very different application domains, Python is ideal for
+oddball integration tasks.  It can link a commercial database to
+number-crunching code; it can add a graphical user interface to a
+network management tool; it can send email from a virtual reality
+application.
+
+
+<H2>Conclusion</H2>
+
+<P>Python can fulfill an important integration role in the design of
+large applications with a long life expectancy.  It allows a fast
+response to changes in user requirements that require adapting the
+higher-level application logic without changing the fundamental
+underlying components.  It also allows quick adaptation of the
+application to changes in the underlying components.
+
+<P>
+
+<HR>
+
+
+<H2>Epilogue: Python and Java Integration</H2>
+
+<P>A new Python implementation written in 100% Pure Java, dubbed <A
+HREF="http://www.python.org/jpython">JPython</A>, is currently under
+development; alpha releases are available for evaluation.  JPython
+offers seamless scripting for Java.  It is a full implementation of
+the Python language and standard library, adding direct access to the
+universe of Java classes.  Java code can also use Python classes --
+this is important for callbacks, for instance.
+
+<P>The main thrust for JPython is that it does for Java what Python
+already does for C and C++: to present programmers with more options
+in the trade-off between development time and execution time, by
+providing a more dynamic, more expressive alternative.  JPython's
+integration with Java is superior to Python's integration with C/C++:
+due to Java's Reflection API, JPython can use arbitrary Java classes
+without the help of a wrapper generator such as SWIG.  (C/C++ code
+must first be made available to Java through the Java native code
+interface; once it is callable from Java it is callable from JPython.)
+
+<hr>
+<p><a href="index.html">&larr; Python Essays</a></p>
+<p><small>Originally published on <a href="https://legacy.python.org/doc/essays/omg-darpa-mcc-position/">python.org</a>.</small></p>
+
+</div>
+<script
+  id="counterscale-script"
+  data-site-id="bdfl"
+  src="https://counterscale.gvanrossum.workers.dev/tracker.js"
+  defer
+></script>
+</body>
+</html>

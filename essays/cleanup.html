@@ -1,0 +1,235 @@
+---
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proposed Improvements to Module Cleanup</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p><a href="index.html">&larr; Python Essays</a></p>
+
+<H1>Proposed Improvements to Module Cleanup</H1>
+
+<P>I'm experimenting with a better way of cleaning up at the end of an
+execution run.  Without implementing true GC, I can never do it 100%
+right, but I can implement a predictable set of rules based on
+practical observation that will solve most problems that are actually
+observed.
+
+<P>Here's my proposal.  At the end of this message I list some potential
+problems with the proposal and ask for feedback.  This will probably
+be implemented in Python 1.5.1.
+
+<P>Contents:
+
+<UL>
+<LI><A HREF="#algorithms">Algorithms</A>
+<LI><A HREF="#motivation">Motivation</A>
+<LI><A HREF="#problems">Problems and Questions</A>
+</UL>
+
+<H3>Revised version</H3>
+
+<P>Based on some comments I received and some more thinking, I've
+changed this a bit since my web posting on this subject.  Significant
+Changes are indicated in the text by [<i>italicized remarks in square
+brackets</i>].
+
+
+<H2><A NAME="algorithms">Algorithms</A></H2>
+
+<P>When a Python interpreter is deleted, its variables and modules are
+"cleared carefully" in a partially specified order.  The operation
+"clear carefully" is defined below; it effectively deletes the
+module's variables in a partially specified order.
+
+<UL>
+
+<LI>M1. Before anything else, the following variables are set to None
+(not necessarily in this order):
+	<UL>
+	<LI>__builtin__._
+	<LI>sys.exc_{type,value,traceback}
+	<LI>sys.last_{type,value,traceback}
+	<LI>sys.path
+	<LI>sys.argv
+	<LI>sys.ps1, sys.ps2
+	<LI>sys.exitfunc
+	</UL>
+
+[<i>path, argv, ps1, ps2 and exitfunc are new in this list.</i>]
+
+<P>
+
+<LI>M2. The three standard I/O files (sys.stdin, sys.stdout and
+sys.stderr) are restored to their initial values (which are saved as
+sys.__stdin__, sys.__stdout__ and sys.__stderr__, respectively, when
+the interpreter starts).  If any of the initial values is unavailable,
+the corresponding object is set to None.
+[<i>New.</i>]
+
+<P>
+
+<LI>M3. Clear module __main__ carefully before any other modules.
+[<i>This used to be done after the next step.</i>]
+
+<P>
+
+<LI>M4. Loop over all modules repeatedly, looking for modules with a
+reference count of one.  Each module with a reference count of one is
+cleared carefully.  The loop stops when no more modules with a
+reference count of one are found.  The modules __builtin__ and sys are
+excluded from the loop.
+
+<P>
+
+<LI>M5. Clear all remaining modules carefully, except __builtin__ and sys.
+
+<P>
+
+<LI>M6. Clear sys carefully.
+
+<P>
+
+<LI>M7. Clear __builtin__ carefully.
+
+<P>
+
+</UL>
+
+<P>To clear a module carefully, the following steps are taken:
+
+<UL>
+
+<LI>C1. In an order determined by the dictionary hashing of the names, set
+all names to None that start with exactly one underscore.
+
+<P>
+
+<LI>C2. In an order determined by the dictionary hashing of the names,
+set all names to None except __builtins__.
+[<i>This used to be "all names that do not start with two or more
+underscores".</i>]
+
+<P>
+
+<LI>[<i>Deleted step: In an order determined by the dictionary hashing
+of the names, delete all remaining names from the module's dictionary
+(this is done by a call to __dict__.clear()).</i>]
+
+<P>
+
+<LI>C3. The module itself is replaced by None in the dictionary of
+modules (sys.modules).
+
+<P>
+
+</UL>
+
+<P>[<i>New.</i>] Steps C1-C2 will also be used when a module is
+deallocated.  While modules are generally not involved in cycles
+(except when there are mutually recursive imports), a module's
+dictionary generally is involved in a cycle because every function and
+method defined in the module references its __dict__, and these
+functions and methods are generally reachable from that __dict__.
+Thus, when a module is deleted, I explicitly clear its __dict__
+carefully.  (This has always been done, just not "carefully".)
+
+
+<H2><A NAME="motivation">Motivation</A></H2>
+
+<P>M1 is done because these variables are common places for user values
+to hide, and they would come too late in the proposed order.  (In fact
+nearly all reported problems with destructors not being called when
+expected have to do with these.)
+
+<P>M3 is there because __main__ is conceptually the "root" of the
+program -- if it is not imported by other modules, it would be deleted
+first by step M4 anyway, but if it <b>is</b> imported elsewhere,
+deleting __main__ is a plausible way to break a tie.
+
+<P>M4 is an explicit garbage collection loop -- it deletes all those
+modules which are referenced by no other modules, only by the table of
+modules (sys.modules) itself.  It may not delete all modules, however,
+when there are mutual imports; the remaining steps take care of those.
+
+<P>M5 is needed to take care of mutually recursive imports, which create
+cycles so that M4 won't delete everything.
+
+<P>The special treatment of __builtin__ and sys is because these are
+referenced by the interpreter implicitly by many operations;
+__builtin__ of course contains all the built-in functions and
+exceptions; sys contains the standard I/O files which are referenced
+implicitly by various I/O operations.  So they are excluded in M2 and
+M4.  __builtin__ is deleted last because it contains the most
+basic and fundamental values.
+
+<P>The special care for cleaning up a module's dictionary is needed
+because there's a fundamental circular reference whenever a module
+defines a Python function or class.  A function object contains a
+reference to the function's 'globals' object, which is the __dict__ of
+the module that defines it.  Since the __dict__ normally has a
+reference to the function there's a cycle that needs to be broken, or
+else the __dict__ would never be garbage collected.
+
+<P>Note that a reference-count based solution doesn't work within one
+module, since references between functions are by name, not by value
+-- two mutually recursive functions can still both have a reference
+count of one, since they do a name lookup for each other.
+
+<P>C1 is an attempt to provide a way for a module to define globals that
+are deleted before anything else in the module.  Since imported module
+or function names generally don't begin with an underscore, this means
+that such objects can be guaranteed that any imported modules or
+functions still exist when they are deleted -- provided, of course,
+that the only reference to them is in the module.  (This step is
+already implemented in 1.5 as released.)
+
+<P>C2 deletes the remaining objects but leaves the "internal global
+variable" __builtins__ alone -- this prevents the problem that the 1.5
+release has where e.g. using "None" in a destructor raises a
+NameError!
+
+<P>C3 removes the reference to the module from the modules table in a
+way that makes a later import of the same module fail.  (It is
+possible for user code to delete this entry and still start a
+completely new import -- but if they are that clever they deserve what
+they get.)
+
+
+<H2><A NAME="problems">Problems and Questions</A></H2>
+
+<P>P1. When all uses of a module M have the form ``from M import ...'',
+the module M will have a reference count of 1.  So it will be deleted
+in step M1.  This renders all but the most trivial functions defined
+in the module (which are presumably still referenced by other modules)
+useless, since the imported modules and functions that they might need
+are all deleted from their globals.  A simple remedy of course is not
+to use ``from M import ...'', but this sounds like it might become a
+FAQ...  The problem is that I don't know of a better way -- because of
+the circular references between functions and their module's __dict__,
+I can't use the reference count of the __dict__ in step M1.  I think
+it is acceptable -- this behaviour also existed in 1.4 and earlier
+versions.  (It has been suggested to add a reference named e.g.
+".<i>module</i>" in the importing module, to indicate the dependency
+and prevent this problem; while this may do the job nicely, I'm
+reluctant to implement it because it may confuse introspective tools.)</p>
+
+<hr>
+<p><a href="index.html">&larr; Python Essays</a></p>
+<p><small>Originally published on <a href="https://legacy.python.org/doc/essays/cleanup/">python.org</a>.</small></p>
+
+</div>
+<script
+  id="counterscale-script"
+  data-site-id="bdfl"
+  src="https://counterscale.gvanrossum.workers.dev/tracker.js"
+  defer
+></script>
+</body>
+</html>

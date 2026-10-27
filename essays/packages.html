@@ -1,0 +1,616 @@
+---
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Built-in Package Support in Python 1.5</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p><a href="index.html">&larr; Python Essays</a></p>
+
+<H1>The Knights Who Say Neeeow ... Wum ... Ping!</H1>
+<H2>Built-in Package Support in Python 1.5</H2>
+
+<P>Starting with Python version 1.5a4, package support is built into
+the Python interpreter.  This implements a slightly simplified and
+modified version of the package import semantics pioneered by the "ni"
+module.
+
+<P>"Package import" is a method to structure Python's module namespace
+by using "dotted module names".  For example, the module name A.B
+designates a submodule named B in a package named A.  Just like the
+use of modules saves the authors of different modules from having to
+worry about each other's global variable names, the use of dotted
+module names saves the authors of multi-module packages like NumPy or
+PIL from having to worry about each other's module names.
+
+<P>Starting with Python version 1.3, package import was supported by a
+standard Python library module, "ni". (The name is supposed to be an
+acronym for New Import, but really referrs to the <i>Knights Who Say
+Ni</i> in the movie <i>Monty Python and the Holy Grail</i>, who, after
+King Arthur's knights return with a shrubbery, have changed their
+names to the <i>Knights Who Say Neeeow ... Wum ... Ping</i> - but
+that's another story.)
+
+<P>The ni module was all user code except for a few modifications to
+the Python parser (also introduced in 1.3) to accept import statements
+of the for "import A.B.C" and "from A.B.C import X".  When ni was not
+enabled, using this syntax resulted in a run-time error "No such
+module".  Once ni was enabled (by executing "import ni" before
+importing other modules), ni's import hook would look for the
+submodule of the correct package.
+
+<P>The new package support is designed to resemble ni, but has been
+streamlined, and a few features have been changed or removed.
+
+
+<H2>An Example</H2>
+
+<P>Suppose you want to design a package for the uniform handling of
+sound files and sound data.  There are many different sound file
+formats (usually recognized by their extension, e.g. .wav, .aiff,
+.au), so you may need to create and maintain a growing collection of
+modules for the conversion between the various file formats.  There
+are also many different operations you might want to perform on sound
+data (e.g. mixing, adding echo, applying an equalizer function,
+creating an artificial stereo effect), so in addition you will be
+writing a never-ending stream of modules to perform these operations.
+Here's a possible structure for your package (expressed in terms of a
+hierarchical filesystem):
+
+<BLOCKQUOTE>
+<PRE>
+Sound/				Top-level package
+      __init__.py		Initialize the sound package
+      Utils/			Subpackage for internal use
+            __init__.py
+            iobuffer.py
+	    errors.py
+	    ...
+      Formats/			Subpackage for file format conversions
+              __init__.py
+              wavread.py
+	      wavwrite.py
+	      aiffread.py
+	      aiffwrite.py
+	      auread.py
+	      auwrite.py
+	      ...
+      Effects/			Subpackage for sound effects
+              __init__.py
+	      echo.py
+	      surround.py
+	      reverse.py
+	      ...
+      Filters/			Subpackage for filters
+              __init__.py
+              equalizer.py
+	      vocoder.py
+	      karaoke.py
+	      dolby.py
+	      ...
+</PRE>
+</BLOCKQUOTE>
+
+<P>Users of the package can import individual modules from the
+package, for example:
+
+<DL>
+
+<DT><code>import Sound.Effects.echo</code>
+
+<DD>This loads the submodule Sound.Effects.echo.  It must be referenced
+with its full name, e.g.
+
+<code>
+Sound.Effects.echo.echofilter(input, output, delay=0.7, atten=4)
+</code>
+
+<P>
+
+<DT><code>from Sound.Effects import echo</code>
+
+<DD>This also loads the submodule echo, and makes it available without
+its package prefix, so it can be used as follows:
+
+<code>
+echo.echofilter(input, output, delay=0.7, atten=4)
+</code>
+
+<P>
+
+<DT><code>from Sound.Effects.echo import echofilter</code>
+
+<DD>Again, this loads the submodule echo, but this makes its function
+echofilter directly available:
+
+<code>
+echofilter(input, output, delay=0.7, atten=4)
+</code>
+
+<P>
+
+</DL>
+
+<P>Note that when using <code>from</code> <i>package</i>
+<code>import</code> <i>item</i>, the item can be either a submodule
+(or subpackage) of the package, or some other name defined in a the
+package, like a function, class or variable.  The import statement
+first tests whether the item is defined in the package; if not, it
+assumes it is a module and attempts to load it.  If it fails to find
+it, ImportError is raised.
+
+<P>Contrarily, when using syntax like <code>import</code>
+<i>item.subitem.subsubitem</i>, each item except for the last must be
+a package; the last item can be a module or a package but can't be
+a class or function or variable defined in the previous item.
+
+
+<H2>Importing * From a Package; the <code>__all__</code> Attribute</H2>
+
+<P>Now what happens when the user writes <code>from Sound.Effects
+import *</code>?  Ideally, one would hope that this somehow goes out
+to the filesystem, finds which submodules are present in the package,
+and imports them all.  Unfortunately, this operation does not work
+very well on Mac and Windows platforms, where the filesystem does not
+always have accurate information about the case of a filename!  On
+these platforms, there is no guaranteed way to know whether a file
+ECHO.PY should be imported as a module echo, Echo or ECHO.  (For
+example, Windows 95 has the annoying practice of showing all file
+names with a capitalized first letter.)  The DOS 8+3 filename
+restriction adds another interesting problem for long module names.
+
+<P>The only solution is for the package author to provide an explicit
+index of the package.  The import statement uses the following
+convention: if a package's __init__.py code defines a list named
+__all__, it is taken to be the list of module names that should be imported
+when <code>from</code> <i>package</i> <code>import</code> * is
+encountered.  It is up to the package author to keep this list
+up-to-date when a new version of the package is released.  Package
+authors may also decide not to support it, if they don't see a use for
+importing * from their package.  For example, the file
+<code>Sounds/Effects/__init__.py</code> could contain the following code:
+
+<PRE>
+__all__ = ["echo", "surround", "reverse"]
+</PRE>
+
+This would mean that <code>from Sound.Effects import *</code> would
+import the three named submodules of the Sound package.
+
+<P>If __all__ is not defined, the statement <code>from Sound.Effects
+import *</code> does <i>not</i> import all submodules from the package
+Sound.Effects into the current namespace; it only ensures that the
+package Sound.Effects has been imported (possibly running its
+initialization code, __init__.py) and then imports whatever names are
+defined in the package.  This includes any names defined (and
+submodules explicitly loaded) by __init__.py.  It also includes any
+submodules of the package that were explicitly loaded by previous
+import statements, e.g.
+
+<BLOCKQUOTE>
+<PRE>
+import Sound.Effects.echo
+import Sound.Effects.surround
+from Sound.Effects import *
+</PRE>
+</BLOCKQUOTE>
+
+In this example, the echo and surround modules are imported in the
+current namespace because they are defined in the Sound.Effects
+package when the from...import statement is executed.  (This also
+works when __all__ is defined.)
+
+<P>Note that in general the practicing of importing * from a module or
+package is frowned upon, since it often causes poorly readable code.
+However, it is okay to use it to save typing in interactive sessions,
+and certain modules are designed to export only names that follow
+certain patterns.
+
+<P>Remember, there is nothing wrong with using <code>from Package
+import specific_submodule</code>!  In fact this becomes the
+recommended notation unless the importing module needs to use
+submodules with the same name from different packages.
+
+
+<H2>Intra-package References</H2>
+
+<P>The submodules often need to refer to each other.  For example, the
+surround module might use the echo module.  In fact, such references
+are so common that the import statement first looks in the containing
+package before looking in the standard module search path.  Thus, the
+surround module can simply use <code>import echo</code> or <code>from
+echo import echofilter</code>.  If the imported module is not found
+in the current package (the package of which the current module is a
+submodule), the import statement looks for a top-level module with the
+given name.
+
+<P>When packages are structured into subpackage (as with the Sound
+package in the example), there's no shortcut to refer to submodules of
+sibling packages - the full name of the subpackage must be used.  For
+example, if the module Sound.Filters.vocoder needs to use the echo
+module in the Sound.Effects package, it can use <code>from
+Sound.Effects import echo</code>.
+
+<P>(One could design a notation to refer to parent packages, similar
+to the use of ".." to refer to the parent directory in Unix and
+Windows filesystems.  In fact, ni supported this using __ for the
+package containing the current module, __.__ for the parent package,
+and so on.  This feature was dropped because of its awkwardness; since
+most packages will have a relative shallow substructure, this is no
+big loss.)
+
+
+<H2>Details</H2>
+
+<H4>Packages Are Modules, Too!</H4>
+
+<P>Warning: the following may be confusing for those who are familiar
+with Java's package notation, which is similar to Python's, but
+different.
+
+<P>Whenever a submodule of a package is loaded, Python makes sure that
+the package itself is loaded first, loading its __init__.py file if
+necessary.  The same for packages.  Thus, when the statement
+<code>import Sound.Effects.echo</code> is executed, it first ensures
+that Sound is loaded; then it ensures that Sound.Effects is loaded;
+and only then does it ensure that Sound.Effects.echo is loaded
+(loading it if it hasn't been loaded before).
+
+<P>Once loaded, the difference between a package and a module is
+minimal.  In fact, both are represented by module objects, and both
+are stored in the table of loaded modules, sys.modules.  The key in
+sys.modules is the full dotted name of a module (which is not always
+the same name as used in the import statement).  This is also the
+contents of the __name__ variable (which gives the full name of the
+module or package).
+
+<H4>The __path__ Variable</H4>
+
+<P>The one distinction between packages and modules lies in the
+presence or absence of the variable __path__.  This is only present
+for packages.  It is initialized to a list of one item, containing the
+directory name of the package (a subdirectory of a directory on
+sys.path).  Changing __path__ changes the list of directories that are
+searched for submodules of the package.  For example, the
+Sound.Effects package might contain platform specific submodules.  It
+could use the following directory structure:
+
+<BLOCKQUOTE>
+<PRE>
+Sound/
+      __init__.py
+      Effects/			# Generic versions of effects modules
+              __init__.py
+              echo.py
+	      surround.py
+	      reverse.py
+	      ...
+              plat-ix86/	# Intel x86 specific effects modules
+	                echo.py
+			surround.py
+	      plat-PPC/		# PPC specific effects modules
+	                echo.py
+</PRE>
+</BLOCKQUOTE>
+
+<P>The Effects/__init__.py file could manipulate its __path__ variable
+so that the appropriate platform specific subdirectory comes
+<i>before</i> the main Effects directory, so that the platform
+specific implementations of certain effects (if available) override
+the generic (probably slower) implementations.  For example:
+
+<BLOCKQUOTE>
+<PRE>
+platform = ...			# Figure out which platform applies
+dirname = __path__[0]		# Package's main folder
+__path__.insert(0, os.path.join(dirname, "plat-" + platform))
+</PRE>
+</BLOCKQUOTE>
+
+<P>If it is not desirable that platform specific submodules hide
+generic modules with the same name, __path__.append(...) should be
+used instead of __path__.insert(0, ...).
+
+<P>Note that the plat-* subdirectories are <i>not</i> subpackages of
+Effects - the file Sound/Effects/plat-PPC/echo.py correspondes to the
+module Sound.Effects.echo.py.
+
+<H4>Dummy Entries in <code>sys.modules</code></H4>
+
+<P>When using packages, you may occasionally find spurious entries in
+sys.modules, e.g. sys.modules['Sound.Effects.string'] could be found
+with the value None.  This is an "indirection" entry created because
+some submodule in the Sound.Effects package imported the top-level
+string module.  Its purpose is an important optimization: because the
+import statement cannot tell whether a local or global module is
+wanted, and because the rules state that a local module (in the same
+package) hides a global module with the same name, the import
+statement must search the package's search path <i>before</i> looking
+for a (possibly already imported) global module.  Since searching the
+package's path is a relatively expensive operation, and importing an
+already imported module is supposed to be cheap (in the order of one
+or two dictionary lookups) an optimization is in order.  The dummy
+entry avoids searching the package's path when the same global module
+is imported from the second time by a submodule of the same package.
+
+<P>Dummy entries are only created for modules that are found at the
+top level; if the module is not found at all, the import fails and the
+optimization is generally not needed.  Moreover, in interactive use,
+the user could create the module as a package-local submodule and
+retry the import; if a dummy entry had been created this would not be
+found.  If the user changes the package structure by creating a local
+submodule with the same name as a global module that has already been
+used in the package, the result is generally known as a "mess", and
+the proper solution is to quit the interpreter and start over.
+
+<H4>What If I Have a Module and a Package With The Same Name?</H4>
+
+<P>You may have a directory (on sys.path) which has both a module
+spam.py and a subdirectory spam that contains an __init__.py (without
+the __init__.py, a directory is not recognized as a package).  In this
+case, the subdirectory has precedence, and importing spam will ignore
+the spam.py file, loading the package spam instead.  If you want the
+module spam.py to have precedence, it must be placed in a directory
+that comes earlier in sys.path.
+
+<P>(Tip: the search order is determined by the list of suffixes
+returned by the function imp.get_suffixes().  Usually the suffixes are
+searched in the following order: ".so", "module.so", ".py", ".pyc".
+Directories don't explicitly occur in this list, but precede all
+entries in it.)
+
+
+<H2>A Proposal For Installing Packages</H2>
+
+<P>In order for a Python program to use a package, the package must be
+findable by the import statement.  In other words, the package must be
+a subdirectory of a directory that is on sys.path.
+
+<P>Traditionally, the easiest way to ensure that a package was on
+sys.path was to either install it in the standard library or to have
+users extend sys.path by setting their $PYTHONPATH shell environment
+variable.  In practice, both solutions quickly cause chaos.
+
+<H4>Dedicated Directories</H4>
+
+<P>In Python 1.5, a convention has been established that should
+prevent chaos, by giving the system administrator more control.  First
+of all, two extra directories are added to the end of the default
+search path (four if the install prefix and exec_prefix differ).
+These are relative to the install prefix (which defaults to
+/usr/local):
+
+<P>
+
+<UL>
+<LI>$prefix/lib/python1.5/site-packages
+<LI>$prefix/lib/site-python
+</UL>
+
+<P>The site-packages directory can be used for packages that are
+likely to depend on the Python version (e.g. package containing shared
+libraries or using new features).  The site-python directory is used
+for backward compatibility with Python 1.4 and for pure Python
+packages or modules that are not sensitive to the Python version
+used.
+
+<P>Recommended use of these directories is to place each package in a
+subdirectory of its own in either the site-packages or the site-python
+directory.  The subdirectory should be the package name, which should
+be acceptable as a Python identifier.  Then, any Python program can
+import modules in the package by giving their full name.  For example,
+the Sound package used in the example could be installed in the
+directory $prefix/lib/python1.5/site-packages/Sound to enable imports
+statements like <code>import Sound.Effects.echo</code>).
+
+<H4>Adding a Level of Indirection</H4>
+
+<P>Some sites wish to install their packages in other places, but
+still wish them to to be importable by all Python programs run by all
+their users.  This can be accomplished by two different means:
+
+<P>
+
+<DL>
+
+<DT><b>Symbolic Links</b>
+
+<DD>If the package is structured for dotted-name import, place a
+symbolic link to its top-level directory in the site-packages or
+site-python directory.  The name of the symbolic link should be the
+package name; for example, the Sound package could have a symbolic
+link $prefix/lib/python1.5/site-packages/Sound pointing to
+/usr/home/soundguru/lib/Sound-1.1/src.
+
+<P>
+
+<DT><b>Path Configuration Files</b>
+
+<DD>If the package really requires adding one or more directories on
+sys.path (e.g. because it has not yet been structured to support
+dotted-name import), a "path configuration file" named
+<i>package</i>.pth can be placed in either the site-python or
+site-packages directory.  Each line in this file (except for comments
+and blank lines) is considered to contain a directory name which is
+appended to sys.path.  Relative pathnames are allowed and interpreted
+relative to the directory containing the .pth file.
+
+<P>The .pth files are read in alphabetic order, with case sensitivity
+the same as the local file system. This means that if you find the
+irresistable urge to play games with the order in which directories
+are searched, at least you can do it in a predictable way.  (This is
+not the same as an endorsement.  A typical installation should have no
+or very few .pth files or something is wrong, and if you need to play
+with the search order, something is <i>very</i> wrong.  Nevertheless,
+sometimes the need arises, and this is how you can do it of you must.)
+
+<P>
+
+</DL>
+
+<H4>Notes for Mac and Windows Platforms</H4>
+
+<P>On Mac and Windows, the conventions are slightly different.  The
+conventional directory for package installation on these platforms
+is the root (or a subdirectory) of the Python installation directory,
+which is specific to the installed Python version.  This is also the
+(only) directory searched for path configuration files (*.pth).
+
+
+<H2>Subdirectories of the Standard Library Directory</H2>
+
+<P>Since any subdirectory of a directory on sys.path is now implicitly
+usable as a package, one could easily be confused about whether these
+are intended as such.  For example, assume there's a subdirectory
+called tkinter containing a module Tkinter.py.  Should one write
+import Tkinter or import tkinter.Tkinter?  If the tkinter
+subdirectory os on the path, both will work, but that's creating
+unnecessary confusion.
+
+<P>I have established a simple naming convention that should remove
+this confusion: non-package directories must have a hyphen in their
+name.  In particular, all platform-specific subdirectories (sunos5,
+win, mac, etc.) have been renamed to a name with the prefix "plat-".
+The subdirectories specific to optional Python components that haven't
+been converted to packages yet have been renamed to a name with the
+prefix "lib-".  The dos_8x3 sundirectory has been renamed to dos-8x3.
+The following tables gives all renamed directories:
+
+<P>
+
+<!-- How do I add double horizontal lines to the table? -->
+<!-- How do I declare a row to be a table header> -->
+
+<center>
+<table border=1 cols=2>
+
+<tr><td><i>Old Name</i><td><i>New Name</i>
+
+<tr><td>tkinter<td>lib-tk
+<tr><td>stdwin<td>lib-stdwin
+<tr><td>sharedmodules<td>lib-dynload
+
+<tr>
+
+<tr><td>dos_8x3<td>dos-8x3
+
+<tr>
+
+<tr><td>aix3<td>plat-aix3
+<tr><td>aix4<td>plat-aix4
+<tr><td>freebsd2<td>plat-freebsd2
+<tr><td>generic<td>plat-generic
+<tr><td>irix5<td>plat-irix5
+<tr><td>irix6<td>plat-irix6
+<tr><td>linux1<td>plat-linux1
+<tr><td>linux2<td>plat-linux2
+<tr><td>next3<td>plat-next3
+<tr><td>sunos4<td>plat-sunos4
+<tr><td>sunos5<td>plat-sunos5
+<tr><td>win<td>plat-win
+
+<tr>
+
+<tr><td>test<td>test
+
+<tr>
+
+</table>
+</center>
+
+<P>Note that the test subdirectory is not renamed.  It is now a
+package.  To invoke it, use a statement like <code>import
+test.autotest</code>.
+
+<H2>Other Stuff</H2>
+
+XXX I haven't had the time to write up discussions of the following
+items yet:
+
+<LI>New imp functions.
+
+<LI>Future directions.
+
+<LI>Future of ihooks.
+
+<LI>Future name space reorganization.
+
+<LI>What to do with ni?  Disable it and force using oldni?
+
+<H2>Changes From <code>ni</code></H2>
+
+<P>The following features of ni have not been duplicated exactly.
+Ignore this section unless you are currently using the ni module and
+wish to migrate to the built-in package support.
+
+<H4>Dropped <code>__domain__</code></H4>
+
+<P>By default, when a submodule of package A.B.C imports a module X,
+ni would search for A.B.C.X, A.B.X, A.X and X, in that order.  This
+was defined by the __domain__ variable in the package which could be
+set to a list of package names to be searched.  This feature is
+dropped in the built-in package support.  Instead, the search always
+looks for A.B.C.X first and then for X.  (This a reversal to the "two
+scope" approach that is used successfully for namespace resolution
+elsewhere in Python.)
+
+<H4>Dropped <code>__</code></H4>
+
+<P>Using ni, packages could use explicit "relative" module names
+using the special name "__" (two underscores).  For example, modules
+in package A.B.C can refer to modules defined in package A.B.K via
+names of the form __.__.K.module.  This feature has been dropped
+because of its limited use and poor readability.
+
+<H4>Incompatible Semantics For <code>__init__</code></H4>
+
+<P>Using ni, the __init__.py file inside a package (if present) would
+be imported as a standard submodule of the package.  The built-in
+package support instead loads the __init__.py file in the package's
+namespace.  This means that if __init__.py in package A defines a name
+x, if can be referred to as A.x without further effort.  Using ni, the
+__init__.py would have to contain an assignment of the form <code>__.x
+= x</code> to get the same effect.
+
+<P>Also, the new package support <b>requires</b> that an
+<code>__init__</code> module is present; under ni, it was optional.
+This is a change introduced in Python 1.5b1; it is designed to avoid
+directories with common names, like "string", to unintentionally hide
+valid modules that occur later on the module search path.
+
+<P>Packages that wish to be backwards compatible with ni can test
+whether the special variable __ exists, e.g.:
+
+<BLOCKQUOTE>
+<PRE>
+# Define a function to be visible at the package level
+def f(...): ...
+
+try:
+    __
+except NameError:    # new built-in package support
+    pass
+else:                # backwards compatibility for ni
+    __.f = f
+</PRE>
+</BLOCKQUOTE>
+
+<hr>
+<p><a href="index.html">&larr; Python Essays</a></p>
+<p><small>Originally published on <a href="https://legacy.python.org/doc/essays/packages.html">python.org</a>.</small></p>
+
+</div>
+<script
+  id="counterscale-script"
+  data-site-id="bdfl"
+  src="https://counterscale.gvanrossum.workers.dev/tracker.js"
+  defer
+></script>
+</body>
+</html>

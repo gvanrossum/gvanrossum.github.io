@@ -1,0 +1,811 @@
+---
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Computer Programming for Everybody (original proposal)</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p><a href="index.html">&larr; Python Essays</a></p>
+
+<H1>Computer Programming for Everybody</H1>
+
+<P>This is the main text of a funding proposal that we sent to DARPA
+in January 1999.  In August 1999, we submitted a
+<a href='cp4e.html'>revised version</a> of the proposal.
+
+<p>Please look at the <a href="https://legacy.python.org/community/sigs/current/edu-sig"
+>EDU-SIG home page</a> (Python in Education Special Interest Group).
+This is where the current project status is described and/or will be
+discussed, and where you'll find pointers to more resources.
+
+<BLOCKQUOTE><b>Note:</b>I have made one change to the text of the
+proposal: At the request of some supporters of other languages, I've
+withdrawn a language comparison chart that contained highly personal
+and sometimes unfounded opinions of other languages.  The table was
+being used out of context in a way that some found objectionable.
+(Not all of the table is disputed, but it seems wiser not to engage in
+direct language comparisons without a lot more
+documentation.)</BLOCKQUOTE>
+
+
+<H2>Innovative Claims</H2>
+
+<P>In the seventies, Xerox PARC asked itself: "Can we have a computer
+on every desk?"  By the middle of the nineties, this question was
+answered affirmatively. But all those computers haven't necessarily
+empowered their users.  Today's computers are often inflexible: the
+average computer user can often only change a limited set of options
+configurable via a "wizard" (a lofty word for a canned dialog), and is
+dependent on expert programmers for everything else.
+
+<P>We now ask ourselves a follow-up question: "What would the world
+look like if users could program their own computer?"  We're looking
+forward to a future where every computer user will be able to "open
+the hood" of their computer and make improvements to the applications
+inside.  We believe that this will eventually change the nature of
+software and software development tools fundamentally.
+
+<P>We compare mass ability to write and modify software with mass
+literacy, and expect that equally fundamental changes to society may
+ensue. Since hardware is now sufficiently fast and cheap to make mass
+computer education possible, we believe that the ability for the
+average computer user to create and modify software (rather than just
+installing and using it) will enable the next big change-and we
+consider it our next challenge.
+
+<P>The open source movement claims that peer review of software by
+thousands can greatly improve the quality of software.  The success of
+an operating system like Linux indicates that there is value to this
+claim.  We believe that the next step, having <i>millions</i> of
+programmers, will cause a change of a different quality-the abundant
+availability of <i>personalized</i> software.
+
+<P>The tools needed for this new way to look at programming will be
+different than the tools currently available to professional
+programmers.  We intend to greatly improve both the training material
+and the development tools available. As an example, non-professional
+programmers should not have to fear that a small mistake might destroy
+their work or render their computer unusable.
+
+<P>The following factors will affect the success of our project:
+
+<UL>
+
+<LI>Programming language
+
+<LI>Development tools
+
+<LI>Training materials
+
+<LI>Community building
+
+</UL>
+
+<P>For practical reasons, we propose to use an existing programming
+language.  The design and implementation of a new language can take
+several years, and we have picked one that is good enough to start
+working on the other three points.  Our choice is Python, an advanced
+scripting and prototyping language.  There is enough (anecdotal)
+evidence that Python is easy to learn for people who are (nearly)
+computer-illiterate.  There are currently no development tools or
+training materials for Python that suit such an audience.  We will
+make development of these the main focus of our task.  We want to
+foster a community specifically focused on our tools and materials, so
+we can collect the necessary feedback; there is already interest in
+the use of Python by "newbies" in the existing Python community
+(estimated at 20,000 programmers, and growing rapidly), so we expect
+that it will be a fertile deployment ground.
+
+<H2>Technical Rationale and Approach</H2>
+
+<H4>1. Introduction</H4>
+
+<P>In the dark ages, only those in power or with great wealth (and
+selected experts) possessed reading and writing skills or the ability
+to acquire them.  It can be argued that literacy of the general
+population (while still not 100%!), together with the invention of
+printing technology, has been one of the most emancipatory forces of
+recent history.
+
+<P>We are just now entering the information age, and it is expected
+that computer technology will soon replace printing as the dominant
+form of information distribution technology.  About half of all US
+households already own at least one personal computer, and this number
+is still growing.
+
+<P>However, while many people nowadays use a computer, few of them are
+computer programmers.  Non-programmers aren't really "empowered" in
+their computer use: they are confined to using applications in ways
+that programmers have determined for them.  One doesn't need to be a
+visionary to see that this causes a lot of grief.
+
+<P>An even more radical change is the introduction of computing and
+communication embedded in the home and office.  The number of devices
+that will contain programmable elements will grow dramatically in the
+coming years.  We must learn how to expose this programmability to
+users in a meaningful way and to make it easy for non-programmers to
+control and program these devices.  Users must be empowered from the
+start.
+
+<P>In this "expedition into the future," we want to explore the notion
+that everybody can obtain <i>some</i> level of computer programming
+skills in school, just as everybody can learn how to read and write.
+
+<P>Specifically, we are interesting in the development of educational
+materials, programming languages, and development tools.  We emphasize
+that this is not an attempt at evolutionary improvement of the
+materials and tools that are currently in use; we believe that a
+radically new approach is necessary.  (However, for practical reasons
+we will start by using an existing language.)
+
+<P>There are many challenges for programming languages and
+environments if they are used by a mass audience.  Consider one
+example: If everybody is a programmer, bad programmers will abound.
+This requires a rethinking of the fundamental properties of
+programming languages and development tools.  We also believe that
+there should be no clear-cut distinction between tools used by
+professionals and tools used for the educational process--just as
+professional writers use the same language and alphabet as their
+readers!
+
+<H4>2. The Vision</H4>
+
+<P>In the conference call about this BAA, the following was said:
+"Presumably these expeditions are going to [...] invent whole new
+futures for the field, and we expect that there will be users
+involved, and that we'll have some impact so that the users may be in
+very different roles than they are today."  We have a vision that will
+indeed give users a very different role.
+
+<P>Our vision is that one day in the not-so-distant future, computer
+programming will be taught in elementary school, just like reading,
+writing and arithmetic are today.  We really mean computer
+<i>programming</i>--not just computer use (which is already a part of our
+nation's educational system); and we mean serious programming, not
+just noodling around with turtle graphics (although this is a good
+teaching tool in lower grades).  Of course, most students would not
+become skilled application architects, just as most people who learn
+to write don't become bestseller authors-but reading and writing
+skills are useful for everyone, and so (in our vision) are general
+programming skills.
+
+<P>We already see some indications that this is a realistic goal.  For
+example, the Alice project <A HREF="#Alice">[Alice]</A> reports that
+freshmen and even teenagers with no previous programming experience
+start writing programs to control virtual worlds within days.  Perhaps
+not incidentally, Alice uses a version of the advanced scripting
+language Python <A HREF="#Python">[Python]</A> <A
+HREF="#Lutz">[Lutz]</A> <A HREF="#Watters">[Watters]</A>, developed by
+one of the current proposal's authors.
+
+<P>Experiences with the Logo programming language <A
+HREF="#Logo">[Logo]</A> and similar languages (e.g. LogoMation by
+Magic Square <A HREF="#LogoMation">[LogoMation]</A>) are another
+indication that younger people can learn how to program.  Perhaps
+these can be seen as precursors to Alice, showing their age by their
+use of 2D instead of 3D graphics (although Alice places less emphasis
+on learning how to program than do Logo and LogoMation).
+
+<P>Imagine that users could make their own changes to the software
+embedded in, say, their GPS receiver or handheld organizer, rather
+than (or in addition to) downloading upgrades from a vendor, or buying
+"canned" add-on applications from third parties.  This would greatly
+empower users to improve their life by programming their personal
+tools to do exactly what they need them to do.
+
+<P>The recently popular open source movement <A
+HREF="#OpenSource">[OpenSource]</A> is promising to improve the
+quality of key software packages through the peer review of thousands,
+as well as the ability for programmers to "scratch their own itch."
+(I.e., tweak the software in a minor way that only one individual
+cares about.)  We expect that moving from thousands to millions will
+change the nature of the software development process once
+again. Scratching your own itch will become more important (and
+feasible) at this scale, while mass peer review will become less
+important due to diminished returns (the logistics of integrating bug
+fixes from thousands of sources is already a formidable task).  But
+most current software, open source or otherwise, is too complex to
+allow anyone to scratch their itch without first investing a serious
+amount of effort and time into understanding the software they're
+using.  We are interested in changes to the whole software development
+process that will fix this as well-in particular development tools.
+
+<P>Why teach a "general" programming language?  It is well understood
+that there is a bit of a dichotomy between "procedural" programming
+languages on the one hand and "declarative" languages on the other.
+For this discussion, we use the term "procedural" in a broad and loose
+sense, to include functional programming languages and possibly even
+logic programming languages to the extent in which they are usable as
+a general programming tool.  Turing-completeness is the key concept
+here.
+
+<P>The "declarative" category then contains everything else, from
+command line argument syntax to email headers and HTML.  The
+distinguishing factor here is the presence of a relatively "narrow"
+application domain.  In this category we would also place things like
+Microsoft's "wizards" (which are really just sequences of predefined
+dialogs connected by simple flow charts) and the controls and dials on
+a microwave oven or nuclear reactor.
+
+<P>A typical property of declarative languages is that they provide
+excellent control in the application domain for which they were
+intended, and (almost) no freedom in unanticipated areas.  For
+example, HTML has no inherent ability for conditional inclusion of
+text, or variable expansion.  (The fact that such features have been
+added as extensions to HTML proves the point.)
+
+<P>Procedural languages, on the other hand, usually aren't as good in
+any particular domain (e.g. it takes a lot more work to write a
+program in a procedural language to format a paragraph of text than it
+does in HTML).  However, they make up for this through their
+Turing-completeness, which makes it possible to solve <i>any</i>
+problem that might come up (assuming availability of sufficient
+resources).  Procedural languages are therefore ideal in
+<i>combination</i> with declarative languages.
+
+<P>For example, if my cell phone were programmable, I would still use
+the regular declarative interface (i.e. the keypad) to dial a specific
+number, since that's the most convenient way to access that specific
+functionality.  However, without programmability, there is no way I
+can make it try a couple of different numbers for a particular friend
+until one is answered, unless the cell phone vendor anticipated this
+particular feature.
+
+<H4>3. Challenges</H4>
+
+<P>Some questions arise immediately.  What would the programming
+language taught in schools look like?  Would it bear any resemblance
+to any of the programming languages we know today?  Would it even be
+called a programming language?  How would we teach it?  Would there be
+only one language?  What other tools are essential to the teaching and
+use of this language?
+
+<P>Just as interesting are questions like these: How and for what
+would people use their programming skills?  How would a near-universal
+ability to read and write computer programs change the structure of
+computer software?  (Especially in combination with a future version
+of the Internet, which promises ubiquitous access to computing and
+storage elements as well as to network connectivity.)  How would it
+affect the software market?  How far in the future might this become a
+reality?
+
+<P>A clear potential worry is the expectation that, if most people are
+programmers, many of them will most likely be <i>bad</i> programmers.
+People who can't write understandable sentences in their native tongue
+or balance their checkbook are unlikely to write well-structured
+computer programs!
+
+<P>We therefore need to investigate ways to improve the quality of the
+interaction between the programmer and the system, to help even poor
+programmers get the most out of their computers.  For example, you
+might want to write a program to customize your PDA or toaster, but
+you might be discouraged if a small mistake could wipe out your
+address book or set your house on fire.  Safeguards against disasters
+are needed, as well as ways of backing out of unwanted changes to a
+system as a whole.  ("Undo", while very powerful, usually only applies
+to one file at a time.  Backing out of global system changes typically
+requires a reboot or even painful data restoration from back-up
+media.)
+
+<P>Scripting languages have become incredibly popular, and an advanced
+scripting language like Python makes a good starting point for our
+expedition.  One persistent criticism on scripting languages is that
+their performance is inadequate for some tasks.  Techniques like
+program analysis and advanced compiler technology may be able to
+eliminate part of this problem, probably in combination with some form
+of optional static typing.  The challenge is to do this without
+obfuscating the programming language or making the development cycle
+(edit-run-debug) more tedious.
+
+<P>Scripting languages are very good at gluing together existing
+components in a new way, rather than starting from scratch.  One
+conclusion is that we need better techniques for software reuse-an
+issue of ongoing debate in object-oriented programming circles.
+
+<P>Scripting languages are also good at gluing together components
+written in other languages.  However, what happens at the boundaries
+between languages is often very ugly.  There are two possible resorts
+here.  One is to try to reduce the need for other languages, by adding
+facilities to a scripting language that make it usable as a system
+language (i.e. a language suitable for low-level programming, such as
+C or Java).  Here, we are once again looking at improving performance
+above all.  The other possibility is to simply improve the
+synchronicity between system and scripting languages.  A good example
+is JPython, a Python dialect that is seamlessly integrated with Java
+<A HREF="#JPython">[JPython]</A>.
+
+<H4>4. How Will it Change the World?</H4>
+
+<P>Just as mass literacy has had a pervasive effect on western
+society, arguably leading to modern western democracy, the long-term
+effects of mass computer literacy on society will be tremendous.
+Having a general understanding of computers at the level of software
+design and implementation will cause a massive surge in productivity
+and creativity, with a far-ranging impact that can barely be
+anticipated or imagined.
+
+<P>On a shorter term, the quantity and quality of available computer
+software will improve drastically, as the imagination and labor of
+millions is applied to the problem.  Inventive office workers will be
+able to improve the software that supports them in their tasks, and
+share their improvements with their colleagues or-via the
+Internet-with others far away who are faced with the same tasks and
+problems.
+
+<P>Now is the time to start working on this vision.  The developments
+in hardware for computation, storage and connectivity are such that
+for the first time, the masses will have access to computers that are
+powerful enough to be useful to them, either as stand-alone desktop or
+laptop computers, or embedded in appliances.  We need to start
+developing software that will empower them to control their computers
+instead of being controlled by them.
+
+<H4>5. Expedition Plan</H4>
+
+<P>Ideally, we want to come up with a programming language, a
+development environment, and teaching materials, suitable to teach
+programming to children in junior and senior high school, as well as
+to adults with no previous computer experience.  Around these
+materials, we expect to build a community of users that will provide
+us with feedback and that will eventually realize our vision of a
+different way of software development and personalization.
+
+<P>Recognizing our limitations, we propose to start by making it
+possible to teach an existing scripting language, Python, and to focus
+on creating a new development environment and teaching materials for
+it.  We have anecdotal evidence that Python is a good language to
+teach as a first programming language.  Our effort will focus creating
+tools and educational materials for this purpose and on fostering a
+community around those materials, so we will be able to study
+<i>why</i> Python is a good teaching language, and recommend
+directions for future teaching language development.
+
+<P>Why use an existing language?  Our experience indicates that the
+design and implementation of a new language is measured in years-and
+that this work must be (nearly) completed before the development
+environment and teaching materials can be created.  So we must
+jump-start our project by using an existing language.
+
+<P>Why use Python?  We believe that Python is a good language for
+teaching to absolute beginners.  It derives many of its critical
+features from ABC <A HREF="#ABC">[ABC]</A> <A
+HREF="#Geurts">[Geurts]</A>, a language that was designed specifically
+for teaching programming to non-experts.  The Python community has
+seen many reports from individuals who taught their children
+programming using Python.  The consensus from these reports is that
+the language itself is perfect for this purpose-unlike, say, Java,
+Perl, or Visual Basic, which are all too cluttered with
+idiosyncrasies.
+
+<P>The table below is a (subjective) chart comparing a few relevant
+aspects of Python to some other languages.  From this table, we
+conclude that Python is a good first choice for teaching which also
+serves well as a language for serious application development.  Unlike
+other languages proposed for teaching to novices (e.g. Logo,
+LogoMation, even Python's ancestor ABC), Python isn't <i>just</i> a
+teaching language.  It is suitable for developing large applications,
+as projects here at CNRI and elsewhere prove.  Moreover, Python is
+extensible by modules written in other languages, e.g. C, C++, or
+Java, to mediate access to advanced functionality that is not easily
+accessible from Python directly (for example, high-speed 3D computer
+graphics packages).  While we don't expect our students to write
+extension modules, the <i>use</i> of such modules makes it possible to
+spruce up their learning experience, and gives teachers an opportunity
+to tailor lessons to the interests of their students by providing them
+with guarded access to other software packages.
+
+<P>
+
+<CENTER>
+(withdrawn)</CENTER>
+
+<P>The fact that Python can be used to develop large applications
+plays into a different aspect of our vision: The development of open
+source application software that can be tailored by users who are not
+expert programmers, but have learned some programming skills.
+Although this is not the focus of our scouting task, we hope that we
+will see at least some initiatives towards this goal, and we will
+encourage companies and organizations wishing to take steps in this
+direction.  We expect that the existence of JPython (a Python
+implementation seamlessly integrated with Java) will be an important
+enabling factor here.
+
+<P>Python's programming environment and the available introductory
+material are less than ideal for teaching to novices.  In particular,
+the existing development environments and tutorials for Python (there
+are several of each) all assume that the user is a dyed-in-the-wool
+developer, who knows a suite of external tools to edit, run and debug
+a program, and who already knows one or more other programming
+languages and their development environments.  This currently stands
+in the way of more widespread experimentation with Python as a first
+programming language.
+
+<P>By teaching Python to non-programmers, we expect we will collect
+valuable information that will guide the design of a better
+programming language.  In fact, we expect that others will do most of
+the actual teaching for us, and we will create web- and email-based
+feedback channels that maximize the amount of (useful) feedback we
+get.
+
+<P>Our plan for the initial scouting task has four major components:
+
+<UL>
+
+<LI>Create a Python development environment suitable for novices;
+
+<LI>Create training materials to teach Python to novices using this
+environment;
+
+<LI>Foster a user community for the above and extract feedback from
+it;
+
+<LI>Evaluate the feedback and recommend guidelines for follow-up
+research or development.
+
+</UL>
+
+<P>As soon as an initial version of the development environment and
+training material is released to the Python community, the feedback
+channels will be opened, and the initial feedback will mostly go into
+improvements of the environment and materials.
+
+<P>Later, when more feedback has come in, we will evaluate the use of
+Python for this project.  Maybe Python is perfect; quite possibly
+changes are necessary; perhaps a drastically different language design
+is required after all.  Our interest here is in discovering what
+aspects of Python work well in a teaching language.  Based on this
+evaluation, we will propose or undertake follow-on research and
+development activities.
+
+<P>We will design and build a development environment specifically
+intended to teach Python programming to adults with no previous
+programming experience, as well as to children in middle school or in
+junior and senior high school (also without previous programming
+experience).
+
+<P>We will develop educational materials to go with the new
+development environment.  As an incentive to make programming more
+"fun", we intend to connect the development environment to an existing
+programmable 3D game-playing engine such as used in popular computer
+games.  Several of such engines are or will likely become available
+for use with Python; we will select one and create an interface
+library for it suitable to our audience.
+
+<P>Why a 3D game-playing engine?  The experiences with Logo show that
+graphics are a good way to catch a younger audience's attention, but
+its 2D graphics look somewhat boring compared to the video games
+teenagers are familiar with these days.  Alice is another good example
+of a 3D graphics environment that is more engaging than turtle
+graphics.
+
+<P>In the spirit of "mass computer literacy" and the open source
+movement, we will create and maintain a website to make the software
+and educational materials widely and freely available, and set up
+feedback pages there.  In addition to the website, we will create and
+maintain one or more mailing lists with archives, and perhaps a "chat"
+service for users.  We will actively participate in the mailing lists
+in order to foster a community, and also collect and analyze the
+feedback provided by the community to us through these (and other)
+channels.
+
+<P>We also intend to engage in small-scale teaching efforts ourselves,
+but we don't expect that we will be doing much teaching.  If our
+experience with the Python's popularity are any indication, we won't
+have to: others are eager to participate in this experiment.
+
+
+<H2>Facilities</H2>
+
+<P>We will use CNRI's existing computing infrastructure for
+development and distribution of the proposed materials, augmented with
+desktop workstations and a web server purchased specifically for this
+project.  We will use the Internet and the World-Wide Web for all
+distribution of materials.
+
+
+<H2>Comparison to Other Ongoing Research</H2>
+
+<P>ABC.  Python's predecessor, ABC, was designed in the early eighties
+as a teaching language.  It's motto was "stamp out
+Basic"-acknowledging the main competition in languages for non-experts
+at the time.  ABC's designers had a lot of experience teaching
+"classic" programming languages like Algol to novices.  They found
+that their students were often so overwhelmed by the incidental
+details of using a computer language (such as running the compiler,
+dealing with different numeric formats, arcane I/O operations, and
+low-level memory management) that they never managed to concentrate on
+the essentials of good program and algorithm design.
+
+<P>To counteract this effect, ABC's designers went back to basics.
+They set out to design a language and an environment for that language
+that would take care of all the incidentals, leaving the student more
+time to learn what's essential in programming independent of the
+programming language at hand, such as clear control flow and powerful
+data structures, and focusing on the elegant expression of programs.
+They proposed both a new language design and new terminology that
+deviated radically from what was (and still is) current amongst
+computer scientists and programmers.  In fact, the single biggest
+reason why ABC didn't make as much of an impact as expected is
+probably that they deviated too much from current practice.  The
+people who had access to the hardware that was needed to run ABC
+(initially it only ran on Unix system, although it was later ported to
+Mac and PC) were often experienced computer users who felt frustrated
+that ABC didn't "speak the same language" as the rest of their
+applications.
+
+<P>About a decade later, Python grew out of this frustration.  It
+shares ABC's focus on elegance of expression, fundamentals of
+programming, and taking away incidentals, but adds object-orientation,
+extensibility, and a powerful library of modules that interface to
+other applications, via many different mechanisms: shared files,
+program embedding, RPC interfaces like CORBA or COM, and network
+protocols (supporting all the protocols typically used on the WWW).
+
+<P>Logo.  Really a family of languages related to Lisp and mostly
+developed at MIT, Logo is of course the most well-known programming
+language in the educational field.  It has a rich tradition, strong
+roots in schools, and a number of commercial offerings.  There is
+ongoing research being done by the Epistemology and Learning Group at
+the MIT Media Lab, e.g. the "programmable brick" (in cooperation with
+LEGO).
+
+<P>The key difference between Logo and our proposal lies in our vision
+that millions of (amateur) programmers will be developing open source
+software together-Logo appears content with teaching limited
+programming skills to younger children, for whom computer programming
+is mostly a way to train their mind in abstract thinking.
+
+<P>LogoMation.  A company called Magic Square sells LogoMation, a
+language not unlike Logo, with a similar emphasis on turtle
+graphics. It comes with an excellent tutorial suitable for children
+from 8 up. LogoMation's syntax is similar to Python (more so than
+Logo's syntax); which suggests that we're on the right track with
+Python.
+
+<P>But like Logo, LogoMation is limited in the growth path it offers.
+It doesn't directly address the issue of "what next," expecting its
+users to move on to other programming languages for real work.
+
+<P>Alice.  The testimonials on the Alice website clearly indicate that
+Alice is successful at teaching programming to children as well as to
+adults with no prior experience.  It also indicates the importance of
+a "fun" environment (and Alice's 3D graphics are more attractive than
+Logo's turtle graphics).  Since Alice actually uses (a slightly
+modified version of) Python, this is another indication of Python's
+suitability.  Alice also gives us some hints on what aspects of Python
+could be improved: for example, their experiences suggest that
+Python's case-sensitivity might be a problem.
+
+<P>However, the emphasis of the Alice project is on 3D graphics-their
+tutorial doesn't really teach much in the way of program or data
+structuring techniques.  While we agree that 3D graphics are a great
+way to create and keep an audience, we are interested more in teaching
+programming, not just graphics.  For this reason, the emphasis in our
+initial work will be on the development of a programming environment
+and tutorial where 3D graphics is just one of the possible
+applications for a computer.
+
+<P>DrScheme.  The TeachScheme! Project at Rice University <A
+HREF="#TeachScheme">[TeachScheme]</A> aims to develop a new
+introductory computing curriculum based on the Scheme programming
+language.  A central part of the Rice effort is the development of
+DrScheme <A HREF="#Findler">[Findler]</A>, a programming environment
+targeted at beginning students.  The focus of TeachScheme is on a
+relatively narrow audience-college students who have a solid grounding
+in high school algebra and an interest in studying computing and its
+application to scientific problems.  We envision a much wider
+audience, where the assumptions about a strong math background and
+interest in scientific problems do not hold.  We also expect that
+Scheme, a language that excels in exposing the fundamental building
+blocks of computation for pedagogical purposes, would be inappropriate
+for a mass audience.
+
+<P>It is interesting to note, however, that one of the key parts of
+the TeachScheme project is a development environment.  While the
+audiences and approach are different, our project and TeachScheme
+share a sense that the development environment is a crucial component.
+There is a need for an interactive read-eval-print loop, a powerful
+debugger, and tools to understand how programs work.
+
+
+<H2>List of Key Personnel</H2>
+
+<P>Guido van Rossum is a group leader at CNRI, which he joined in
+1995.  He is the creator of Python, a popular interpreted
+object-oriented programming language with capabilities not unlike
+Java.  He is also the lead designer of the Knowbot mobile agent
+system.  In the past he has worked on ABC, a programming language
+developed for teaching purposes, and Amoeba, a well known distributed
+operating system developed in the 80s.  He has a Masters' degree in
+mathematics and computer science from the University of Amsterdam.
+
+<BLOCKQUOTE>Expected effort on the project: 50%. Other DARPA or NSF
+projects: 40%. Other significant sources of support: Python Consortium
+(10%).</BLOCKQUOTE>
+
+<P>Jeremy Hylton is a senior member of the technical staff.  He is one
+of the designers of the Knowbot mobile agent system, and has designed
+and implemented several agent-based information management
+applications.  He received a M.Eng. in electrical engineering and
+computer science and an S.B. in computer science and engineering from
+the Massachusetts Institute of Technology, both in 1996.  He joined
+CNRI the same year.
+
+<BLOCKQUOTE>Expected effort on the project: 30%. Other DARPA or NSF
+projects: 70%.</BLOCKQUOTE>
+
+<P>Barry Warsaw has been a systems engineer with CNRI since 1994.  He
+has been a contributing designer to several CNRI projects including
+the Application Gateway System and the Knowbot Operating Environment.
+He has contributed to development of the Python language and to the
+Grail Internet Browser.  He received a B.S. in computer science from
+the University of Maryland in 1984.  Previous to CNRI, he worked on
+robotic systems operator interfaces at the National Institute of
+Standards and Technology from 1980 through 1990, and on medical
+database information technology at the National Library of Medicine
+from 1990 through 1994.
+
+<BLOCKQUOTE>Expected effort on the project: 30%. Other DARPA or NSF
+projects: 70%.</BLOCKQUOTE>
+
+<P>Other group members will carry out substantial effort on the
+proposed project. When other pending DARPA proposals are awarded, the
+level of effort on this project may be reduced somewhat and other
+group members will take over. No subcontractors will be used.
+
+
+<H2>Statement of Work</H2>
+
+<P>CNRI will perform the following work:
+
+<OL>
+
+<LI>Design and implement a prototype interactive programming
+environment, written in Python, suitable for teaching Python to
+computer users without previous programming experience.<P>
+
+<LI>Design and implement a prototype library of Python modules
+connecting Python to an existing 3D game-playing engine for the
+purpose of teaching Python in an engaging environment.<P>
+
+<LI>Write a tutorial that teaches general programming skills and good
+programming habits to students with no previous programming skills,
+using the above software.<P>
+
+<LI>Create and maintain a website and mailing lists to foster a
+community focused on the above software and tutorial.  The website
+will be used to provide easy access to all software and teaching
+materials produced for this project.<P>
+
+<LI>Evaluate and report on the feedback gathered from the community
+pertaining to the above software and tutorial.  Make recommendations
+for follow-up research.<P>
+
+</OL>
+
+<P>In order to maximize access to the materials produced, all
+software, teaching materials, and reports produced for this project
+will be made freely available on the World-Wide Web as open source
+material.
+
+<H2>Schedule</H2>
+
+<P>The schedule is divided in four half-year periods from the start of
+the funding award.
+
+<H4>1. First half-year period</H4>
+
+<P>Initial design for the programming environment.  Early prototype
+implementation to gauge the implementability of the design.  Write
+early draft version of part one of the tutorial, "First steps into
+programming."  Select a 3D game-playing engine for use with the
+tutorial and the programming environment.  Connect with other groups
+interested in similar research.
+
+<H4>2. Second half-year period</H4>
+
+<P>Refine programming environment design.  Start implementing the 3D
+game-playing library modules.  Set up website and mailing lists to
+begin community building. Release alpha versions of the
+implementation.  Refine and release alpha versions of part one of the
+tutorial.  Start collecting feedback. Write early draft version of
+part two of the tutorial, "Creating larger programs."
+
+<H4>3. Third half-year period</H4>
+
+<P>Use feedback to refine programming environment design.  Release
+alpha versions of the 3D game-playing library.  Release beta versions
+of the implementation and part one of the tutorial.  Release alpha
+versions of part two of the tutorial. Write early draft version of
+part three of the tutorial, "Programming and the world-wide-web."
+
+<H4>4. Fourth half-year period</H4>
+
+<P>Release final version of the programming environment, the 3D
+game-playing library, and of all three parts of the tutorial.
+Evaluate the use of Python for teaching purposes.  Evaluate the
+effectiveness of the programming environment and the tutorial.  Write
+final report.
+
+
+<H2>Optional Tasks</H2>
+
+<P>There are no optional tasks in the current proposal.
+
+
+<H2>References</H2>
+
+<DL>
+
+<DT><A NAME="ABC">[ABC]</A>
+<DD><A HREF="http://www.cwi.nl/~steven/abc/"
+>http://www.cwi.nl/~steven/abc/</A>
+
+<DT><A NAME="Alice">[Alice]</A>
+<DD><A HREF="http://www.alice.org/"
+>http://www.alice.org/</A>
+
+<DT><A NAME="Findler">[Findler]</A>
+<DD>Robert Bruce Findler, Cormac Flanagan, Matthew Flatt, Shriram
+Krishnamurthi, and Matthias Felleisen.  DrScheme: a pedagogic
+programming environment for Scheme.  In Proceedings of the 1997
+Symposium on Programming Languages: Implementations, Logics, and
+Programs, Southampton, UK, Sept. 1997.  (Lecture Notes in Computer
+Science, Vol. 1292.)
+
+<DT><A NAME="Geurts">[Geurts]</A>
+<DD>Leo Geurts, Lambert Meertens, Steven Pemberton.  The ABC
+Programmer's Handbook.  Prentice-Hall, 1990
+
+<DT><A NAME="JPython">[JPython]</A>
+<DD><A HREF="http://www.python.org/jpython/"
+>http://www.python.org/jpython/</A>
+
+<DT><A NAME="Logo">[Logo]</A>
+<DD><A HREF="http://el.www.media.mit.edu/groups/logo-foundation/"
+>http://el.www.media.mit.edu/groups/logo-foundation/</A>
+
+<DT><A NAME="LogoMation">[LogoMation]</A>
+<DD><A HREF="http://www.magicsquare.com/LM2/"
+>http://www.magicsquare.com/LM2/</A>
+
+<DT><A NAME="Lutz">[Lutz]</A>
+<DD>Mark Lutz. Programming Python. O'Reilly, 1996.
+
+<DT><A NAME="OpenSource">[OpenSource]</A>
+<DD><A HREF="http://www.opensource.org/"
+>http://www.opensource.org/</A>
+
+<DT><A NAME="Python">[Python]</A>
+<DD><A HREF="http://www.python.org/"
+>http://www.python.org/</A>
+
+<DT><A NAME="TeachScheme">[TeachScheme]</A>
+<DD><A HREF="http://www.cs.rice.edu/CS/PLT/Teaching/"
+>http://www.cs.rice.edu/CS/PLT/Teaching/</A>
+
+<DT><A NAME="Watters">[Watters]</A>
+<DD>Aaron Watters, Guido van Rossum, Jim Ahlstrom. Internet
+Programming with Python. MIS Press/Henry Holt, 1996.
+
+</DL>
+
+<hr>
+<p><a href="index.html">&larr; Python Essays</a></p>
+<p><small>Originally published on <a href="https://legacy.python.org/doc/essays/everybody/">python.org</a>.</small></p>
+
+</div>
+<script
+  id="counterscale-script"
+  data-site-id="bdfl"
+  src="https://counterscale.gvanrossum.workers.dev/tracker.js"
+  defer
+></script>
+</body>
+</html>

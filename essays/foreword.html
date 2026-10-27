@@ -1,0 +1,162 @@
+---
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foreword for &quot;Programming Python&quot; (1st ed.)</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="container">
+
+<p><a href="index.html">&larr; Python Essays</a></p>
+
+<H1>Foreword for "Programming Python" (1st ed.)</H1>
+
+<HR>
+This is the foreword I wrote for Mark Lutz' book "Programming Python"
+(1st ed.), published by O'Reilly.  See also my <a
+href="foreword2.html">foreword to the 2nd edition</a>.
+<HR>
+
+<p>
+
+As Python's creator, I'd like to say a few words about its origins,
+adding a bit of personal philosophy. <p>
+
+Over six years ago, in December 1989, I was looking for a "hobby"
+programming project that would keep me occupied during the week around
+Christmas.  My office (a government-run research lab in Amsterdam)
+would be closed, but I had a home computer, and not much else on my
+hands.  I decided to write an interpreter for the new scripting
+language I had been thinking about lately: a descendant of ABC that
+would appeal to Unix/C hackers.  I chose Python as a working title for
+the project, being in a slightly irreverent mood (and a big fan of
+Monty Python's Flying Circus). <p>
+
+Today, I can safely say that Python has changed my life.  I have moved
+to a different continent.  I spend my working days developing large
+systems in Python, when I'm not hacking on Python or answering
+Python-related email.  There are Python T-shirts, workshops, mailing
+lists, a newsgroup, and now a book.  Frankly, my only unfulfilled wish
+is to have my picture on the front page of the New York Times.  But
+before I get carried away daydreaming, here are a few tidbits from
+Python's past. <p>
+
+It all started with ABC, a wonderful teaching language that I had
+helped create in the early eighties.  It was an incredibly elegant and
+powerful language, aimed at non-professional programmers.  Despite all
+its elegance and power and the availability of a free implementation,
+ABC never became popular in the Unix/C world.  I can only speculate
+about the reasons, but here's a likely one: the difficulty of adding
+new "primitive" operations to ABC.  It was a monolithic, "closed
+system", with only the most basic I/O operations: read a string from
+the console, write a string to the console.  I decided not repeat this
+mistake in Python. <p>
+
+Besides this intention, I had a number of other ideas for improvement
+over ABC, and was eager to try them out.  For instance, ABC's powerful
+data types turned out to be less efficient than we hoped.  There was
+too much emphasis on theoretically optimal algorithms, and not enough
+tuning for common cases.  I also felt that some of ABC's features,
+aimed at novice programmers, were less desirable for the (then!)
+intended audience of experienced Unix/C programmers.  For instance:
+ABC's ideosyncratic syntax (all uppercase keywords!); some terminology
+(e.g. "how-to" instead of "procedure"); and the integrated structured
+editor, which its users almost universally hated.  Python would rely
+more on the Unix infrastructure and conventions, without being
+Unix-bound.  And in fact, the first implementation was done on a Mac. <p>
+
+As it turned out, Python is remarkably free from many of the hang-ups
+of conventional programming languages.  This is perhaps due to my
+choice of examples: besides ABC, my main influence was Modula-3.  This
+is another language with remarkable elegance and power, designed by a
+small, strong-willed team (most of whom I had met during a summer
+internship at DEC's Systems Research Center in Palo Alto).  Imagine
+what Python would have looked like if I had modelled it after the Unix
+shell and C instead!  (Yes, I borrowed from C too, but only its least
+controversial features, in my desire to please the Unix/C audience.) <p>
+
+Any individual creation has its ideosyncracies, and occasionally its
+creator has to justify these.  Perhaps Python's most controversial
+feature is its use of indentation for statement grouping, which
+derives directly from ABC.  It is one of the language's features that
+is dearest to my heart.  It makes Python code more readable in two
+ways.  First, the use of indentation reduces visual clutter and makes
+programs shorter, thus reducing the attention span needed to take in a
+basic unit of code.  Second, it allows the programmer less freedom in
+formatting, thereby enabling a more uniform style, which makes it
+easier to read someone else's code.  (Compare, for instance, the three
+or four different conventions for the placement of braces in C, each
+with strong proponents.) <p>
+
+This emphasis on readability is no accident.  As an object-oriented
+language, Python aims to encourage the creation of reusable code.
+Even if we all wrote perfect documentation all of the time, code can
+hardly be considered reusable if it's not readable.  Many of Python's
+features, in addition to its use of indentation, conspire to make
+Python code highly readable.  This reflects the philosophy of ABC,
+which was intended to teach programming in its purest form, and
+therefore placed a high value on clarity. <p>
+
+Readability is often enhanced by reducing unnecessary variability.
+When possible, there's a single, obvious way to code a particular
+construct.  This reduces the number of choices facing the programmer
+who is writing the code, and increases the chance that will appear
+familiar to a second programmer reading it.  Yet another contribution
+to Python's readability is the choice to use punctuation mostly in a
+conservative, conventional manner.  Most operator symbols are familiar
+to anyone with even a vague recollection of high school math, and no
+new meanings have to be learned for comic strip curse characters like
+@&$!. <p>
+
+I will gladly admit that Python is not the fastest running scripting
+language.  It is a good runner-up though.  With ever-increasing
+hardware speed, the accumulated running time of a program during its
+lifetime is often negligible compared to the programmer time needed
+to write and debug it.  This, of course, is where the real savings can
+be made.  While this is hard to assess objectively, Python is
+considered a winner in coding time by most who have tried it.  In
+addition, many consider using Python a pleasure -- a better
+recommendation is hard to imagine. <p>
+
+I am solely responsible for Python's strengths and shortcomings, even
+when some of the code has been written by others.  However, its
+success is the product of a community, starting with the early
+adopters who picked it up when I first published Python on the net,
+and who spread the word about it in their own environment.  They sent
+me their praise, criticism, feature requests, code contributions, and
+personal revelations via email.  They were willing to discuss every
+aspect of Python in the mailing list that I soon set up, and educate
+me or nudge me in the right direction where my initial intuition
+failed me.  There have been too many contributors to thank
+individually.  I'll make one exception, however: this book's author
+was one of Python's early adopters and evangelists.  With its
+publication, his longstanding wish (and mine!) of having a more
+accessible description of Python than the standard set of manuals, is
+fulfilled. <p>
+
+But enough rambling.  I highly recommend this book to anyone
+interested in learning Python, whether for personal improvement or as
+a career enhancement.  Take it away, Eric, the orchestra leader! (If
+you don't understand this last sentence, you haven't watched enough
+Monty Python reruns.) <p>
+
+Guido van Rossum<br>
+Reston, VA, May 1996
+
+<hr>
+<p><a href="index.html">&larr; Python Essays</a></p>
+<p><small>Originally published on <a href="https://legacy.python.org/doc/essays/foreword/">python.org</a>.</small></p>
+
+</div>
+<script
+  id="counterscale-script"
+  data-site-id="bdfl"
+  src="https://counterscale.gvanrossum.workers.dev/tracker.js"
+  defer
+></script>
+</body>
+</html>
