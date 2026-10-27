@@ -332,7 +332,7 @@ def ensure_front_matter(md_path: Path) -> dict[str, str]:
 
 
 def create_blog_index(blog_dir: Path, blog_title: str) -> None:
-    """Create a new index.html for a blog folder."""
+    """Create a standalone index.html, including instrumentation."""
     escaped = html_module.escape(blog_title)
     index_html = f"""\
 <!DOCTYPE html>
@@ -364,6 +364,12 @@ def create_blog_index(blog_dir: Path, blog_title: str) -> None:
 <p><a href="../index.html">&larr; Back to the home page</a></p>
 
 </div>
+<script
+  id="counterscale-script"
+  data-site-id="bdfl"
+  src="https://counterscale.gvanrossum.workers.dev/tracker.js"
+  defer
+></script>
 </body>
 </html>
 """
