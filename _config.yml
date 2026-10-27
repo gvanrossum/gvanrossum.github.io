@@ -1,4 +1,6 @@
 # Minimal Jekyll configuration for GitHub Pages
+include:
+  - essays/meta-vladimir.txt
 exclude:
   - publish.py
   - README.md
