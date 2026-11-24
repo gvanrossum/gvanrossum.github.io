@@ -290,8 +290,8 @@ Exactly. There's no way to nail it.
 
 **Do you remember when Raymond Hettinger started?**
 
-He started about a year before me -- got his commit bit in 2002, I got mine in
-2003. Then there was Python 3: helping write PEP 3000 with Andrew Kuchling,
+He started about a year before me -- got his commit bit in 2002, I got mine 
+in 2003. Then there was Python 3: helping write PEP 3000 with Andrew Kuchling,
 which later became PEP 3100 when we took PEP 3000 over for the motivation. And
 then the gutting of the standard library.
 
